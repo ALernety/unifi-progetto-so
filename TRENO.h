@@ -3,8 +3,7 @@
    parametro come nome e li inserisce nella stringa passata come secondo
    parametro.
 */
-void riceviItinerario(char*,char*);
-
+void riceviItinerario(char *, char *);
 
 /*Presa in input una stringa, la divide in tante sottostringhe
   usando il carattere ',' come separatore. Restituisce un array
@@ -22,31 +21,26 @@ void riceviItinerario(char*,char*);
                 {"MA8"},
                 {"S6"}};
 */
-static char** dividiItinerario(char*);
-
+static char **dividiItinerario(char *);
 
 /*
   Scrive sul file di log riferito dal parametro intero le
   informazioni riguardanti la stazione di partenza di un treno.
 */
-static char* ottieniStazionePartenza(char**,char*,int);
-
-
+static char *ottieniStazionePartenza(char **, char *, int);
 
 /*
   Scrive sul file di log riferito dal parametro intero le
   informazioni relative alla stazione di arrivo e libera
   il segmento occupato in precedenza.
 */
-static void gestisciarrivoInStazione(char*,char*,char*,int);
-
+static void gestisciarrivoInStazione(char *, char *, char *, int);
 
 /*
  Scrive la data corrente nel file riferito dal parametro intero
  Il formato è formato dd-mm-yyyy hh:mm:ss.
 */
-static void scriviDataSuFile(int );
-
+static void scriviDataSuFile(int);
 
 /*
  Scrive sul file avente come file descriptor il primo parametro
@@ -55,7 +49,7 @@ static void scriviDataSuFile(int );
  il segmento è quello in cui il treno si trova attualmente, altrimenti
  è il prossimo segmento o stazione da attraversare.
 */
-static void scriviSegmentoSuFile(int,char*,int);
+static void scriviSegmentoSuFile(int, char *, int);
 
 /*
  Funzione principale che gestisce il passaggio di un treno
@@ -63,4 +57,4 @@ static void scriviSegmentoSuFile(int,char*,int);
  informazioni sui segmenti attraversati vengono salvate nel
  file di log riferito dal parametro intero.
 */
-void percorriItinerario(char*,char*,int );
+void percorriItinerario(char *, char *, int);
