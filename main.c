@@ -11,66 +11,64 @@
 #include "REGISTRO.h"
 #include "TRENO.h"
 
-
 int main(int argc, char const *argv[]) {
-    int MA1,MA2,MA3,MA4,MA5,MA6,MA7,MA8,MA9,MA10,MA11,MA12,MA13,MA14,MA15,MA16;
-    int T1,T2,T3,T4,T5;
-    int registroPid;
+  int MA1, MA2, MA3, MA4, MA5, MA6, MA7, MA8, MA9, MA10, MA11, MA12, MA13, MA14,
+      MA15, MA16;
+  int T1, T2, T3, T4, T5;
+  int registroPid;
 
+  umask(000);
+  MA1 = creaSegmento("MA1");
+  MA2 = creaSegmento("MA2");
+  MA3 = creaSegmento("MA3");
+  MA4 = creaSegmento("MA4");
+  MA5 = creaSegmento("MA5");
+  MA6 = creaSegmento("MA6");
+  MA7 = creaSegmento("MA7");
+  MA8 = creaSegmento("MA8");
+  MA9 = creaSegmento("MA9");
+  MA10 = creaSegmento("MA10");
+  MA11 = creaSegmento("MA11");
+  MA12 = creaSegmento("MA12");
+  MA13 = creaSegmento("MA13");
+  MA14 = creaSegmento("MA14");
+  MA15 = creaSegmento("MA15");
+  MA16 = creaSegmento("MA16");
+  inizializzaSegmento(MA1);
+  inizializzaSegmento(MA2);
+  inizializzaSegmento(MA3);
+  inizializzaSegmento(MA4);
+  inizializzaSegmento(MA5);
+  inizializzaSegmento(MA6);
+  inizializzaSegmento(MA7);
+  inizializzaSegmento(MA8);
+  inizializzaSegmento(MA9);
+  inizializzaSegmento(MA10);
+  inizializzaSegmento(MA11);
+  inizializzaSegmento(MA12);
+  inizializzaSegmento(MA13);
+  inizializzaSegmento(MA14);
+  inizializzaSegmento(MA15);
+  inizializzaSegmento(MA16);
 
-    umask(000);
-    MA1=creaSegmento("MA1");
-    MA2=creaSegmento("MA2");
-    MA3=creaSegmento("MA3");
-    MA4=creaSegmento("MA4");
-    MA5=creaSegmento("MA5");
-    MA6=creaSegmento("MA6");
-    MA7=creaSegmento("MA7");
-    MA8=creaSegmento("MA8");
-    MA9=creaSegmento("MA9");
-    MA10=creaSegmento("MA10");
-    MA11=creaSegmento("MA11");
-    MA12=creaSegmento("MA12");
-    MA13=creaSegmento("MA13");
-    MA14=creaSegmento("MA14");
-    MA15=creaSegmento("MA15");
-    MA16=creaSegmento("MA16");
-    inizializzaSegmento(MA1);
-    inizializzaSegmento(MA2);
-    inizializzaSegmento(MA3);
-    inizializzaSegmento(MA4);
-    inizializzaSegmento(MA5);
-    inizializzaSegmento(MA6);
-    inizializzaSegmento(MA7);
-    inizializzaSegmento(MA8);
-    inizializzaSegmento(MA9);
-    inizializzaSegmento(MA10);
-    inizializzaSegmento(MA11);
-    inizializzaSegmento(MA12);
-    inizializzaSegmento(MA13);
-    inizializzaSegmento(MA14);
-    inizializzaSegmento(MA15);
-    inizializzaSegmento(MA16);
+  close(MA1);
+  close(MA2);
+  close(MA3);
+  close(MA4);
+  close(MA5);
+  close(MA6);
+  close(MA7);
+  close(MA8);
+  close(MA9);
+  close(MA10);
+  close(MA11);
+  close(MA12);
+  close(MA13);
+  close(MA14);
+  close(MA15);
+  close(MA16);
 
-    close(MA1);
-    close(MA2);
-    close(MA3);
-    close(MA4);
-    close(MA5);
-    close(MA6);
-    close(MA7);
-    close(MA8);
-    close(MA9);
-    close(MA10);
-    close(MA11);
-    close(MA12);
-    close(MA13);
-    close(MA14);
-    close(MA15);
-    close(MA16);
-
-
-    if( ( registroPid=fork() )<0 ){
+  if ((registroPid = fork()) < 0) {
     perror("errore durante le creazione del processo registro");
     exit(EXIT_FAILURE);
    }
@@ -212,6 +210,4 @@ int main(int argc, char const *argv[]) {
          exit(0);
      }//fine processo treno5
 return 0;
-
-
-  }
+}
