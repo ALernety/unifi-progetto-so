@@ -1,6 +1,5 @@
-*
-!*.*
-!LICENSE
+
 *.o
 *.log
 MA[0-9]+
+bin/*
