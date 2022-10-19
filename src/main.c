@@ -10,7 +10,50 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+enum Booleans { false, true };
+typedef enum Booleans boolean;
+
 int main(int argc, char const *argv[]) {
+  char helpStr[450];
+  sprintf(
+      helpStr,
+      "\033[31mNot enough arguments! Example of use:\033[0m\n"
+      "\n"
+      "Usage: %s MODE [RBC] MAP\n\n"
+      "\033[36mMODE\033[0m possible values are:\n"
+      "    \033[36mETCS1\033[0m    - program has to be used without server\n"
+      "    \033[36mETCS2\033[0m    - program has to be used with server RBC\n"
+      "\n"
+      "\033[36mRBC\033[0m used to activate server\n"
+      "\n"
+      "\033[36mMAP\033[0m possible values are:\n"
+      "    \033[36mMAPPA1\033[0m   - manage trains with map one \n"
+      "    \033[36mMAPPA2\033[0m   - manage trains with map two\n",
+      argv[0]);
+  switch (argc) {
+  case 3: {
+    boolean isNotETCS = strcmp(argv[1], "ETCS1") && strcmp(argv[1], "ETCS2");
+    boolean isNotMAP = strcmp(argv[2], "MAPPA1") && strcmp(argv[2], "MAPPA2");
+    if (isNotETCS || isNotMAP) {
+      printf("%s", helpStr);
+      exit(EXIT_FAILURE);
+    }
+    break;
+  }
+  case 4: {
+    boolean isNotMAP = strcmp(argv[3], "MAPPA1") && strcmp(argv[3], "MAPPA2");
+    if (strcmp(argv[1], "ETCS2") || strcmp(argv[2], "RBC") || isNotMAP) {
+      printf("%s", helpStr);
+      exit(EXIT_FAILURE);
+    }
+    break;
+  }
+  default:
+    printf("%s", helpStr);
+    exit(EXIT_FAILURE);
+    break;
+  }
+
   int MA[16];
   int Train[5];
   // int T1, T2, T3, T4, T5;
@@ -18,7 +61,7 @@ int main(int argc, char const *argv[]) {
 
   umask(000);
   for (int i = 0; i < 16; i++) {
-    char file[4];
+    char file[5];
     sprintf(file, "MA%d", i + 1);
     MA[i] = creaSegmento(file);
     inizializzaSegmento(MA[i]);

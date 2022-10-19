@@ -8,6 +8,56 @@
 #include <time.h>
 #include <unistd.h>
 
+/*-----------------------Declare static functions-----------------------------*/
+
+/*Presa in input una stringa, la divide in tante sottostringhe
+  usando il carattere ',' come separatore. Restituisce un array
+  contenente tutte le stringhe derivanti da questa separazione.
+
+  Ad esempio, se abbiamo una stringa di questo tipo:
+        char* str={"S2,MA5,MA6,MA7,MA3,MA8,S6"};
+        char** arrStr=riceviItinerario(str);
+  arrStr avrà questa forma:
+        arrStr={{"S2"},
+                {"MA5"},
+                {"MA6"},
+                {"MA7"},
+                {"MA3"},
+                {"MA8"},
+                {"S6"}};
+*/
+static char **dividiItinerario(char *);
+
+/*
+  Scrive sul file di log riferito dal parametro intero le
+  informazioni riguardanti la stazione di partenza di un treno.
+*/
+// static char *ottieniStazionePartenza(char **, char *, int);
+
+/*
+  Scrive sul file di log riferito dal parametro intero le
+  informazioni relative alla stazione di arrivo e libera
+  il segmento occupato in precedenza.
+*/
+static void gestisciarrivoInStazione(char *, char *, char *, int);
+
+/*
+ Scrive la data corrente nel file riferito dal parametro intero
+ Il formato è formato dd-mm-yyyy hh:mm:ss.
+*/
+static void logCurrentDate(int);
+
+/*
+ Scrive sul file avente come file descriptor il primo parametro
+ le informazioni sul segmento passato come secondo parametro.
+ In particolare, se il flag è impostato a un valore diverso da 0
+ il segmento è quello in cui il treno si trova attualmente, altrimenti
+ è il prossimo segmento o stazione da attraversare.
+*/
+static void scriviSegmentoSuFile(int, char *, int);
+
+/*----------------------------------------------------------------------------*/
+
 /*---------------------------riceviItinerario---------------------------------*/
 void riceviItinerario(char *nome, char *itinerario) {
   int pipeFd;
@@ -36,7 +86,7 @@ static char **dividiItinerario(char *itinerario) {
 }
 /*----------------------------------------------------------------------------*/
 
-/*-----------------------logCurrentDate-------------------------------------*/
+/*------------------------logCurrentDate--------------------------------------*/
 static void logCurrentDate(int fd) {
   char buffer[30];
   size_t i;
@@ -46,25 +96,25 @@ static void logCurrentDate(int fd) {
   tim = *(localtime(&now));
   i = strftime(buffer, 30, "%d %b %Y; %H:%M:%S\n", &tim);
   int byteScritti = write(fd, buffer, i);
-  if (byteScritti != i) {
+  if (byteScritti != (int)i) {
     perror("errore durante la scrittura della data corrente");
   }
 }
 /*----------------------------------------------------------------------------*/
 
 /*-------------------ottieniStazionePartenza---------------------------------*/
-static char *ottieniStazionePartenza(char **arrItinerario, char *treno,
-                                     int fd) {
-  char *segmentoCorrente = arrItinerario[0];
-  printf("stazione di partenza di %s: %s\n", treno, segmentoCorrente);
-  char buffer[20];
-  sprintf(buffer, "%s[Attuale: %s], ", buffer, segmentoCorrente);
-  int writtenChars = write(fd, buffer, strlen(buffer));
-  if (writtenChars != strlen(buffer)) {
-    perror("errore durante la scrittura in un file di log");
-  }
-  return segmentoCorrente;
-}
+// static char *ottieniStazionePartenza(char **arrItinerario, char *treno,
+//                                      int fd) {
+//   char *segmentoCorrente = arrItinerario[0];
+//   printf("stazione di partenza di %s: %s\n", treno, segmentoCorrente);
+//   char buffer[20];
+//   sprintf(buffer, "%s[Attuale: %s], ", buffer, segmentoCorrente);
+//   int writtenChars = write(fd, buffer, strlen(buffer));
+//   if (writtenChars != (int)strlen(buffer)) {
+//     perror("errore durante la scrittura in un file di log");
+//   }
+//   return segmentoCorrente;
+// }
 /*----------------------------------------------------------------------------*/
 
 /*------------------------gestisciarrivoInStazione-----------------------*/
@@ -82,18 +132,18 @@ static void gestisciarrivoInStazione(char *treno, char *segmentoCorrente,
 
 /*-------------scriviSegmentoSuFile-------------------------------------------*/
 static void scriviSegmentoSuFile(int fd, char *segmento, int flag) {
-  char buffer[30];
+  char buffer[50];
   if (flag) {
-    strcat(buffer, "[Attuale: ");
+    strcpy(buffer, "[Attuale: ");
   } else {
-    strcat(buffer, "[Next: ");
+    strcpy(buffer, "[Next: ");
   }
 
   strcat(buffer, segmento);
   strcat(buffer, "], ");
 
   int writtenChars = write(fd, buffer, strlen(buffer));
-  if (writtenChars != strlen(buffer)) {
+  if (writtenChars != (int)strlen(buffer)) {
     perror("errore durante la scrittura in un file di log");
   }
 }
