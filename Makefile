@@ -15,7 +15,7 @@ endif
 LDFLAGS := -lm
 
 # Funzioni per la risoluzione di sorgenti e file oggetto dei componenti
-SRC_FILES = $(wildcard $(SRC_DIR)/$(1).c)
+SRC_FILES = $(wildcard $(SRC_DIR)/$(1)/*.c) $(wildcard $(SRC_DIR)/common/*.c)
 OBJ_FILES = $(subst $(SRC_DIR)/,$(OBJ_DIR)/,$(patsubst %.c,%.o,$(call SRC_FILES,$(1))))
 
 # Riferimento unico al comando di generazione dei file oggetto
@@ -39,17 +39,24 @@ clean_tmp: ## Pulisci i log e i file temporanei
 
 ### Targets di entrata
 
-# .PHONY: all generatore_fallimenti pfc pfc_disconnect_switch transducers wes main
-.PHONY: all PADRE_TRENI REGISTRO TRENO main
-all: PADRE_TRENI REGISTRO TRENO main ## Compila tutti i componenti
+.PHONY: all PADRE_TRENI REGISTRO RBC railway_manager
+all: PADRE_TRENI REGISTRO RBC railway_manager ## Compila tutti i componenti
 PADRE_TRENI: $(call OBJ_FILES,PADRE_TRENI) ## Compila il PADRE_TRENI
 REGISTRO: $(call OBJ_FILES,REGISTRO) ## Compila il REGISTRO
-TRENO: $(call OBJ_FILES,TRENO) ## Compila il TRENO
-main: $(call OBJ_FILES,main) bin.railway_manager ## Compila il main
+RBC: $(call OBJ_FILES,RBC) ## Compila il RBC
+railway_manager: | PADRE_TRENI REGISTRO $(call OBJ_FILES,railway_manager) bindir bin.railway_manager ## Compila il railway_manager
 
 ### Targets di compilazione file oggetto
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | objdir
+$(OBJ_DIR)/common/%.o: $(SRC_DIR)/common/%.c | objdir/common
+	$(BUILD_O)
+$(OBJ_DIR)/PADRE_TRENI/%.o: $(SRC_DIR)/PADRE_TRENI/%.c | objdir/PADRE_TRENI
+	$(BUILD_O)
+$(OBJ_DIR)/REGISTRO/%.o: $(SRC_DIR)/REGISTRO/%.c | objdir/REGISTRO
+	$(BUILD_O)
+$(OBJ_DIR)/RBC/%.o: $(SRC_DIR)/RBC/%.c | objdir/RBC
+	$(BUILD_O)
+$(OBJ_DIR)/railway_manager/%.o: $(SRC_DIR)/railway_manager/%.c | objdir/railway_manager
 	$(BUILD_O)
 
 ### Targets di creazione paths di output
@@ -57,12 +64,12 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | objdir
 .PHONY: objdir bindir tmpdir logdir
 objdir:
 	@mkdir -p $(OBJ_DIR)
-# objdir/%:
-# 	@mkdir -p $(OBJ_DIR)/$(subst objdir/,,$@)
+objdir/%:
+	@mkdir -p $(OBJ_DIR)/$(subst objdir/,,$@)
 bindir:
 	@mkdir -p $(BIN_DIR)
-# bindir/%:
-# 	@mkdir -p $(BIN_DIR)/$(subst bindir/,,$@)
+bindir/%:
+	@mkdir -p $(BIN_DIR)/$(subst bindir/,,$@)
 tmpdir:
 	@mkdir -p $(TMP_DIR)
 logdir:
@@ -73,4 +80,4 @@ logdir:
 
 bin.%: | bindir tmpdir logdir
     # Cache wildcard bypassata tramite utilizzo di ls via shell
-	$(CC) $(CFLAGS) $(OBJ_DIR)/* -o $(BIN_DIR)/$(subst bin.,,$@) $(LDFLAGS)
+	$(CC) $(CFLAGS) $(shell ls $(OBJ_DIR)/*/*.o) -o $(BIN_DIR)/$(subst bin.,,$@) $(LDFLAGS)
