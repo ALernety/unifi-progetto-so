@@ -1,6 +1,6 @@
-#include "PADRE_TRENI.h"
-#include "REGISTRO.h"
-#include "TRENO.h"
+#include "../PADRE_TRENI/PADRE_TRENI.h"
+#include "../PADRE_TRENI/TRENO.h"
+#include "../REGISTRO/REGISTRO.h"
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
