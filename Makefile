@@ -29,7 +29,7 @@ endef
 
 ### Targets ausiliari/cosmetici
 
-.PHONY: help clean
+.PHONY: help clean clean_tmp
 help: ## Mostra questo aiuto
 	@grep -E '^[a-zA-Z\._-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-25s\033[0m %s\n", $$1, $$2}'
 clean: ## Pulisci i file oggetto, i binari, i log e i file temporanei
@@ -44,24 +44,30 @@ all: PADRE_TRENI REGISTRO RBC railway_manager ## Compila tutti i componenti
 PADRE_TRENI: $(call OBJ_FILES,PADRE_TRENI) ## Compila il PADRE_TRENI
 REGISTRO: $(call OBJ_FILES,REGISTRO) ## Compila il REGISTRO
 RBC: $(call OBJ_FILES,RBC) ## Compila il RBC
-railway_manager: | PADRE_TRENI REGISTRO $(call OBJ_FILES,railway_manager) bindir bin.railway_manager ## Compila il railway_manager
+railway_manager: | PADRE_TRENI REGISTRO $(call OBJ_FILES,railway_manager)\
+  bindir bin.railway_manager ## Compila il railway_manager
 
 ### Targets di compilazione file oggetto
 
-$(OBJ_DIR)/common/%.o: $(SRC_DIR)/common/%.c | objdir/common
+$(OBJ_DIR)/common/%.o:\
+  $(SRC_DIR)/common/%.c cpplint/common/%.c | objdir/common
 	$(BUILD_O)
-$(OBJ_DIR)/PADRE_TRENI/%.o: $(SRC_DIR)/PADRE_TRENI/%.c | objdir/PADRE_TRENI
+$(OBJ_DIR)/PADRE_TRENI/%.o:\
+  $(SRC_DIR)/PADRE_TRENI/%.c cpplint/PADRE_TRENI/%.c | objdir/PADRE_TRENI
 	$(BUILD_O)
-$(OBJ_DIR)/REGISTRO/%.o: $(SRC_DIR)/REGISTRO/%.c | objdir/REGISTRO
+$(OBJ_DIR)/REGISTRO/%.o:\
+  $(SRC_DIR)/REGISTRO/%.c cpplint/REGISTRO/%.c | objdir/REGISTRO
 	$(BUILD_O)
-$(OBJ_DIR)/RBC/%.o: $(SRC_DIR)/RBC/%.c | objdir/RBC
+$(OBJ_DIR)/RBC/%.o:\
+  $(SRC_DIR)/RBC/%.c cpplint/RBC/%.c | objdir/RBC
 	$(BUILD_O)
-$(OBJ_DIR)/railway_manager/%.o: $(SRC_DIR)/railway_manager/%.c | objdir/railway_manager
+$(OBJ_DIR)/railway_manager/%.o:\
+  $(SRC_DIR)/railway_manager/%.c cpplint/railway_manager/%.c | objdir/railway_manager
 	$(BUILD_O)
 
 ### Targets di creazione paths di output
 
-.PHONY: objdir bindir tmpdir logdir
+.PHONY: objdir bindir tmpdir logdir cpplint
 objdir:
 	@mkdir -p $(OBJ_DIR)
 objdir/%:
@@ -75,9 +81,13 @@ tmpdir:
 logdir:
 	@mkdir -p $(LOG_DIR)
 	# @mkdir -p $(LOG_DIR)/components
+cpplint: ## Analyze all source code
+	cpplint $(shell find $(SRC_DIR) -type f -name "*.c")
+cpplint/%: ## Analyze source code of directory or specifed file
+	-cpplint $(shell find $(SRC_DIR)/$(subst cpplint/,,$@) -type f -name "*.c")
 
 ### Targets di compilazione binari
 
 bin.%: | bindir tmpdir logdir
     # Cache wildcard bypassata tramite utilizzo di ls via shell
-	$(CC) $(CFLAGS) $(shell ls $(OBJ_DIR)/*/*.o) -o $(BIN_DIR)/$(subst bin.,,$@) $(LDFLAGS)
+	$(CC) $(CFLAGS) $(shell find $(OBJ_DIR) -type f -name "*.o") -o $(BIN_DIR)/$(subst bin.,,$@) $(LDFLAGS)
