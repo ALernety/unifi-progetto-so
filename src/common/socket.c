@@ -15,9 +15,9 @@
 #define SOCKET_TYPE SOCK_STREAM
 
 static int socket_open_unix(int *sfd, socket_user user, char *socket_path,
-                            int max_conected_clients);
+                            int max_connected_clients);
 static int socket_open_inet(int *sfd, socket_user user, char *socket_path,
-                            unsigned int port, int max_conected_clients);
+                            unsigned int port, int max_connected_clients);
 
 int socket_open(socket_data socket_input, sa_family_t socket_domain) {
   unlink(socket_input.socket_path);
@@ -25,12 +25,12 @@ int socket_open(socket_data socket_input, sa_family_t socket_domain) {
   case AF_UNIX:
     *socket_input.sfd = socket_open_unix(socket_input.sfd, socket_input.user,
                                          socket_input.socket_path,
-                                         socket_input.max_conected_clients);
+                                         socket_input.max_connected_clients);
     break;
   case AF_INET:
     *socket_input.sfd = socket_open_inet(
         socket_input.sfd, socket_input.user, socket_input.socket_path,
-        socket_input.port, socket_input.max_conected_clients);
+        socket_input.port, socket_input.max_connected_clients);
     break;
   }
   return *socket_input.sfd;
@@ -77,7 +77,7 @@ int socket_write(int *sfd, char *msg, ssize_t msg_len) {
 }
 
 static int socket_open_unix(int *sfd, socket_user user, char *socket_path,
-                            int max_conected_clients) {
+                            int max_connected_clients) {
   // Define socket, and prepare variables.
   int socketLen;
   struct sockaddr_un socketAddress;
@@ -109,7 +109,7 @@ static int socket_open_unix(int *sfd, socket_user user, char *socket_path,
       perror("bind");
       abort();
     }
-    if (listen(*sfd, max_conected_clients) == -1) {
+    if (listen(*sfd, max_connected_clients) == -1) {
       perror("listen");
       abort();
     }
@@ -119,7 +119,7 @@ static int socket_open_unix(int *sfd, socket_user user, char *socket_path,
 }
 
 static int socket_open_inet(int *sfd, socket_user user, char *socket_path,
-                            unsigned int port, int max_conected_clients) {
+                            unsigned int port, int max_connected_clients) {
   // Define socket and prepare variables.
   int socketLen;
   struct sockaddr_in socketAddress;
@@ -146,7 +146,7 @@ static int socket_open_inet(int *sfd, socket_user user, char *socket_path,
       perror("bind");
       abort();
     }
-    if (listen(*sfd, max_conected_clients) == -1) {
+    if (listen(*sfd, max_connected_clients) == -1) {
       perror("listen");
       abort();
     }
