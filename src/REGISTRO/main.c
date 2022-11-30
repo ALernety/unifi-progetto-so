@@ -39,8 +39,7 @@ int main(int argc, char const *argv[]) {
     break;
   }
 
-  char *map = "";
-  map = get_malloc_map(map_name, map);
+  char *map = get_malloc_map(map_name);
   char **itinerary_list = get_malloc_itinerary_list(map);
   int sfd = create_socket_server("127.0.0.1", 43210, 3);
   start_socket_server(&sfd, itinerary_list);
