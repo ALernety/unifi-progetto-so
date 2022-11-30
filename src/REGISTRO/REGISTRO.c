@@ -9,7 +9,7 @@
 
 static int get_number_of_tokens(char *str, char *delim, int *number);
 
-char *get_malloc_map(char *map_name, char *map) {
+char *get_malloc_map(char *map_name) {
   const char *map_to_use;
   if (!strcmp(map_name, "MAPPA1")) {
     map_to_use = "S1, MA1, MA2, MA3, MA8, S6\n"
@@ -26,7 +26,7 @@ char *get_malloc_map(char *map_name, char *map) {
     perror("Wrong map!");
     abort();
   }
-  malloc_macro(char *, map, strlen(map_to_use));
+  malloc_macro_def(char *, map, strlen(map_to_use));
   sprintf(map, "%s", map_to_use);
   return map;
 }
@@ -66,10 +66,11 @@ void start_socket_server(int *sfd, char **itinerary_list) {
   //   itinerary_list_t[i] = strdup(itinerary_list[i]);
   // }
   while (true) {
-    int *client_sfd;
+    int client_socket = -1;
+    int *client_sfd = &client_socket;
     socket_accept(sfd, client_sfd);
     if (fork() == 0) {
-      printf("%s\n", itinerary_list[0]);
+      // printf("%s\n", itinerary_list[0]);
       char *train_name = get_malloc_train(client_sfd);
       send_itinerary(client_sfd, itinerary_list, train_name);
       free(train_name);
