@@ -1,8 +1,6 @@
-#include "../PADRE_TRENI/PADRE_TRENI.h"
-#include "../PADRE_TRENI/TRENO.h"
-#include "../REGISTRO/REGISTRO.h"
 #include "../common/parent_dir.h"
 #include <fcntl.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,11 +11,11 @@
 #define SEGMENTS_NUM 16
 #define TRAIN_NUM 4
 
-enum Booleans { false, true };
-typedef enum Booleans boolean;
-
 int main(int argc, char const *argv[]) {
   char helpStr[450];
+  char *map_name;
+  char *mode_name;
+  bool is_rbc = false;
   sprintf(
       helpStr,
       "\033[31mNot enough arguments! Example of use:\033[0m\n"
@@ -35,20 +33,25 @@ int main(int argc, char const *argv[]) {
       argv[0]);
   switch (argc) {
   case 3: {
-    boolean isNotETCS = strcmp(argv[1], "ETCS1") && strcmp(argv[1], "ETCS2");
-    boolean isNotMAP = strcmp(argv[2], "MAPPA1") && strcmp(argv[2], "MAPPA2");
+    bool isNotETCS = strcmp(argv[1], "ETCS1") && strcmp(argv[1], "ETCS2");
+    bool isNotMAP = strcmp(argv[2], "MAPPA1") && strcmp(argv[2], "MAPPA2");
     if (isNotETCS || isNotMAP) {
       printf("%s", helpStr);
       exit(EXIT_FAILURE);
     }
+    mode_name = strdup(argv[1]);
+    map_name = strdup(argv[2]);
     break;
   }
   case 4: {
-    boolean isNotMAP = strcmp(argv[3], "MAPPA1") && strcmp(argv[3], "MAPPA2");
+    bool isNotMAP = strcmp(argv[3], "MAPPA1") && strcmp(argv[3], "MAPPA2");
     if (strcmp(argv[1], "ETCS2") || strcmp(argv[2], "RBC") || isNotMAP) {
       printf("%s", helpStr);
       exit(EXIT_FAILURE);
     }
+    mode_name = strdup(argv[1]);
+    map_name = strdup(argv[2]);
+    is_rbc = !strcmp(argv[2], "RBC");
     break;
   }
   default:
