@@ -1,4 +1,4 @@
-#include "REGISTRO.h"
+#include "../REGISTRO/REGISTRO.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
