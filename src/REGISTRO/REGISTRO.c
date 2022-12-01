@@ -1,51 +1,11 @@
 #include "../REGISTRO/REGISTRO.h"
 #include "../common/alloc_macro.h"
 #include "../common/socket.h"
-#include <ctype.h>
+#include "../common/string_handlers.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-static int get_number_of_tokens(char *str, char *delim, int *number);
-
-char *get_malloc_map(char *map_name) {
-  const char *map_to_use;
-  if (!strcmp(map_name, "MAPPA1")) {
-    map_to_use = "S1, MA1, MA2, MA3, MA8, S6\n"
-                 "S2, MA5, MA6, MA7, MA3, MA8, S6\n"
-                 "S7, MA13, MA12, MA11, MA10, MA9, S3\n"
-                 "S4, MA14, MA15, MA16, MA12, S8";
-  } else if (!strcmp(map_name, "MAPPA2")) {
-    map_to_use = "S2, MA5, MA6, MA7, MA3, MA8, S6\n"
-                 "S3, MA9, MA10, MA11, MA12, S8\n"
-                 "S4, MA14, MA15, MA16, MA12, S8\n"
-                 "S6, MA8, MA3, MA2, MA1, S1\n"
-                 "S5, MA4, MA3, MA2, MA1, S1";
-  } else {
-    perror("Wrong map!");
-    abort();
-  }
-  malloc_macro_def(char *, map, strlen(map_to_use));
-  sprintf(map, "%s", map_to_use);
-  return map;
-}
-
-char **get_malloc_itinerary_list(char *map) {
-  int number_of_tokens = 0;
-  get_number_of_tokens(map, "\n", &number_of_tokens);
-  char *itinerary_str = strtok(map, "\n");
-  malloc_macro_def(char **, itinerary_list, number_of_tokens * sizeof(char *));
-  for (int itinerary_number = 0;
-       itinerary_str && itinerary_number < number_of_tokens;
-       itinerary_number++) {
-    malloc_macro(char *, itinerary_list[itinerary_number],
-                 sizeof(char) * strlen(itinerary_str));
-    sprintf(itinerary_list[itinerary_number], "%s", itinerary_str);
-    itinerary_str = strtok(NULL, "\n");
-  }
-  return itinerary_list;
-}
 
 int create_socket_server(char *socket_path, unsigned int port,
                          int max_connected_clients) {
@@ -67,9 +27,10 @@ void start_socket_server(int *sfd, char **itinerary_list) {
     if (fork() == 0) {
       // printf("%s\n", itinerary_list[0]);
       char *train_name = get_malloc_train(client_sfd);
-      send_itinerary(client_sfd, itinerary_list, train_name);
+      int train_index = get_integer_from(train_name) - 1;
+      send_itinerary(client_sfd, itinerary_list[train_index]);
       free(train_name);
-      free(itinerary_list);
+      free_alloc_array(itinerary_list);
       socket_close(client_sfd, NULL);
       exit(EXIT_SUCCESS);
     } else {
@@ -88,29 +49,7 @@ char *get_malloc_train(int *sfd) {
   return train_name;
 }
 
-bool send_itinerary(int *sfd, char **itinerary_list, char *train_name) {
-  char *train_name_tmp = strdup(train_name);
-  int train_index;
-  while (*train_name_tmp) { // While there are more characters to process...
-    if (isdigit(*train_name_tmp)) {
-      // Found a number
-      train_index =
-          strtol(train_name_tmp, &train_name_tmp, 10) - 1; // Read number
-    } else {
-      // Otherwise, move on to the next character.
-      train_name_tmp++;
-    }
-  }
-  size_t message_len = socket_write(sfd, itinerary_list[train_index],
-                                    strlen(itinerary_list[train_index]));
-  return message_len == strlen(itinerary_list[train_index]);
-}
-
-static int get_number_of_tokens(char *str, char *delim, int *count) {
-  *count = 1;
-  while ((str = strpbrk(str, delim)) != NULL) {
-    (*count)++;
-    str++;
-  }
-  return *count;
+bool send_itinerary(int *sfd, char *itinerary) {
+  size_t message_len = socket_write(sfd, itinerary, strlen(itinerary));
+  return message_len == strlen(itinerary);
 }

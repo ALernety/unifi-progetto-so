@@ -1,25 +1,6 @@
 #pragma once
 #include <stdbool.h>
 
-/**
- * @brief Get the malloc map string, using map_name.
- *
- * @param map_name Is a string, to choose predefined map.
- * @return char* Is a string, containing the itineraries of trains,
- *        separated by new line (\n), allocated with malloc.
- */
-char *get_malloc_map(char *map_name);
-
-/**
- * @brief Get the malloc itinerary list from map string.
- *
- * @param map Is a string, containing the itineraries of trains,
- *        separated by new line (\n).
- * @return char** Is an array of itineraries, index of which is
- *         a number of line in map, starting count from 0, and
- *         allocated with malloc.
- */
-char **get_malloc_itinerary_list(char *map);
 
 /**
  * @brief Create a socket server of AF_INET type.
@@ -59,4 +40,4 @@ char *get_malloc_train(int *sfd);
  * @return true All characters of itinerary was write to socket.
  * @return false Some characters was not write to socket.
  */
-bool send_itinerary(int *sfd, char **itinerary_list, char *train_name);
+bool send_itinerary(int *sfd, char *itinerary);

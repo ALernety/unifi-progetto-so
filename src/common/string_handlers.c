@@ -10,6 +10,7 @@
 char *get_malloc_string_from(char *file) {
   int fd = open(file, O_RDONLY);
   int file_length = lseek(fd, 0, SEEK_END);
+  lseek(fd, 0, SEEK_SET);
   malloc_macro_def(char *, map, file_length);
   read(fd, map, file_length);
   close(fd);
