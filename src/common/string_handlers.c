@@ -57,26 +57,23 @@ char **get_malloc_token_list(char *string_to_split, char *delim) {
   return token_list;
 }
 
-int *get_malloc_integer_list_from(char *string_with_integers) {
-  int *extracted_integers;
+int get_integer_from(char *string_with_integer) {
+  int extracted_integer = -1;
   // While there are more characters to process...
-  while (*string_with_integers) {
+  while (*string_with_integer) {
     // Found a number
-    if (isdigit(*string_with_integers) ||
-        ((*string_with_integers == '-' || *string_with_integers == '+') &&
-         isdigit(*(string_with_integers + 1)))) {
-      // Allocate memory for array
-      realloc_macro(int *, extracted_integers, sizeof(extracted_integers) + 1);
+    if (isdigit(*string_with_integer) ||
+        ((*string_with_integer == '-' || *string_with_integer == '+') &&
+         isdigit(*(string_with_integer + 1)))) {
       // Read number
-      extracted_integers[sizeof(extracted_integers) + 1] =
-          strtol(string_with_integers, &string_with_integers, 10);
+      extracted_integer = strtol(string_with_integer, &string_with_integer, 10);
       break;
     } else {
       // Otherwise, move on to the next character.
-      string_with_integers++;
+      string_with_integer++;
     }
   }
-  return extracted_integers;
+  return extracted_integer;
 }
 
 char *to_upper(char *string_to_handle) {

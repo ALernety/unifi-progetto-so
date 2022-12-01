@@ -29,12 +29,13 @@ int get_number_of_tokens(char *str, char *delim);
 char **get_malloc_token_list(char *string_to_split, char *delim);
 
 /**
- * @brief Extract all integers in malloc array.
+ * @brief Extract integer from string.
  *
- * @param string_with_integers String contains integers.
- * @return int* Array of integers, got from string_with_integers.
+ * @param string_with_integer String contains integer.
+ * @return int Integer, got from string_with_integer. If integer not found
+ *         will return -1.
  */
-int *get_malloc_integer_list_from(char *string_with_integers);
+int get_integer_from(char *string_with_integer);
 
 /**
  * @brief Converts all string to uppercase.
