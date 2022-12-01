@@ -1,5 +1,5 @@
 #include "REGISTRO.h"
-#include "../common/malloc_macro.h"
+#include "../common/alloc_macro.h"
 #include "../common/socket.h"
 #include <ctype.h>
 #include <stdio.h>
@@ -60,11 +60,6 @@ int create_socket_server(char *socket_path, unsigned int port,
 }
 
 void start_socket_server(int *sfd, char **itinerary_list) {
-  // malloc_macro_def(char **, itinerary_list_t, sizeof(itinerary_list));
-  // for (int i = 0; itinerary_list[i]; i++) {
-  //   malloc_macro(char *, itinerary_list_t[i], sizeof(itinerary_list[i]));
-  //   itinerary_list_t[i] = strdup(itinerary_list[i]);
-  // }
   while (true) {
     int client_socket = -1;
     int *client_sfd = &client_socket;
