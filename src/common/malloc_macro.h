@@ -1,12 +1,15 @@
-#define malloc_macro_def_type(def_type, type, variable, size)                  \
-  def_type variable = (type)malloc(size + 1);                                  \
+#define alloc_macro_def(alloc_function_call, def_type, cast_type, variable)    \
+  def_type variable = (cast_type)alloc_function_call;                          \
   if (!variable) {                                                             \
     perror("Memory allocation failed!\n");                                     \
     abort();                                                                   \
   }
 
-#define malloc_macro(type, variable, size)                                     \
-  malloc_macro_def_type(, type, variable, size)
+#define malloc_macro(cast_type, variable, size)                                \
+  alloc_macro_def(malloc(size + 1), , cast_type, variable)
 
-#define malloc_macro_def(type, variable, size)                                 \
-  malloc_macro_def_type(type, type, variable, size)
+#define malloc_macro_def(cast_type, variable, size)                            \
+  alloc_macro_def(malloc(size + 1), cast_type, cast_type, variable)
+
+#define realloc_macro(cast_type, variable, size)                               \
+  alloc_macro_def(realloc(variable, size + 1), , cast_type, variable)
