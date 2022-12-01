@@ -13,3 +13,9 @@
 
 #define realloc_macro(cast_type, variable, size)                               \
   alloc_macro_def(realloc(variable, size + 1), , cast_type, variable)
+
+#define free_alloc_array(array)                                                \
+  for (int i = 0; i < sizeof(array); i++) {                                    \
+    free(array[i]);                                                            \
+  }                                                                            \
+  free(array);

@@ -1,4 +1,5 @@
 #include "../REGISTRO/REGISTRO.h"
+#include "../common/string_handlers.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,7 +8,10 @@
 int main(int argc, char const *argv[]) {
   char helpStr[450];
   char *map_name;
+  char map_delimiter[] = "\n";
   char *mode_name;
+  char ip_address[] = "127.0.0.1";
+  char port_string[] = "43210";
 
   sprintf(helpStr,
           "\033[31mNot enough arguments! Example of use:\033[0m\n"
@@ -39,9 +43,10 @@ int main(int argc, char const *argv[]) {
     break;
   }
 
-  char *map = get_malloc_map(map_name);
-  char **itinerary_list = get_malloc_itinerary_list(map);
-  int sfd = create_socket_server("127.0.0.1", 43210, 3);
+  char *map = get_malloc_string_from(map_name);
+  char **itinerary_list = get_malloc_token_list(map, map_delimiter);
+  unsigned int port = get_integer_from(port_string);
+  int sfd = create_socket_server(ip_address, port, 3);
   start_socket_server(&sfd, itinerary_list);
 
   return EXIT_SUCCESS;
