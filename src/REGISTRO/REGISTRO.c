@@ -1,4 +1,4 @@
-#include "REGISTRO.h"
+#include "../REGISTRO/REGISTRO.h"
 #include "../common/alloc_macro.h"
 #include "../common/socket.h"
 #include <ctype.h>
