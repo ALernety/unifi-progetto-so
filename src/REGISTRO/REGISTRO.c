@@ -40,13 +40,8 @@ void start_socket_server(int *sfd, char **itinerary_list) {
 }
 
 char *get_malloc_train(int *sfd) {
-  char *train_name = NULL;
-  int train_name_size = 0;
-  do {
-    realloc_macro(char *, train_name, (train_name_size + 1) * sizeof(char));
-    socket_read(sfd, &train_name[train_name_size], sizeof(char));
-  } while (train_name[train_name_size++]);
-  return train_name;
+  // Read from socket
+  return socket_read_malloc(sfd, "\0");
 }
 
 bool send_itinerary(int *sfd, char *itinerary) {
