@@ -64,11 +64,21 @@ bool socket_close(int *sfd, char *socket_path);
  * @param msg_len Number of characters to read.
  * @return int Length of read message.
  */
-int socket_read(int *sfd, char *msg, ssize_t msg_len);
+int socket_read_length(int *sfd, char *msg, ssize_t msg_len);
+
+/**
+ * @brief Read message from socket to allocated space with malloc,
+ *        until end.
+ *
+ * @param sfd File descriptor of socket.
+ * @param end End of message.
+ * @return int Length of read message.
+ */
+char *socket_read_malloc(int *sfd, char *end);
 
 /**
  * @brief Write first msg_len characters from msg to socket.
- * 
+ *
  * @param sfd File descriptor of socket.
  * @param msg Message to write.
  * @param msg_len Number of characters of msg to write.

@@ -1,4 +1,5 @@
 #include "../common/socket.h"
+#include "../common/alloc_macro.h"
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -58,13 +59,30 @@ bool socket_close(int *sfd, char *socket_path) {
   return socket_status;
 }
 
-int socket_read(int *sfd, char *msg, ssize_t msg_len) {
-  ssize_t readed_len = read(*sfd, msg, msg_len);
-  if (readed_len == -1) {
+int socket_read_length(int *sfd, char *msg, ssize_t msg_len) {
+  ssize_t read_len = read(*sfd, msg, msg_len);
+  if (read_len == -1) {
     perror("read");
     abort();
   }
-  return readed_len;
+  return read_len;
+}
+
+char *socket_read_malloc(int *sfd, char *end) {
+  int end_position = -strlen(end);
+  if (end_position > -1) {
+    end_position = -1;
+  }
+  char *message = NULL;
+  int message_size = 0;
+  do {
+    realloc_macro(char *, message, (message_size + 1) * sizeof(char));
+    socket_read_length(sfd, &message[message_size++], sizeof(char));
+    if (end_position++ < 0) {
+      continue;
+    }
+  } while (strcmp(&message[end_position], end));
+  return message;
 }
 
 int socket_write(int *sfd, char *msg, ssize_t msg_len) {
