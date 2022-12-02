@@ -53,7 +53,7 @@ char **get_malloc_token_list(char *string_to_split, char *delim) {
     malloc_macro(char *, token_list[token_number],
                  sizeof(char) * strlen(token));
     sprintf(token_list[token_number], "%s", token);
-    token = strtok(NULL, "\n");
+    token = strtok(NULL, delim);
   }
   return token_list;
 }
