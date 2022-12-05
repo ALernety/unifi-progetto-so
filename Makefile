@@ -49,9 +49,12 @@ clean_tmp: ## Pulisci i log e i file temporanei
 
 .PHONY: all PADRE_TRENI REGISTRO RBC railway_manager
 all: PADRE_TRENI REGISTRO RBC railway_manager ## Compila tutti i componenti
-PADRE_TRENI: $(call OBJ_FILES,PADRE_TRENI) ## Compila il PADRE_TRENI
-REGISTRO: $(call OBJ_FILES,REGISTRO) ## Compila il REGISTRO
-RBC: $(call OBJ_FILES,RBC) ## Compila il RBC
+PADRE_TRENI: $(call OBJ_FILES,PADRE_TRENI)\
+  bindir bin.PADRE_TRENI ## Compila il PADRE_TRENI
+REGISTRO: $(call OBJ_FILES,REGISTRO)\
+  bindir bin.REGISTRO ## Compila il REGISTRO
+RBC: $(call OBJ_FILES,RBC)\
+  bindir bin.RBC ## Compila il RBC
 railway_manager: | PADRE_TRENI REGISTRO $(call OBJ_FILES,railway_manager)\
   bindir bin.railway_manager ## Compila il railway_manager
 
