@@ -16,7 +16,11 @@ LDFLAGS := -lm
 
 # Funzioni per la risoluzione di sorgenti e file oggetto dei componenti
 SRC_FILES = $(wildcard $(SRC_DIR)/$(1)/*.c) $(wildcard $(SRC_DIR)/common/*.c)
-OBJ_FILES = $(subst $(SRC_DIR)/,$(OBJ_DIR)/,$(patsubst %.c,%.o,$(call SRC_FILES,$(1))))
+OBJ_FILES = $(subst \
+				$(SRC_DIR)/,\
+				$(OBJ_DIR)/,\
+				$(patsubst %.c,%.o,$(call SRC_FILES,$(1)))\
+			)
 
 # Riferimento unico al comando di generazione dei file oggetto
 define BUILD_O
@@ -31,7 +35,11 @@ endef
 
 .PHONY: help clean clean_tmp
 help: ## Mostra questo aiuto
-	@grep -E '^[a-zA-Z\._-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-25s\033[0m %s\n", $$1, $$2}'
+	@sed -e':a' -e'N' -e'$$!ba' -e's/\\\n//g' $(MAKEFILE_LIST)\
+	| grep -E '^[a-zA-Z\._-]+:.*?## .*$$'\
+	| awk \
+		'BEGIN {FS = ":.*?## "};\
+		{printf "\033[36m%-25s\033[0m %s\n", $$1, $$2}'
 clean: ## Pulisci i file oggetto, i binari, i log e i file temporanei
 	rm -rf $(OBJ_DIR) $(BIN_DIR) $(LOG_DIR) $(TMP_DIR)
 clean_tmp: ## Pulisci i log e i file temporanei
@@ -84,10 +92,18 @@ logdir:
 cpplint: ## Analyze all source code
 	cpplint $(shell find $(SRC_DIR) -type f -name "*.c")
 cpplint/%: ## Analyze source code of directory or specifed file
-	-cpplint $(shell find $(SRC_DIR)/$(subst cpplint/,,$@) -type f -name "*.c")
+	-cpplint $(shell find \
+					$(SRC_DIR)/$(subst cpplint/,,$@) \
+					-type f \
+					-name "*.c"\
+				)
 
 ### Targets di compilazione binari
 
 bin.%: | bindir tmpdir logdir
     # Cache wildcard bypassata tramite utilizzo di ls via shell
-	$(CC) $(CFLAGS) $(shell find $(OBJ_DIR) -type f -name "*.o") -o $(BIN_DIR)/$(subst bin.,,$@) $(LDFLAGS)
+	$(CC) \
+		$(CFLAGS) \
+		$(shell find $(OBJ_DIR) -type f -name "*.o") \
+		-o $(BIN_DIR)/$(subst bin.,,$@) \
+		$(LDFLAGS)
