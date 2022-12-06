@@ -1,14 +1,38 @@
 
-/* legge i dati contenuti nel buffer della pipe che ha il primo
-   parametro come nome e li inserisce nella stringa passata come secondo
-   parametro.
-*/
-void riceviItinerario(char *, char *);
+ 
+/**
+ * @brief Iterates through all segments that make up the itinerary  
+ *        and provides a log file with detailed access informations.            
+ * 
+ * @param itinerary_list Array of strings obtained by splitting the itinerary  
+ * @param log_fd Log file descriptor
+ */
+void traverse_itinerary(char **itinerary_list, int log_fd);
 
-/*
- Funzione principale che gestisce il passaggio di un treno
- dalla stazione di partenza a quella di arrivo. Tutte le
- informazioni sui segmenti attraversati vengono salvate nel
- file di log riferito dal parametro intero.
+/**
+*@brief Create a client-side AF_INET socket 
+*
+*@param socket_path IP address 
+*@param port_string Server socket port  
+*@return int Socket file descriptor  
 */
-void percorriItinerario(char *, char *, int);
+int create_socket_client(char *socket_path, char* port_string);
+
+/**
+ * @brief Get the itinerary needed for the trains via AF-INET socket   
+ * 
+ * @param sfd Socket file descriptor 
+ * @param trainName Name of train
+ * @param itineraryName Name of itinerary
+ * @return char* String containing the itinerary
+ */
+char* get_itinerary(int sfd,char* trainName,char* itineraryName);
+
+/**
+ * @brief Create log file used to keep track of accessed segments.  
+ * 
+ * @param logFile Pathname of file 
+ * @param train_number Used to display additional error informations 
+ * @return int File descriptor of created file
+ */
+int log_create(char* logFile,int train_number);

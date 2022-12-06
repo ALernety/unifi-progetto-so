@@ -1,137 +1,59 @@
-#include "TRENO.h"
+#include "../PADRE_TRENI/TRENO.h"
+#include "../PADRE_TRENI/PADRE_TRENI.h"
+#include "../common/socket.h"
+#include "../common/string_handlers.h"
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/file.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
 
-/*-----------------------Declare static functions-----------------------------*/
+#define MICROSECONDS 10000
 
-/*Presa in input una stringa, la divide in tante sottostringhe
-  usando il carattere ',' come separatore. Restituisce un array
-  contenente tutte le stringhe derivanti da questa separazione.
+static void reach_station( char *cur_segment, char *next_segment, int fd);
 
-  Ad esempio, se abbiamo una stringa di questo tipo:
-        char* str={"S2,MA5,MA6,MA7,MA3,MA8,S6"};
-        char** arrStr=riceviItinerario(str);
-  arrStr avrà questa forma:
-        arrStr={{"S2"},
-                {"MA5"},
-                {"MA6"},
-                {"MA7"},
-                {"MA3"},
-                {"MA8"},
-                {"S6"}};
-*/
-static char **dividiItinerario(char *);
+static void log_current_date(int fd);
 
-/*
-  Scrive sul file di log riferito dal parametro intero le
-  informazioni riguardanti la stazione di partenza di un treno.
-*/
-// static char *ottieniStazionePartenza(char **, char *, int);
+static void log_segment(int fd, char *segment, int flag);
 
-/*
-  Scrive sul file di log riferito dal parametro intero le
-  informazioni relative alla stazione di arrivo e libera
-  il segmento occupato in precedenza.
-*/
-static void gestisciarrivoInStazione(char *, char *, char *, int);
+static int check_next_segment(char *next_segment, char *segment_free);
 
-/*
- Scrive la data corrente nel file riferito dal parametro intero
- Il formato è formato dd-mm-yyyy hh:mm:ss.
-*/
-static void logCurrentDate(int);
+static void access_segment(int next_segment_fd, char *next_segment, char *cur_segment);
 
-/*
- Scrive sul file avente come file descriptor il primo parametro
- le informazioni sul segmento passato come secondo parametro.
- In particolare, se il flag è impostato a un valore diverso da 0
- il segmento è quello in cui il treno si trova attualmente, altrimenti
- è il prossimo segmento o stazione da attraversare.
-*/
-static void scriviSegmentoSuFile(int, char *, int);
+static void free_segment(char *next_segment, char *cur_segment, int log_fd
+                         ,int *next_seg_counter);
 
-/*----------------------------------------------------------------------------*/
-
-/*---------------------------riceviItinerario---------------------------------*/
-void riceviItinerario(char *nome, char *itinerario) {
-  int pipeFd;
-  pipeFd = open(nome, O_RDONLY);
-  read(pipeFd, itinerario, 100);
-  close(pipeFd);
+static void reach_station(char *cur_segment, char *next_segment, int log_fd) {
+  int cur_segment_fd = open(cur_segment, O_WRONLY);
+  write(cur_segment_fd, "0", 1);
+  close(cur_segment_fd);
+  log_segment(log_fd, next_segment, 1);
+  log_segment(log_fd, "-- ", 0);
+  log_current_date(log_fd);
+  close(log_fd);
 }
-/*----------------------------------------------------------------------------*/
 
-/*---------------------dividiItinerario---------------------------------------*/
-static char **dividiItinerario(char *itinerario) {
-  char **segmentArray = NULL;
-  char *segment = strtok(itinerario, ",");
-  int count = 0;
-  while (segment) {
-    segmentArray = realloc(segmentArray, sizeof(char *) * ++count);
-    if (segmentArray == NULL) {
-      exit(-1);
-    }
-    segmentArray[count - 1] = segment;
-    segment = strtok(NULL, ",");
-  }
-  segmentArray = realloc(segmentArray, sizeof(char *) * (count + 1));
-  segmentArray[count] = 0;
-  return segmentArray;
-}
-/*----------------------------------------------------------------------------*/
-
-/*------------------------logCurrentDate--------------------------------------*/
-static void logCurrentDate(int fd) {
+static void log_current_date(int fd) {
   char buffer[30];
   size_t i;
   struct tm tim;
   time_t now;
+
   now = time(NULL);
   tim = *(localtime(&now));
   i = strftime(buffer, 30, "%d %b %Y; %H:%M:%S\n", &tim);
-  int byteScritti = write(fd, buffer, i);
-  if (byteScritti != (int)i) {
-    perror("errore durante la scrittura della data corrente");
+  int bytesWritten = write(fd, buffer, i);
+  if (bytesWritten != (int)i) {
+    perror("Error logging date.");
+    exit(EXIT_FAILURE);
   }
 }
-/*----------------------------------------------------------------------------*/
 
-/*-------------------ottieniStazionePartenza---------------------------------*/
-// static char *ottieniStazionePartenza(char **arrItinerario, char *treno,
-//                                      int fd) {
-//   char *segmentoCorrente = arrItinerario[0];
-//   printf("stazione di partenza di %s: %s\n", treno, segmentoCorrente);
-//   char buffer[20];
-//   sprintf(buffer, "%s[Attuale: %s], ", buffer, segmentoCorrente);
-//   int writtenChars = write(fd, buffer, strlen(buffer));
-//   if (writtenChars != (int)strlen(buffer)) {
-//     perror("errore durante la scrittura in un file di log");
-//   }
-//   return segmentoCorrente;
-// }
-/*----------------------------------------------------------------------------*/
-
-/*------------------------gestisciarrivoInStazione-----------------------*/
-static void gestisciarrivoInStazione(char *treno, char *segmentoCorrente,
-                                     char *segmentoSuccessivo, int fd) {
-  printf("treno %s: arrivo in stazione: %s\n", treno, segmentoSuccessivo);
-  FILE *fileSegmentoCorrente = fopen(segmentoCorrente, "r+");
-  fwrite("0", 1, 1, fileSegmentoCorrente);
-  fclose(fileSegmentoCorrente);
-  scriviSegmentoSuFile(fd, segmentoSuccessivo, 1);
-  scriviSegmentoSuFile(fd, "-- ", 0);
-  logCurrentDate(fd);
-}
-/*------------------------------------------------------------------------*/
-
-/*-------------scriviSegmentoSuFile-------------------------------------------*/
-static void scriviSegmentoSuFile(int fd, char *segmento, int flag) {
+static void log_segment(int fd, char *segment, int flag) {
   char buffer[50];
   if (flag) {
     strcpy(buffer, "[Attuale: ");
@@ -139,70 +61,111 @@ static void scriviSegmentoSuFile(int fd, char *segmento, int flag) {
     strcpy(buffer, "[Next: ");
   }
 
-  strcat(buffer, segmento);
+  strcat(buffer, segment);
   strcat(buffer, "], ");
 
   int writtenChars = write(fd, buffer, strlen(buffer));
   if (writtenChars != (int)strlen(buffer)) {
-    perror("errore durante la scrittura in un file di log");
+    perror("Error logging into file");
+    exit(EXIT_FAILURE);
   }
 }
-/*----------------------------------------------------------------------------*/
 
-/*---------------------------------percorriItinerario-------------------------*/
-void percorriItinerario(char *itinerario, char *treno, int fd) {
-  int contatore = 1;
-  char permesso;
-  char *segmentoSuccessivo;
-  char **arrItinerario = dividiItinerario(itinerario);
-  char *segmentoCorrente = arrItinerario[0];
-  printf("stazione di partenza di %s: %s\n", treno, segmentoCorrente);
-  scriviSegmentoSuFile(fd, segmentoCorrente, 1);
-
-  while (1) {
-    /*INIZIO ITERAZIONE WHILE*/
-    segmentoSuccessivo = arrItinerario[contatore];
-    printf("treno %s vuole accedere a %s\n", treno, segmentoSuccessivo);
-    // provare a scrivere qui il segmento corrente
-    scriviSegmentoSuFile(fd, segmentoSuccessivo, 0);
-    logCurrentDate(fd);
-
-    if (segmentoSuccessivo[0] == 'S') {
-      gestisciarrivoInStazione(treno, segmentoCorrente, segmentoSuccessivo, fd);
-      close(fd);
-      exit(0);
-    }
-
-    FILE *fileSegmentoSuccessivo = fopen(segmentoSuccessivo, "r+");
-    fread(&permesso, 1, 1, fileSegmentoSuccessivo);
-    printf("permesso per %s di accesso a %s: %c\n", treno, segmentoSuccessivo,
-           permesso);
-    fseek(fileSegmentoSuccessivo, 0, SEEK_SET);
-
-    if (permesso == '0') {
-      printf("permesso accordato. %s accede a %s\n", treno, segmentoSuccessivo);
-      fwrite("1", 1, 1, fileSegmentoSuccessivo);
-      fseek(fileSegmentoSuccessivo, 0, SEEK_SET);
-      if (segmentoCorrente[0] == 'S') {
-        segmentoCorrente = segmentoSuccessivo;
-        printf("il treno %s si trova in %s \n", treno, segmentoCorrente);
-        scriviSegmentoSuFile(fd, segmentoCorrente, 1);
-        fclose(fileSegmentoSuccessivo);
-        contatore++;
-      } else {
-        FILE *fileSegmentoCorrente = fopen(segmentoCorrente, "r+");
-        fwrite("0", 1, 1, fileSegmentoCorrente);
-        fseek(fileSegmentoCorrente, 0, SEEK_SET);
-        segmentoCorrente = segmentoSuccessivo;
-        scriviSegmentoSuFile(fd, segmentoCorrente, 1);
-        fclose(fileSegmentoSuccessivo);
-        fclose(fileSegmentoCorrente);
-        contatore++;
-      }
-    } else
-      printf("il treno %s non può accedere a a %s \n", treno,
-             segmentoSuccessivo);
-    sleep(2);
+static int check_next_segment(char *next_segment, char *segment_value) {
+  int next_segment_fd = open(next_segment, O_RDWR);
+  if (next_segment_fd == -1) {
+    perror("Error opening a segment file");
+    exit(EXIT_FAILURE);
   }
-  printf("uscita funzione per %s\n", treno);
+  flock(next_segment_fd, LOCK_SH);
+  read(next_segment_fd, segment_value, 1);
+  flock(next_segment_fd, LOCK_UN);
+  lseek(next_segment_fd, 0, SEEK_SET);
+  return next_segment_fd;
+}
+
+static void access_segment(int next_segment_fd, char *next_segment, char *cur_segment) {
+  flock(next_segment_fd, LOCK_EX);
+  file_write(next_segment_fd, "1", 1);
+  usleep(MICROSECONDS);
+  flock(next_segment_fd, LOCK_UN);
+}
+
+static void free_segment(char *next_segment, char *cur_segment, int log_fd,
+                         int *next_seg_counter) {
+
+  int cur_segment_fd = open(cur_segment, O_WRONLY);
+  flock(cur_segment_fd, LOCK_EX);
+  file_write(cur_segment_fd, "0", 1);
+  flock(cur_segment_fd, LOCK_UN);
+  sprintf(cur_segment, "%s", next_segment);
+  log_segment(log_fd, cur_segment, 1);
+  close(cur_segment_fd);
+  *next_seg_counter = *next_seg_counter + 1;
+}
+
+void traverse_itinerary(char **itinerary_list, int log_fd) {
+  int next_seg_counter = 0;
+  char segment_value;
+  char *next_segment;
+  char *cur_segment = itinerary_list[next_seg_counter++];
+  
+  log_segment(log_fd, cur_segment, 1);//Log departure station
+  while (1) {
+    next_segment = itinerary_list[next_seg_counter];
+    log_segment(log_fd, next_segment, 0);
+    log_current_date(log_fd);
+    if (next_segment[0] == 'S') {// If next_segment is a station, final destination is reached.
+      reach_station(cur_segment, next_segment, log_fd);
+      exit(EXIT_SUCCESS);
+    }
+    // Open file corresponding to the next segment to enter and check if it is free
+    int next_segment_fd = check_next_segment(next_segment, &segment_value);
+    if (segment_value == '0') {
+      access_segment(next_segment_fd, next_segment, cur_segment);
+      if (cur_segment[0] == 'S') {// If train is in the departure station, It can immediately enter the next segment
+        sprintf(cur_segment, "%s", next_segment);
+        log_segment(log_fd, cur_segment, 1);
+        close(next_segment_fd);
+        next_seg_counter++;
+      } else {
+        free_segment(next_segment, cur_segment, log_fd, &next_seg_counter);
+        close(next_segment_fd);
+      }
+  } else {// If segment_value is 1, then the next segment is occupied by another train
+      usleep(MICROSECONDS);
+    }
+  }
+}
+
+int create_socket_client(char *socket_path, char *port_string) {
+  int sfd;
+  unsigned int port = get_integer_from(port_string);
+  socket_data socket_input;
+  socket_input.socket_path = socket_path;
+  socket_input.max_connected_clients = 1;
+  socket_input.port = port;
+  socket_input.sfd = &sfd;
+  socket_input.user = CLIENT;
+  return socket_open(socket_input, AF_INET);
+}
+
+char *get_itinerary(int sfd, char *trainName, char *itineraryName) {
+  char *itinerary;
+  // ask itinerary to REGISTRO
+  socket_write(&sfd, trainName, strlen(trainName) + 1);
+  // get itinerary from REGISTRO
+  itinerary = socket_read_malloc(&sfd, "\0");
+  return itinerary;
+}
+
+int log_create(char *logFile, int train_number) {
+  int fd = open(logFile, O_CREAT | O_WRONLY | O_TRUNC, 0666);
+  if (fd == -1) {
+    char err_string[40];
+    sprintf(err_string, "Error creating Train[%d].log", train_number + 1);
+    perror(err_string);
+    exit(EXIT_FAILURE);
+  }
+  return fd;
 }
