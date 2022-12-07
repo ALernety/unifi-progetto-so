@@ -14,3 +14,11 @@ void log_current_date(int fd);
  * @param flag It is 0 if logging next segment, 1 if logging current segment  
  */
 void log_segment(int fd, char *segment, int flag);
+
+/**
+ * @brief Create log file.
+ * 
+ * @param logFile Pathname of file 
+ * @return int File descriptor of created file
+ */
+int log_create(char* logFile);

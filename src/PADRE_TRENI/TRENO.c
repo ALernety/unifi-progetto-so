@@ -96,6 +96,7 @@ void traverse_itinerary(char **itinerary_list, int log_fd) {
     }
   }
 
+
 }
 
 int create_socket_client(char *socket_path, char *port_string) {
@@ -110,6 +111,7 @@ int create_socket_client(char *socket_path, char *port_string) {
   return socket_open(socket_input, AF_INET);
 }
 
+
 char *get_itinerary(int sfd, char *trainName, char *itineraryName) {
   char *itinerary;
   // ask itinerary to REGISTRO
@@ -117,15 +119,4 @@ char *get_itinerary(int sfd, char *trainName, char *itineraryName) {
   // get itinerary from REGISTRO
   itinerary = socket_read_malloc(&sfd, "\0");
   return itinerary;
-}
-
-int log_create(char *logFile, int train_number) {
-  int fd = open(logFile, O_CREAT | O_WRONLY | O_TRUNC, 0666);
-  if (fd == -1) {
-    char err_string[40];
-    sprintf(err_string, "Error creating Train[%d].log", train_number + 1);
-    perror(err_string);
-    exit(EXIT_FAILURE);
-  }
-  return fd;
 }
