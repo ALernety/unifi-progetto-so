@@ -23,7 +23,6 @@ int main(int argc, char *argv[]) {
   char *itinerary = NULL;
   char trainName[5];
   char *project_path = parent_dir(NULL, argv[0], 2);
-  char *mode_name;
   char ip_address[] = "127.0.0.1";
   char port_string[] = "43210";
   
