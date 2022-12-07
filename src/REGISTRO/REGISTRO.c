@@ -25,12 +25,9 @@ void start_socket_server(int *sfd, char **itinerary_list) {
     int *client_sfd = &client_socket;
     socket_accept(sfd, client_sfd);
     if (fork() == 0) {
-      // printf("%s\n", itinerary_list[0]);
       char *train_name = get_malloc_train(client_sfd);
       int train_index = get_integer_from(train_name) - 1;
       send_itinerary(client_sfd, itinerary_list[train_index]);
-      free(train_name);
-      free_alloc_array(itinerary_list);
       socket_close(client_sfd, NULL);
       exit(EXIT_SUCCESS);
     } else {

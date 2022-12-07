@@ -7,12 +7,13 @@
 #include <string.h>
 #include <unistd.h>
 
-char *get_malloc_string_from(char *file) {
+char *get_malloc_string_from(const char *file) {
   int fd = open(file, O_RDONLY);
   int file_length = lseek(fd, 0, SEEK_END);
   lseek(fd, 0, SEEK_SET);
-  malloc_macro_def(char *, map, file_length);
-  read(fd, map, file_length);
+  malloc_macro_def(char *, string_from_file,
+                   file_length * sizeof(*string_from_file));
+  read(fd, string_from_file, file_length);
   close(fd);
   // const char *map_to_use;
   // if (!strcmp(file, "MAPPA1")) {
@@ -30,12 +31,13 @@ char *get_malloc_string_from(char *file) {
   //   perror("Wrong map!");
   //   abort();
   // }
-  // malloc_macro_def(char *, map, strlen(map_to_use));
-  // sprintf(map, "%s", map_to_use);
-  return map;
+  // malloc_macro_def(char *, string_from_file,
+  //                  strlen(map_to_use) * sizeof(*string_from_file));
+  // sprintf(string_from_file, "%s", map_to_use);
+  return string_from_file;
 }
 
-int get_number_of_tokens(char *str, char *delim) {
+int get_number_of_tokens(const char *str, const char *delim) {
   int count = 1;
   while ((str = strpbrk(str, delim)) != NULL) {
     count++;
@@ -44,15 +46,18 @@ int get_number_of_tokens(char *str, char *delim) {
   return count;
 }
 
-char **get_malloc_token_list(char *string_to_split, char *delim) {
-  int number_of_tokens = get_number_of_tokens(string_to_split, delim);
-  malloc_macro_def(char **, token_list, number_of_tokens * sizeof(char *));
+char **get_malloc_token_list(char *string_to_split, const char *delim) {
+  int tokens_number = get_number_of_tokens(string_to_split, delim);
+  return get_malloc_token_list_number(string_to_split, delim, tokens_number);
+}
+
+char **get_malloc_token_list_number(char *string_to_split, const char *delim,
+                                    size_t tokens_number) {
+  malloc_macro_def(char **, token_list, tokens_number * sizeof(*token_list));
   char *token = strtok(string_to_split, delim);
-  for (int token_number = 0; token && token_number < number_of_tokens;
-       token_number++) {
-    malloc_macro(char *, token_list[token_number],
-                 sizeof(char) * strlen(token));
-    sprintf(token_list[token_number], "%s", token);
+  for (size_t index = 0; token && index < tokens_number; index++) {
+    malloc_macro(char *, token_list[index], sizeof(char) * strlen(token));
+    sprintf(token_list[index], "%s", token);
     token = strtok(NULL, delim);
   }
   return token_list;
