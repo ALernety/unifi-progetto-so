@@ -2,6 +2,7 @@
 #include "../common/parent_dir.h"
 #include "../common/socket.h"
 #include "../common/string_handlers.h"
+#include "../common/log.h"
 #include "PADRE_TRENI.h"
 #include "TRENO.h"
 #include <fcntl.h>
@@ -49,7 +50,7 @@ int main(int argc, char *argv[]) {
       sprintf(trainName, "T%i", i + 1);
       int sfd=create_socket_client(ip_address, port_string);
       itinerary=get_itinerary(sfd,trainName,itineraryName);
-      Train[i]=log_create(logFile,i);
+      Train[i]=log_create(logFile);
       // Split the itinerary to get list of segments and stations
       char **itinerary_list = get_malloc_token_list(itinerary, ", ");
       traverse_itinerary(itinerary_list,Train[i]);

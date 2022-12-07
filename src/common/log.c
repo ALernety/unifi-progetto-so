@@ -4,6 +4,10 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 
 void log_current_date(int fd) {
   char buffer[30];
@@ -34,4 +38,14 @@ void log_current_date(int fd) {
     perror("Error logging into file");
     exit(EXIT_FAILURE);
   }
+}
+
+int log_create(char *logFile) {
+  int fd = open(logFile, O_CREAT | O_WRONLY | O_TRUNC, 0666);
+  if (fd == -1) {
+    perror("Error creating log file");
+    exit(EXIT_FAILURE);
+  }
+  return fd;
+
 }
