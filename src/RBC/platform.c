@@ -3,7 +3,7 @@
 #include "../common/string_handlers.h"
 #include <string.h>
 
-Platform get_platform_from(Platform *platform, char *platform_string,
+Platform set_platform_from(Platform *platform, char *platform_string,
                            const char *delim, char **connected_ids) {
   char **platform_values_list = get_malloc_token_list(platform_string, delim);
 
@@ -32,7 +32,7 @@ Platform get_platform_by_id(Platform *platform_list, size_t platform_number,
   exit(EXIT_FAILURE);
 }
 
-Platform *get_connected_platforms_by_id_list(Platform *platform_list,
+Platform *get_platform_list_by_ids(Platform *platform_list,
                                              size_t platform_number,
                                              char **connected_ids,
                                              size_t ids_number) {
