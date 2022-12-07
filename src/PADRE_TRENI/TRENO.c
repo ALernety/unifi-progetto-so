@@ -2,23 +2,16 @@
 #include "../PADRE_TRENI/PADRE_TRENI.h"
 #include "../common/socket.h"
 #include "../common/string_handlers.h"
-#include <fcntl.h>
+#include "../common/log.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/file.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <time.h>
 #include <unistd.h>
 
 #define MICROSECONDS 10000
 
 static void reach_station( char *cur_segment, char *next_segment, int fd);
-
-static void log_current_date(int fd);
-
-static void log_segment(int fd, char *segment, int flag);
 
 static int check_next_segment(char *next_segment, char *segment_free);
 
@@ -35,40 +28,6 @@ static void reach_station(char *cur_segment, char *next_segment, int log_fd) {
   log_segment(log_fd, "-- ", 0);
   log_current_date(log_fd);
   close(log_fd);
-}
-
-static void log_current_date(int fd) {
-  char buffer[30];
-  size_t i;
-  struct tm tim;
-  time_t now;
-
-  now = time(NULL);
-  tim = *(localtime(&now));
-  i = strftime(buffer, 30, "%d %b %Y; %H:%M:%S\n", &tim);
-  int bytesWritten = write(fd, buffer, i);
-  if (bytesWritten != (int)i) {
-    perror("Error logging date.");
-    exit(EXIT_FAILURE);
-  }
-}
-
-static void log_segment(int fd, char *segment, int flag) {
-  char buffer[50];
-  if (flag) {
-    strcpy(buffer, "[Attuale: ");
-  } else {
-    strcpy(buffer, "[Next: ");
-  }
-
-  strcat(buffer, segment);
-  strcat(buffer, "], ");
-
-  int writtenChars = write(fd, buffer, strlen(buffer));
-  if (writtenChars != (int)strlen(buffer)) {
-    perror("Error logging into file");
-    exit(EXIT_FAILURE);
-  }
 }
 
 static int check_next_segment(char *next_segment, char *segment_value) {
@@ -136,6 +95,7 @@ void traverse_itinerary(char **itinerary_list, int log_fd) {
       usleep(MICROSECONDS);
     }
   }
+
 }
 
 int create_socket_client(char *socket_path, char *port_string) {
