@@ -4,8 +4,20 @@
 #include <fcntl.h>
 #include <string.h>
 
-static Railway *connect_platforms(Railway *railway, char **connected_id_list,
-                                  const char *platform_id_delim);
+/**
+ * @brief Connects platforms of railway by list of strings with id's split by
+ *        delimiter. The strings must be sorted corresponding to platform_list
+ *        in railway.
+ *
+ * @param railway Pointer to Railway, which already have not connected
+ *        platforms.
+ * @param id_list Array containing platform_number of strings, each of them
+ *        represent array of platform id, delimited by id_delim.
+ * @param id_delim Delimiter which delimit id's in id_list.
+ * @return Railway* Pointer to Railway, with connected platforms.
+ */
+static Railway *connect_platforms(Railway *railway, char **id_list,
+                                  const char *id_delim);
 
 Railway *get_malloc_railway_from(const char *file, const char *platform_delim,
                                  const char *platform_detail_delim,
@@ -24,7 +36,7 @@ Railway *get_malloc_railway_from(const char *file, const char *platform_delim,
                    railway->platform_number * sizeof(*connected_id_list));
 
   for (size_t index = 0; index < railway->platform_number; index++) {
-    get_platform_from(&railway->platform_list[index], platform_list[index],
+    set_platform_from(&railway->platform_list[index], platform_list[index],
                       platform_detail_delim, &connected_id_list[index]);
   }
   // Free not as array because values of array are used in railway
@@ -39,10 +51,9 @@ static Railway *connect_platforms(Railway *railway, char **id_list,
     railway->platform_list[index].connected_number = ids_number;
     char **connected_ids =
         get_malloc_token_list_number(id_list[index], id_delim, ids_number);
-    railway->platform_list[index].connected =
-        get_connected_platforms_by_id_list(railway->platform_list,
-                                           railway->platform_number,
-                                           connected_ids, ids_number);
+    railway->platform_list[index].connected = get_platform_list_by_ids(
+        railway->platform_list, railway->platform_number, connected_ids,
+        ids_number);
     free(connected_ids);
   }
 
