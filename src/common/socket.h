@@ -74,7 +74,7 @@ int socket_read_length(int *sfd, char *msg, ssize_t msg_len);
  * @param end End of message.
  * @return int Length of read message.
  */
-char *socket_read_malloc(int *sfd, char *end);
+char *socket_read_malloc(int *sfd, const char *end);
 
 /**
  * @brief Write first msg_len characters from msg to socket.

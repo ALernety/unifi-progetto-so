@@ -68,7 +68,7 @@ int socket_read_length(int *sfd, char *msg, ssize_t msg_len) {
   return read_len;
 }
 
-char *socket_read_malloc(int *sfd, char *end) {
+char *socket_read_malloc(int *sfd, const char *end) {
   int end_position = -strlen(end);
   if (end_position > -1) {
     end_position = -1;
@@ -139,6 +139,7 @@ static int socket_open_unix(int *sfd, socket_user user, char *socket_path,
 static int socket_open_inet(int *sfd, socket_user user, char *socket_path,
                             unsigned int port, int max_connected_clients) {
   // Define socket and prepare variables.
+  int opt = 1;
   int socketLen;
   struct sockaddr_in socketAddress;
   struct sockaddr *socketAddressPtr;
@@ -146,6 +147,12 @@ static int socket_open_inet(int *sfd, socket_user user, char *socket_path,
   socketLen = sizeof(socketAddress);
 
   *sfd = socket(AF_INET, SOCKET_TYPE, DEFAULT_PROTOCOL);
+  // Forcefully attaching socket to the address and port
+  if (setsockopt(*sfd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt,
+                 sizeof(opt))) {
+    perror("setsockopt");
+    abort();
+  }
   socketAddress.sin_family = AF_INET;
   socketAddress.sin_addr.s_addr = inet_addr(socket_path);
   socketAddress.sin_port = htons(port);
