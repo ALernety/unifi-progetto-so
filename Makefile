@@ -107,6 +107,9 @@ bin.%: | bindir tmpdir logdir
     # Cache wildcard bypassata tramite utilizzo di ls via shell
 	$(CC) \
 		$(CFLAGS) \
-		$(shell find $(OBJ_DIR) -type f -name "*.o") \
+		$(shell find \
+			$(OBJ_DIR)/{$(subst bin.,,$@),common} \
+			-type f \
+			-name "*.o") \
 		-o $(BIN_DIR)/$(subst bin.,,$@) \
 		$(LDFLAGS)
