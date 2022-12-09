@@ -22,7 +22,9 @@ static void free_segment(char *next_segment, char *cur_segment, int log_fd
 
 static void reach_station(char *cur_segment, char *next_segment, int log_fd) {
   int cur_segment_fd = open(cur_segment, O_WRONLY);
+  flock(cur_segment_fd,LOCK_EX);
   write(cur_segment_fd, "0", 1);
+  flock(cur_segment_fd, LOCK_UN);
   close(cur_segment_fd);
   log_segment(log_fd, next_segment, 1);
   log_segment(log_fd, "-- ", 0);
@@ -61,6 +63,7 @@ static void free_segment(char *next_segment, char *cur_segment, int log_fd,
   log_segment(log_fd, cur_segment, 1);
   close(cur_segment_fd);
   *next_seg_counter = *next_seg_counter + 1;
+
 }
 
 void traverse_itinerary(char **itinerary_list, int log_fd) {

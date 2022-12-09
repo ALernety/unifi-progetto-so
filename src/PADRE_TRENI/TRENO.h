@@ -28,11 +28,3 @@ int create_socket_client(char *socket_path, char* port_string);
  */
 char* get_itinerary(int sfd,char* trainName,char* itineraryName);
 
-/**
- * @brief Create log file used to keep track of accessed segments.  
- * 
- * @param logFile Pathname of file 
- * @param train_number Used to display additional error informations 
- * @return int File descriptor of created file
- */
-int log_create(char* logFile,int train_number);
