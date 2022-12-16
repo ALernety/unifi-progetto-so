@@ -1,3 +1,4 @@
+#pragma once
 #include "../RBC/platform.h"
 #include <stdbool.h>
 #include <sys/types.h>

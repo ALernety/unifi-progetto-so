@@ -29,13 +29,12 @@ Platform get_platform_by_id(Platform *platform_list, size_t platform_number,
   }
 
   perror("platform with id not found");
-  exit(EXIT_FAILURE);
+  abort();
 }
 
 Platform *get_platform_list_by_ids(Platform *platform_list,
-                                             size_t platform_number,
-                                             char **connected_ids,
-                                             size_t ids_number) {
+                                   size_t platform_number, char **connected_ids,
+                                   size_t ids_number) {
   malloc_macro_def(Platform *, connected, sizeof(*connected));
   for (size_t index = 0; index < ids_number; index++) {
     realloc_macro(Platform *, connected, (index + 1) * sizeof(*connected));
