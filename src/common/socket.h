@@ -84,4 +84,4 @@ char *socket_read_malloc(int *sfd, const char *end);
  * @param msg_len Number of characters of msg to write.
  * @return int Number of characters written.
  */
-int socket_write(int *sfd, char *msg, ssize_t msg_len);
+int socket_write(int *sfd, const char *msg, ssize_t msg_len);

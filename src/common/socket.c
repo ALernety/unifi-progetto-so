@@ -100,7 +100,7 @@ char *socket_read_malloc(int *sfd, const char *end) {
   return message;
 }
 
-int socket_write(int *sfd, char *msg, ssize_t msg_len) {
+int socket_write(int *sfd, const char *msg, ssize_t msg_len) {
   int write_len = write(*sfd, msg, msg_len);
   if (write_len < msg_len) {
     perror("write");
