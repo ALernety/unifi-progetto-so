@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 char *get_malloc_string_from(const char *file) {
@@ -38,10 +39,14 @@ char *get_malloc_string_from(const char *file) {
 }
 
 int get_number_of_tokens(const char *str, const char *delim) {
-  int count = 1;
+  size_t count = 1;
+  size_t delim_length = strlen(delim);
+  if (delim_length < 1) {
+    delim_length = 1;
+  }
   while ((str = strpbrk(str, delim)) != NULL) {
     count++;
-    str++;
+    str += delim_length;
   }
   return count;
 }
