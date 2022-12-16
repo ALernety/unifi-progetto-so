@@ -14,6 +14,8 @@
 
 #define DEFAULT_PROTOCOL 0
 #define SOCKET_TYPE SOCK_STREAM
+#define TIMEOUT_SEC 10
+#define TIMEOUT_USEC 0
 
 static int socket_open_unix(int *sfd, socket_user user, char *socket_path,
                             int max_connected_clients);
@@ -21,7 +23,6 @@ static int socket_open_inet(int *sfd, socket_user user, char *socket_path,
                             unsigned int port, int max_connected_clients);
 
 int socket_open(socket_data socket_input, sa_family_t socket_domain) {
-  unlink(socket_input.socket_path);
   switch (socket_domain) {
   case AF_UNIX:
     *socket_input.sfd = socket_open_unix(socket_input.sfd, socket_input.user,
@@ -33,6 +34,20 @@ int socket_open(socket_data socket_input, sa_family_t socket_domain) {
         socket_input.sfd, socket_input.user, socket_input.socket_path,
         socket_input.port, socket_input.max_connected_clients);
     break;
+  }
+  struct timeval timeout;
+  timeout.tv_sec = TIMEOUT_SEC;
+  timeout.tv_usec = TIMEOUT_USEC;
+
+  if (setsockopt(*socket_input.sfd, SOL_SOCKET, SO_RCVTIMEO, &timeout,
+                 sizeof timeout) < 0) {
+    perror("socket timeout receive");
+    abort();
+  }
+  if (setsockopt(*socket_input.sfd, SOL_SOCKET, SO_SNDTIMEO, &timeout,
+                 sizeof timeout) < 0) {
+    perror("socket timeout send");
+    abort();
   }
   return *socket_input.sfd;
 }
