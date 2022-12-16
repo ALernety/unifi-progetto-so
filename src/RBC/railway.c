@@ -22,8 +22,10 @@ static Railway *connect_platforms(Railway *railway, char **id_list,
 Railway *get_malloc_railway_from(const char *file, const char *platform_delim,
                                  const char *platform_detail_delim,
                                  const char *platform_id_delim) {
-
-  char *railway_string = get_malloc_string_from(file);
+#include "../railway_manager/default_values.h"
+  malloc_macro_def(char *, railway_string, strlen(RAILWAY_DEFAULT_STRING));
+  sprintf(railway_string, "%s", RAILWAY_DEFAULT_STRING);
+  // char *railway_string = get_malloc_string_from(file);
   malloc_macro_def(Railway *, railway, sizeof(*railway));
   railway->platform_number =
       get_number_of_tokens(railway_string, platform_delim);
@@ -66,3 +68,19 @@ bool can_transfer_on(const Platform platform) {
   }
   return true;
 }
+
+// int main(/* int argc, char const *argv[] */) {
+//   Railway *railway =
+//       get_malloc_railway_from("railway.txt", "\n", "<platform_data>", ",");
+//   // printf("%s,", railway->platform_list[0].connected[0].id);
+//   for (size_t i = 0; i < railway->platform_number; i++) {
+//     printf("%s\t: ", railway->platform_list[i].id);
+//     for (int j = 0; j < railway->platform_list[i].connected_number; j++) {
+//       printf("%s,", railway->platform_list[i].connected[j].id);
+//       // printf("%d,", railway->platform_list[i].connected_number);
+//       // printf("%p,", railway->platform_list[i].connected[j]);
+//     }
+//     printf("\b.\n");
+//   }
+//   return EXIT_SUCCESS;
+// }
