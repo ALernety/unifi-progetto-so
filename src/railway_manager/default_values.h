@@ -35,3 +35,15 @@
   "MA16<platform_data>1<platform_data>0<platform_data>1<platform_data>MA15,"   \
   "MA12\n"                                                                     \
   "S8<platform_data>0<platform_data>0<platform_data>-1<platform_data>MA12"
+
+#define MAPPA1_DEFAULT_STRING                                                  \
+  "S1, MA1, MA2, MA3, MA8, S6\n"                                               \
+  "S2, MA5, MA6, MA7, MA3, MA8, S6\n"                                          \
+  "S7, MA13, MA12, MA11, MA10, MA9, S3\n"                                      \
+  "S4, MA14, MA15, MA16, MA12, S8"
+#define MAPPA2_DEFAULT_STRING                                                  \
+  "S2, MA5, MA6, MA7, MA3, MA8, S6\n"                                          \
+  "S3, MA9, MA10, MA11, MA12, S8\n"                                            \
+  "S4, MA14, MA15, MA16, MA12, S8\n"                                           \
+  "S6, MA8, MA3, MA2, MA1, S1\n"                                               \
+  "S5, MA4, MA3, MA2, MA1, S1"
