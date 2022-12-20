@@ -109,7 +109,7 @@ int main(int argc, char const *argv[]) {
     perror("fork");
     abort();
   } else if (pid != 0) {
-    execl("bin/REGISTRO", "bin/REGISTRO", mode_name, map_name, NULL);
+    execl("bin/REGISTRO", "bin/REGISTRO", map_name, NULL);
   } else {
     execl("bin/PADRE_TRENI", "bin/PADRE_TRENI", mode_name, NULL);
   }
