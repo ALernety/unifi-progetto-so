@@ -24,3 +24,15 @@ void log_segment(int fd, char *segment, bool is_current);
  * @return int File descriptor of created file
  */
 int log_create(char *logFile);
+
+/**
+ * @brief Log pass permit of RBC.
+ *
+ * @param log_fd File descriptor of log file.
+ * @param train Train name string.
+ * @param current_platform Current platform name string.
+ * @param request_platform Request platform name string.
+ * @param permit Passage permit on platform.
+ */
+void log_rbc(int log_fd, const char *train, const char *current_platform,
+             const char *request_platform, const bool permit);
