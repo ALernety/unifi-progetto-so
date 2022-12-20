@@ -122,24 +122,23 @@ int main(int argc, char const *argv[]) {
   socket_input.socket_path = unix_socket_path;
   socket_input.user = SERVER;
   sfd = socket_open(socket_input, AF_UNIX);
+  int log_fd = log_create("log/RBC.log");
   while (true) {
-    char *platform;
+    char *request_platform;
     char *train_name;
-    int client_sfd = get_request(sfd, ",", &train_name, &platform);
-    printf("%s and %s\n", train_name, platform);
+    int client_sfd = get_request(sfd, ",", &train_name, &request_platform);
     Itinerary *itinerary =
         get_itinerary_by_train(*itinerary_list, itinerary_number, train_name);
-    for (size_t jndex = 0; jndex < itinerary->platform_number; jndex++) {
-      printf(" %s,", itinerary->platform_ids[jndex]);
-    }
-    printf("\b.\n");
-    if (move_to_next_platform(railway, itinerary, platform)) {
+    char *current_platform = itinerary->platform_ids[itinerary->current];
+    bool permit = move_to_next_platform(railway, itinerary, request_platform);
+    if (permit) {
       const char *response = "1";
       socket_write(&client_sfd, response, strlen(response));
     } else {
       const char *response = "0";
       socket_write(&client_sfd, response, strlen(response));
     }
+    log_rbc(log_fd, train_name, current_platform, request_platform, permit);
     close(client_sfd);
   }
   return 0;
