@@ -8,17 +8,16 @@
 #include <time.h>
 #include <unistd.h>
 
-void log_current_date(int fd) {
-  char log_message[30];
-  size_t date_size;
-  struct tm current_time;
-  time_t now;
+static char *get_date(char *date_string, size_t *date_size);
 
-  now = time(NULL);
-  current_time = *(localtime(&now));
-  date_size = strftime(log_message, 30, "%d/%m/%Y; %H:%M:%S\n", &current_time);
-  int write_length = write(fd, log_message, date_size);
-  if (write_length != (int)date_size) {
+void log_current_date(int fd) {
+  size_t date_size = 29;
+  char date_string[date_size];
+  char date[date_size + 1];
+  get_date(date_string, &date_size);
+  sprintf(date, "%s\n", date_string);
+  int write_length = write(fd, date, strlen(date));
+  if (write_length != (int)date_size + 1) {
     perror("log date.");
     abort();
   }
@@ -43,4 +42,40 @@ int log_create(char *log_file) {
     abort();
   }
   return fd;
+}
+
+void log_rbc(int log_fd, const char *train, const char *current_platform,
+             const char *request_platform, const bool permit) {
+  const char *format_string = "[TRENO RICHIEDENTE AUTORIZZAZIONE: %s], "
+                              "[SEGMENTO ATTUALE: %s], "
+                              "[SEGMENTO RICHIESTO: %s], "
+                              "[AUTORIZZATO: %s], "
+                              "[DATA: %s]\n";
+  size_t log_length = strlen(format_string) + strlen(train) +
+                      strlen(current_platform) + strlen(request_platform) +
+                      /*authorize*/ 2 + 1;
+  char log_message[log_length];
+
+  size_t date_size = 30;
+  char date[date_size];
+  get_date(date, &date_size);
+
+  sprintf(log_message, format_string, train, current_platform, request_platform,
+          permit ? "SI" : "NO", date);
+  int write_length = write(log_fd, log_message, strlen(log_message));
+  if (write_length != (int)strlen(log_message)) {
+    perror("log segment");
+    abort();
+  }
+}
+
+static char *get_date(char *date_string, size_t *date_size) {
+  struct tm current_time;
+  time_t now;
+
+  static char *date_format = "%d/%m/%Y; %H:%M:%S";
+  now = time(NULL);
+  current_time = *(localtime(&now));
+  *date_size = strftime(date_string, *date_size, date_format, &current_time);
+  return date_string;
 }
