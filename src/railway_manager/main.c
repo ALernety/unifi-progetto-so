@@ -101,14 +101,15 @@ int main(int argc, char const *argv[]) {
     close(fd);
   }
 
+  if (is_rbc) {
+    execl("bin/RBC", "bin/RBC", NULL);
+  }
   int pid = fork();
   if (pid < 0) {
     perror("fork");
     abort();
   } else if (pid != 0) {
     execl("bin/REGISTRO", "bin/REGISTRO", mode_name, map_name, NULL);
-  } else if (is_rbc) {
-    execl("bin/RBC", "bin/RBC", NULL);
   } else {
     execl("bin/PADRE_TRENI", "bin/PADRE_TRENI", mode_name, NULL);
   }
