@@ -1,5 +1,6 @@
 #include "../RBC/RBC.h"
 #include "../RBC/itinerary.h"
+#include "../common/parent_dir.h"
 #include "../common/socket.h"
 #include "railway.h"
 #include <arpa/inet.h>
@@ -31,15 +32,15 @@ int main(int argc, char const *argv[]) {
     if (argc == 3) {
       ip_address = strdup(argv[1]);
       port = atoi(argv[2]);
-      unix_socket_path = strdup("rbc");
+      unix_socket_path = strdup("tmp/rbc");
     } else if (argc == 2) {
       ip_address = strdup(argv[1]);
       port = 43210;
-      unix_socket_path = strdup("rbc");
+      unix_socket_path = strdup("tmp/rbc");
     } else if (argc == 1) {
       ip_address = strdup("127.0.0.1");
       port = 43210;
-      unix_socket_path = strdup("rbc");
+      unix_socket_path = strdup("tmp/rbc");
     } else {
       ip_address = strdup(argv[1]);
       port = atoi(argv[2]);
@@ -62,6 +63,12 @@ int main(int argc, char const *argv[]) {
     abort();
   }
 
+  parent_dir_def(project_path, argv[0], 2);
+  if (chdir(project_path) == -1) {
+    perror("change directory");
+    abort();
+  }
+
   int sfd;
   socket_data socket_input;
   socket_input.socket_path = ip_address;
@@ -73,7 +80,7 @@ int main(int argc, char const *argv[]) {
   Itinerary **itinerary_list =
       get_malloc_itinerary_list(&itinerary_number, socket_input);
   Railway *railway =
-      get_malloc_railway_from("railway.txt", "\n", "<platform_data>", ",");
+      get_malloc_railway_from("tmp/railway.txt", "\n", "<platform_data>", ",");
   socket_input.socket_path = unix_socket_path;
   socket_input.user = SERVER;
   sfd = socket_open(socket_input, AF_UNIX);

@@ -1,8 +1,7 @@
 #include "../common/alloc_macro.h"
-#include "../common/parent_dir.h"
-#include "../common/socket.h"
-#include "../common/string_handlers.h"
 #include "../common/log.h"
+#include "../common/parent_dir.h"
+#include "../common/string_handlers.h"
 #include "PADRE_TRENI.h"
 #include "TRENO.h"
 #include <fcntl.h>
@@ -22,38 +21,42 @@ int main(int argc, char *argv[]) {
   int Train[TRAIN_NUM];
   char *itinerary = NULL;
   char trainName[5];
-  char *project_path = parent_dir(NULL, argv[0], 2);
   char ip_address[] = "127.0.0.1";
   char port_string[] = "43210";
-  
+
+  parent_dir_def(project_path, argv[0], 2);
+  if (chdir(project_path) == -1) {
+    perror("change directory");
+    abort();
+  }
+
   umask(000);
   // Get the size of the formatted string to allocate needed memory
-  int size = snprintf(NULL, 0, "%s/tmp/MA%d", project_path, SEGMENTS_NUM);
+  int size = snprintf(NULL, 0, "tmp/MA%d", SEGMENTS_NUM);
   malloc_macro_def(char *, file, (size * sizeof(char)) + 1);
-  int logFileSize = snprintf(NULL, 0, "%s/log/T%d", project_path, TRAIN_NUM);
+  int logFileSize = snprintf(NULL, 0, "log/T%d", TRAIN_NUM);
   malloc_macro_def(char *, logFile, (logFileSize * sizeof(char)) + 1);
-  int itineraryNameSize =
-      snprintf(NULL, 0, "%s/tmp/itinerarioT%d", project_path, TRAIN_NUM);
-  malloc_macro_def(char *, itineraryName,(itineraryNameSize * sizeof(char)) + 1);
-  
- for (int i = 0; i < SEGMENTS_NUM; i++) {
-    segment_create(file, project_path,i);
+  int itineraryNameSize = snprintf(NULL, 0, "tmp/itinerarioT%d", TRAIN_NUM);
+  malloc_macro_def(char *, itineraryName,
+                   (itineraryNameSize * sizeof(char)) + 1);
+
+  for (int i = 0; i < SEGMENTS_NUM; i++) {
+    segment_create(file, i);
   }
- free(file);
- // create and execute train processes
- for (int i = 0; i < TRAIN_NUM; i++) {
+  free(file);
+  // create and execute train processes
+  for (int i = 0; i < TRAIN_NUM; i++) {
     Train[i] = process_create();
-    if (Train[i] == 0) { 
-      sprintf(itineraryName, "%s/tmp/itinerarioT%i", project_path, i + 1);
-      sprintf(logFile, "%s/log/T%i.log", project_path, i + 1);
+    if (Train[i] == 0) {
+      sprintf(itineraryName, "tmp/itinerarioT%i", i + 1);
+      sprintf(logFile, "log/T%i.log", i + 1);
       sprintf(trainName, "T%i", i + 1);
-      int sfd=create_socket_client(ip_address, port_string);
-      itinerary=get_itinerary(sfd,trainName,itineraryName);
-      Train[i]=log_create(logFile);
+      int sfd = create_socket_client(ip_address, port_string);
+      itinerary = get_itinerary(sfd, trainName, itineraryName);
+      Train[i] = log_create(logFile);
       // Split the itinerary to get list of segments and stations
       char **itinerary_list = get_malloc_token_list(itinerary, ", ");
-      traverse_itinerary(itinerary_list,Train[i]);
-  
+      traverse_itinerary(itinerary_list, Train[i]);
     }
   }
   free(itineraryName);
@@ -62,4 +65,3 @@ int main(int argc, char *argv[]) {
     wait(NULL);
   }
 }
-      
