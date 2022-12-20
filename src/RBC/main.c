@@ -4,10 +4,13 @@
 #include "../common/socket.h"
 #include "railway.h"
 #include <arpa/inet.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+static void signal_handler(int sig);
 
 int main(int argc, char const *argv[]) {
   char helpStr[450];
@@ -63,6 +66,8 @@ int main(int argc, char const *argv[]) {
     abort();
   }
 
+  signal(SIGUSR2, signal_handler);
+
   parent_dir_def(project_path, argv[0], 2);
   if (chdir(project_path) == -1) {
     perror("change directory");
@@ -105,4 +110,12 @@ int main(int argc, char const *argv[]) {
     close(client_sfd);
   }
   return 0;
+}
+
+static void signal_handler(int sig) {
+  if (sig == SIGUSR2) {
+    exit(EXIT_SUCCESS);
+  }
+  signal(SIGUSR2, signal_handler);
+  return;
 }
