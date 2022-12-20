@@ -1,4 +1,5 @@
 #include "../REGISTRO/REGISTRO.h"
+#include "../common/parent_dir.h"
 #include "../common/string_handlers.h"
 #include <stdbool.h>
 #include <stdio.h>
@@ -28,8 +29,7 @@ int main(int argc, char const *argv[]) {
   switch (argc) {
   case 3: {
     bool isNotETCS = strcmp(argv[1], "ETCS1") && strcmp(argv[1], "ETCS2");
-    bool isNotMAP = strcmp(argv[2], "MAPPA1") && strcmp(argv[2], "MAPPA2");
-    if (isNotETCS || isNotMAP) {
+    if (isNotETCS) {
       printf("%s", helpStr);
       exit(EXIT_FAILURE);
     }
@@ -41,6 +41,12 @@ int main(int argc, char const *argv[]) {
     printf("%s", helpStr);
     exit(EXIT_FAILURE);
     break;
+  }
+
+  parent_dir_def(project_path, argv[0], 2);
+  if (chdir(project_path) == -1) {
+    perror("change directory");
+    abort();
   }
 
   char *map = get_malloc_string_from(map_name);

@@ -1,15 +1,13 @@
 #include "../common/parent_dir.h"
+#include "../railway_manager/default_values.h"
 #include <fcntl.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
 #include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
-#define SEGMENTS_NUM 16
-#define TRAIN_NUM 4
+#define DEFAULT_FILE_NAME 0
+#define DEFAULT_FILE_STRING 1
 
 int main(int argc, char const *argv[]) {
   char helpStr[450];
@@ -50,7 +48,7 @@ int main(int argc, char const *argv[]) {
       exit(EXIT_FAILURE);
     }
     mode_name = strdup(argv[1]);
-    map_name = strdup(argv[2]);
+    map_name = strdup(argv[3]);
     is_rbc = !strcmp(argv[2], "RBC");
     break;
   }
@@ -60,97 +58,60 @@ int main(int argc, char const *argv[]) {
     break;
   }
 
-  int MA[SEGMENTS_NUM];
-  int Train[TRAIN_NUM];
-  // int T1, T2, T3, T4, T5;
-  int registroPid;
-  char *project_path = parent_dir(NULL, argv[0], 2);
-
-  umask(000);
-  // Get the size of the formated string to allocate needed memory
-  int size = snprintf(NULL, 0, "%s/tmp/MA%d", project_path, SEGMENTS_NUM);
-  char *file = malloc((size * sizeof(char)) + 1);
-  if (!file) {
-    fprintf(stderr, "Memory allocation failed!\n");
-    exit(EXIT_FAILURE);
+  parent_dir_def(project_path, argv[0], 2);
+  if (chdir(project_path) == -1) {
+    perror("change directory");
+    abort();
   }
 
-  for (int i = 0; i < SEGMENTS_NUM; i++) {
-    sprintf(file, "%s/tmp/MA%d", project_path, i + 1);
-    MA[i] = creaSegmento(file);
-    inizializzaSegmento(MA[i]);
-    close(MA[i]);
-  }
-  free(file);
+  const char *files[][2] = {{"tmp/railway.txt", RAILWAY_DEFAULT_STRING},
+                            {"tmp/MAPPA1", MAPPA1_DEFAULT_STRING},
+                            {"tmp/MAPPA2", MAPPA2_DEFAULT_STRING}};
+  size_t files_length = sizeof(files) / sizeof(files[0]);
 
-  registroPid = fork();
-  if (registroPid < 0) {
-    perror("errore durante le creazione del processo registro");
-    exit(EXIT_FAILURE);
-  }
-
-  int itineraryNameSize =
-      snprintf(NULL, 0, "%s/tmp/itinerarioT%d", project_path, TRAIN_NUM);
-  char *itineraryName = malloc((itineraryNameSize * sizeof(char)) + 1);
-  if (!itineraryName) {
-    fprintf(stderr, "Memory allocation failed!\n");
-    exit(EXIT_FAILURE);
-  }
-
-  /*esecuzione processo registro*/
-  if (registroPid == 0) {
-
-    char *mappa1[100] = {"S1,MA1,MA2,MA3,MA8,S6", "S2,MA5,MA6,MA7,MA3,MA8,S6",
-                         "S7,MA13,MA12,MA11,MA10,MA9,S3",
-                         "S4,MA14,MA15,MA16,MA12,S8"};
-
-    for (int i = 0; i < TRAIN_NUM; i++) {
-      sprintf(itineraryName, "%s/tmp/itinerarioT%i", project_path, i + 1);
-      /*creazione pipe con nome*/
-      int pipeTreno = creaPipeConNome(itineraryName);
-      /*invio itinerario ai processi treni*/
-      write(pipeTreno, mappa1[i], strlen(mappa1[i]) + 1);
-      close(pipeTreno);
+  // Create or rewrite map
+  for (size_t index = 0; index < files_length; index++) {
+    const char *file_name = files[index][DEFAULT_FILE_NAME];
+    if (index > 0 && strcmp(map_name, file_name + strlen("tmp/"))) {
+      continue;
     }
-    free(itineraryName);
-    exit(EXIT_SUCCESS);
-    // fine processo registro
+    if (index) {
+      map_name = strdup(file_name);
+    }
+    const char *file_string = files[index][DEFAULT_FILE_STRING];
+    int fd = open(file_name, O_RDWR | O_CREAT | O_TRUNC,
+                  S_IWUSR | S_IRUSR | S_IRGRP | S_IROTH);
+    if (fd < 0) {
+      size_t error_length =
+          snprintf(NULL, 0, "open or create '%s' file", file_name) + 1;
+      char error[error_length];
+      sprintf(error, "open or create '%s' file", file_name);
+      perror(error);
+      abort();
+    }
+    size_t string_length = strlen(file_string);
+    size_t file_length = write(fd, file_string, string_length);
+    if (file_length != string_length) {
+      size_t error_length = snprintf(NULL, 0, "write '%s' file", file_name) + 1;
+      char error[error_length];
+      sprintf(error, "write '%s' file", file_name);
+      perror(error);
+      abort();
+    }
+    close(fd);
+  }
+
+  int pid = fork();
+  if (pid < 0) {
+    perror("fork");
+    abort();
+  } else if (pid != 0) {
+    execl("bin/REGISTRO", "bin/REGISTRO", mode_name, map_name, NULL);
+  } else if (is_rbc) {
+    execl("bin/RBC", "bin/RBC", NULL);
   } else {
-    int logFileSize = snprintf(NULL, 0, "%s/log/T%d", project_path, TRAIN_NUM);
-    char *logFile = malloc((logFileSize * sizeof(char)) + 1);
-    if (!logFile) {
-      fprintf(stderr, "Memory allocation failed!\n");
-      exit(EXIT_FAILURE);
-    }
-    char itinerario[5];
-    char trainName[5];
-    for (int i = 0; i < TRAIN_NUM; i++) {
-
-      /*creazione treno*/
-      Train[i] = creaTreno();
-
-      /*esecuzione treno Train[i]*/
-      if (Train[i] == 0) {
-
-        sprintf(itineraryName, "%s/tmp/itinerarioT%i", project_path, i + 1);
-        sprintf(logFile, "%s/log/T%i.log", project_path, i + 1);
-        sprintf(trainName, "T%i", i + 1);
-        riceviItinerario(itineraryName, itinerario);
-        printf("%s: %s\n", itineraryName, itinerario);
-        Train[i] = open(logFile, O_CREAT | O_WRONLY | O_TRUNC, 0666);
-        if (Train[i] == -1) {
-          perror("errore durante la creazione di Train[i].log");
-          exit(EXIT_FAILURE);
-        }
-        percorriItinerario(itinerario, trainName, Train[i]);
-        // fine processo treno
-        exit(EXIT_SUCCESS);
-      }
-    }
-    free(itineraryName);
-    free(logFile);
-    for (int i = 0; i < TRAIN_NUM; i++) {
-      wait(NULL);
-    }
+    execl("bin/PADRE_TRENI", "bin/PADRE_TRENI", mode_name, NULL);
   }
+
+  return EXIT_SUCCESS;
 }
