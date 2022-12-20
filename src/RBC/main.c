@@ -13,57 +13,90 @@
 static void signal_handler(int sig);
 
 int main(int argc, char const *argv[]) {
-  char helpStr[450];
-  char *ip_address;
-  int port = 0;
-  char *unix_socket_path;
+  char helpStr[1000];
 
-  sprintf(helpStr,
-          "\033[31mWrong use! Example:\033[0m\n"
-          "\n"
-          "Usage: %s AF_INET_ADDRESS AF_INET_PORT AF_UNIX_ADDRESS\n\n"
-          "\033[36mAF_INET_ADDRESS\033[0m possible values are:\n"
-          "    \033[36m127.0.0.1\033[0m - is a default value\n"
-          "\n"
-          "\033[36mAF_INET_PORT\033[0m possible values are:\n"
-          "    \033[36m43210\033[0m     - is a default value\n"
-          "\n"
-          "\033[36mAF_UNIX_ADDRESS\033[0m possible values are:\n"
-          "    \033[36mrbc\033[0m       - is a default value\n",
-          argv[0]);
-  if (argc <= 4) {
-    if (argc == 3) {
-      ip_address = strdup(argv[1]);
-      port = atoi(argv[2]);
-      unix_socket_path = strdup("tmp/rbc");
-    } else if (argc == 2) {
-      ip_address = strdup(argv[1]);
-      port = 43210;
-      unix_socket_path = strdup("tmp/rbc");
-    } else if (argc == 1) {
-      ip_address = strdup("127.0.0.1");
-      port = 43210;
-      unix_socket_path = strdup("tmp/rbc");
-    } else {
-      ip_address = strdup(argv[1]);
-      port = atoi(argv[2]);
-      unix_socket_path = strdup(argv[3]);
-    }
+  char *ip_address = strdup("127.0.0.1");
+  int port = 43210;
+  char *unix_socket_path = strdup("tmp/rbc");
+  const char *railway_file = "tmp/railway.txt";
+  const char *platform_delim = "\n";
+  const char *platform_detail_delim = "<platform_data>";
+  const char *platform_id_delim = ",";
+
+  sprintf(
+      helpStr,
+      "\033[31mWrong use! Example:\033[0m\n"
+      "\n"
+      "Usage: %s <AF_INET_ADDRESS> <AF_INET_PORT> <AF_UNIX_ADDRESS> "
+      "<RAILWAY_FILE> <PLATFORM_DELIMITER> <PLATFORM_DETAIL_DELIMITER> "
+      "<PLATFORM_ID_DELIMITER>\n\n"
+      "\033[36m<AF_INET_ADDRESS>\033[0m possible values are:\n"
+      "    \033[36m127.0.0.1\033[0m       - is a default value\n"
+      "\n"
+      "\033[36m<AF_INET_PORT>\033[0m possible values are:\n"
+      "    \033[36m43210\033[0m           - is a default value\n"
+      "\n"
+      "\033[36m<AF_UNIX_ADDRESS>\033[0m possible values are:\n"
+      "    \033[36mtmp/rbc\033[0m         - is a default value\n"
+      "\n"
+      "\033[36m<RAILWAY_FILE>\033[0m possible values are:\n"
+      "    \033[36mtmp/railway.txt\033[0m - is a default value\n"
+      "\n"
+      "\033[36m<PLATFORM_DELIMITER>\033[0m possible values are:\n"
+      "    \033[36m\\n\033[0m             - is a default value\n"
+      "\n"
+      "\033[36m<PLATFORM_DETAIL_DELIMITER>\033[0m possible values are:\n"
+      "    \033[36m<platform_data>\033[0m             - is a default value\n"
+      "\n"
+      "\033[36m<PLATFORM_ID_DELIMITER>\033[0m possible values are:\n"
+      "    \033[36m,\033[0m             - is a default value\n",
+      argv[0]);
+
+  switch (argc) {
+  case 8:
+    platform_id_delim = argv[7];
+    __attribute__((fallthrough));
+  case 7:
+    platform_detail_delim = argv[6];
+    __attribute__((fallthrough));
+  case 6:
+    platform_delim = argv[5];
+    __attribute__((fallthrough));
+  case 5:
+    railway_file = argv[4];
+    __attribute__((fallthrough));
+  case 4:
+    unix_socket_path = strdup(argv[3]);
+    __attribute__((fallthrough));
+  case 3:
+    port = atoi(argv[2]);
+    __attribute__((fallthrough));
+  case 2:
+    ip_address = strdup(argv[1]);
+    __attribute__((fallthrough));
+  case 1: {
     struct sockaddr_in sa;
     bool is_wrong_ip = inet_pton(AF_INET, ip_address, &(sa.sin_addr)) == 0;
     if (is_wrong_ip) {
       printf("\033[31mWrong ip!\033[0m\n");
       printf("%s", helpStr);
-      abort();
+      exit(EXIT_FAILURE);
     }
     if (port == 0) {
       printf("\033[31mWrong port!\033[0m\n");
       printf("%s", helpStr);
-      abort();
+      exit(EXIT_FAILURE);
     }
-  } else {
+    if (access(railway_file, R_OK) == -1) {
+      printf("\033[31mRailway file not found or can't read!\033[0m\n");
+      printf("%s", helpStr);
+      exit(EXIT_FAILURE);
+    }
+    break;
+  }
+  default:
     printf("%s", helpStr);
-    abort();
+    exit(EXIT_FAILURE);
   }
 
   signal(SIGUSR2, signal_handler);
@@ -84,8 +117,8 @@ int main(int argc, char const *argv[]) {
   size_t itinerary_number = 0;
   Itinerary **itinerary_list =
       get_malloc_itinerary_list(&itinerary_number, socket_input);
-  Railway *railway =
-      get_malloc_railway_from("tmp/railway.txt", "\n", "<platform_data>", ",");
+  Railway *railway = get_malloc_railway_from(
+      railway_file, platform_delim, platform_detail_delim, platform_id_delim);
   socket_input.socket_path = unix_socket_path;
   socket_input.user = SERVER;
   sfd = socket_open(socket_input, AF_UNIX);
