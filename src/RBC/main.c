@@ -1,5 +1,6 @@
 #include "../RBC/RBC.h"
 #include "../RBC/itinerary.h"
+#include "../common/log.h"
 #include "../common/parent_dir.h"
 #include "../common/socket.h"
 #include "railway.h"
