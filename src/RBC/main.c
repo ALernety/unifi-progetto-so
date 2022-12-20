@@ -13,6 +13,14 @@
 static void signal_handler(int sig);
 
 int main(int argc, char const *argv[]) {
+  signal(SIGUSR2, signal_handler);
+
+  parent_dir_def(project_path, argv[0], 2);
+  if (chdir(project_path) == -1) {
+    perror("change directory");
+    abort();
+  }
+
   char helpStr[1000];
 
   char *ip_address = strdup("127.0.0.1");
@@ -97,14 +105,6 @@ int main(int argc, char const *argv[]) {
   default:
     printf("%s", helpStr);
     exit(EXIT_FAILURE);
-  }
-
-  signal(SIGUSR2, signal_handler);
-
-  parent_dir_def(project_path, argv[0], 2);
-  if (chdir(project_path) == -1) {
-    perror("change directory");
-    abort();
   }
 
   int sfd;
