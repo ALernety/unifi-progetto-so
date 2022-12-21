@@ -24,34 +24,33 @@ int main(int argc, char const *argv[]) {
   const char *platform_detail_delim = "<platform_data>";
   const char *platform_id_delim = ",";
 
-  sprintf(
-      help_str,
-      "\033[31mWrong use! Example:\033[0m\n"
-      "\n"
-      "Usage: %s <AF_INET_ADDRESS> <AF_INET_PORT> <AF_UNIX_ADDRESS> "
-      "<RAILWAY_FILE> <PLATFORM_DELIMITER> <PLATFORM_DETAIL_DELIMITER> "
-      "<PLATFORM_ID_DELIMITER>\n\n"
-      "\033[36m<AF_INET_ADDRESS>\033[0m possible values are:\n"
-      "    \033[36m127.0.0.1\033[0m       - is a default value\n"
-      "\n"
-      "\033[36m<AF_INET_PORT>\033[0m possible values are:\n"
-      "    \033[36m43210\033[0m           - is a default value\n"
-      "\n"
-      "\033[36m<AF_UNIX_ADDRESS>\033[0m possible values are:\n"
-      "    \033[36mtmp/rbc\033[0m         - is a default value\n"
-      "\n"
-      "\033[36m<RAILWAY_FILE>\033[0m possible values are:\n"
-      "    \033[36mtmp/railway.txt\033[0m - is a default value\n"
-      "\n"
-      "\033[36m<PLATFORM_DELIMITER>\033[0m possible values are:\n"
-      "    \033[36m\\n\033[0m              - is a default value\n"
-      "\n"
-      "\033[36m<PLATFORM_DETAIL_DELIMITER>\033[0m possible values are:\n"
-      "    \033[36m<platform_data>\033[0m - is a default value\n"
-      "\n"
-      "\033[36m<PLATFORM_ID_DELIMITER>\033[0m possible values are:\n"
-      "    \033[36m,\033[0m               - is a default value\n",
-      argv[0]);
+  sprintf(help_str,
+          "\033[31mWrong use! Example:\033[0m\n"
+          "\n"
+          "Usage: %s <AF_INET_ADDRESS> <AF_INET_PORT> <AF_UNIX_ADDRESS> "
+          "<RAILWAY_FILE> <PLATFORM_DELIMITER> <PLATFORM_DETAIL_DELIMITER> "
+          "<PLATFORM_ID_DELIMITER>\n\n"
+          "\033[36m<AF_INET_ADDRESS>\033[0m possible values are:\n"
+          "    \033[36m127.0.0.1\033[0m       - is a default value\n"
+          "\n"
+          "\033[36m<AF_INET_PORT>\033[0m possible values are:\n"
+          "    \033[36m43210\033[0m           - is a default value\n"
+          "\n"
+          "\033[36m<AF_UNIX_ADDRESS>\033[0m possible values are:\n"
+          "    \033[36mtmp/rbc\033[0m         - is a default value\n"
+          "\n"
+          "\033[36m<RAILWAY_FILE>\033[0m possible values are:\n"
+          "    \033[36mtmp/railway.txt\033[0m - is a default value\n"
+          "\n"
+          "\033[36m<PLATFORM_DELIMITER>\033[0m possible values are:\n"
+          "    \033[36m\\n\033[0m              - is a default value\n"
+          "\n"
+          "\033[36m<PLATFORM_DETAIL_DELIMITER>\033[0m possible values are:\n"
+          "    \033[36m<platform_data>\033[0m - is a default value\n"
+          "\n"
+          "\033[36m<PLATFORM_ID_DELIMITER>\033[0m possible values are:\n"
+          "    \033[36m,\033[0m               - is a default value\n",
+          argv[0]);
 
   switch (argc) {
   case 8:
