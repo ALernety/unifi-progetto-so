@@ -20,10 +20,10 @@ void log_segment(int fd, char *segment, bool is_current);
 /**
  * @brief Create log file.
  *
- * @param logFile Pathname of file
+ * @param log_file Pathname of file
  * @return int File descriptor of created file
  */
-int log_create(char *logFile);
+int log_create(char *log_file);
 
 /**
  * @brief Log pass permit of RBC.

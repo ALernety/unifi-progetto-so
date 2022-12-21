@@ -8,13 +8,13 @@
 #include <string.h>
 
 int main(int argc, char const *argv[]) {
-  char helpStr[600];
+  char help_str[600];
   const char *map_name;
   const char *map_delimiter = "\n";
   char *ip_address = strdup("127.0.0.1");
   int port = 43210;
 
-  sprintf(helpStr,
+  sprintf(help_str,
           "\033[31mNot enough arguments! Example of use:\033[0m\n"
           "\n"
           "Usage: %s <MAP> <MAP_DELIMITER> <AF_INET_ADDRESS> <AF_INET_PORT>\n\n"
@@ -48,23 +48,23 @@ int main(int argc, char const *argv[]) {
     bool is_wrong_ip = inet_pton(AF_INET, ip_address, &(sa.sin_addr)) == 0;
     if (is_wrong_ip) {
       printf("\033[31mWrong ip!\033[0m\n");
-      printf("%s", helpStr);
+      printf("%s", help_str);
       exit(EXIT_FAILURE);
     }
     if (port == 0) {
       printf("\033[31mWrong port!\033[0m\n");
-      printf("%s", helpStr);
+      printf("%s", help_str);
       exit(EXIT_FAILURE);
     }
     if (access(map_name, R_OK) == -1) {
       printf("\033[31mMap file not found or can't read!\033[0m\n");
-      printf("%s", helpStr);
+      printf("%s", help_str);
       exit(EXIT_FAILURE);
     }
     break;
   }
   default:
-    printf("%s", helpStr);
+    printf("%s", help_str);
     exit(EXIT_FAILURE);
   }
 

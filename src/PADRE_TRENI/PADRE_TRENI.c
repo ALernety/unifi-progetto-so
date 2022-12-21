@@ -40,12 +40,12 @@ void segment_create(char *file, int seg_number) {
 }
 
 int file_write(int fd, char *msg, ssize_t msg_len) {
-  int bytesWritten = write(fd, msg, msg_len);
-  if (bytesWritten != msg_len) {
+  int bytes_written = write(fd, msg, msg_len);
+  if (bytes_written != msg_len) {
     perror("Error writing into a file.");
     exit(EXIT_FAILURE);
   }
-  return bytesWritten;
+  return bytes_written;
 }
 
 long file_length(int fd) { return lseek(fd, 0, SEEK_END); }

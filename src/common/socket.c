@@ -112,33 +112,33 @@ int socket_write(int *sfd, const char *msg, ssize_t msg_len) {
 static int socket_open_unix(int *sfd, socket_user user, char *socket_path,
                             int max_connected_clients) {
   // Define socket, and prepare variables.
-  int socketLen;
-  struct sockaddr_un socketAddress;
-  struct sockaddr *socketAddressPtr;
-  socketAddressPtr = (struct sockaddr *)&socketAddress;
-  socketLen = sizeof(socketAddress);
+  int socket_len;
+  struct sockaddr_un socket_address;
+  struct sockaddr *socket_address_ptr;
+  socket_address_ptr = (struct sockaddr *)&socket_address;
+  socket_len = sizeof(socket_address);
 
   *sfd = socket(AF_UNIX, SOCKET_TYPE, DEFAULT_PROTOCOL);
-  socketAddress.sun_family = AF_UNIX;
-  snprintf(socketAddress.sun_path, sizeof(socketAddress.sun_path), "%s",
+  socket_address.sun_family = AF_UNIX;
+  snprintf(socket_address.sun_path, sizeof(socket_address.sun_path), "%s",
            socket_path);
 
   switch (user) {
   case CLIENT:
     // Connect to server socket.
-    if (connect(*sfd, socketAddressPtr, socketLen) == -1) {
+    if (connect(*sfd, socket_address_ptr, socket_len) == -1) {
       perror("connect");
       abort();
     }
     break;
   case SERVER:
     // Remove already existing socket.
-    if (unlink(socketAddress.sun_path) == -1 && errno != ENOENT) {
+    if (unlink(socket_address.sun_path) == -1 && errno != ENOENT) {
       perror("unlink");
       abort();
     }
     // And create new one.
-    if (bind(*sfd, socketAddressPtr, socketLen) == -1) {
+    if (bind(*sfd, socket_address_ptr, socket_len) == -1) {
       perror("bind");
       abort();
     }
@@ -155,11 +155,11 @@ static int socket_open_inet(int *sfd, socket_user user, char *socket_path,
                             unsigned int port, int max_connected_clients) {
   // Define socket and prepare variables.
   int opt = 1;
-  int socketLen;
-  struct sockaddr_in socketAddress;
-  struct sockaddr *socketAddressPtr;
-  socketAddressPtr = (struct sockaddr *)&socketAddress;
-  socketLen = sizeof(socketAddress);
+  int socket_len;
+  struct sockaddr_in socket_address;
+  struct sockaddr *socket_address_ptr;
+  socket_address_ptr = (struct sockaddr *)&socket_address;
+  socket_len = sizeof(socket_address);
 
   *sfd = socket(AF_INET, SOCKET_TYPE, DEFAULT_PROTOCOL);
   // Forcefully attaching socket to the address and port
@@ -168,21 +168,21 @@ static int socket_open_inet(int *sfd, socket_user user, char *socket_path,
     perror("setsockopt");
     abort();
   }
-  socketAddress.sin_family = AF_INET;
-  socketAddress.sin_addr.s_addr = inet_addr(socket_path);
-  socketAddress.sin_port = htons(port);
+  socket_address.sin_family = AF_INET;
+  socket_address.sin_addr.s_addr = inet_addr(socket_path);
+  socket_address.sin_port = htons(port);
 
   switch (user) {
   case CLIENT:
     // Connect to server socket.
-    if (connect(*sfd, socketAddressPtr, socketLen) == -1) {
+    if (connect(*sfd, socket_address_ptr, socket_len) == -1) {
       perror("connect");
       abort();
     }
     break;
   case SERVER:
     // Create new socket.
-    if (bind(*sfd, socketAddressPtr, socketLen) == -1) {
+    if (bind(*sfd, socket_address_ptr, socket_len) == -1) {
       perror("bind");
       abort();
     }
