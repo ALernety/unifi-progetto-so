@@ -36,9 +36,6 @@ int main(int argc, char *argv[]) {
   malloc_macro_def(char *, file, (size * sizeof(char)) + 1);
   int log_file_size = snprintf(NULL, 0, "log/T%d", TRAIN_NUM);
   malloc_macro_def(char *, log_file, (log_file_size * sizeof(char)) + 1);
-  int itinerary_name_size = snprintf(NULL, 0, "tmp/itinerario_t%d", TRAIN_NUM);
-  malloc_macro_def(char *, itinerary_name,
-                   (itinerary_name_size * sizeof(char)) + 1);
 
   for (int i = 0; i < SEGMENTS_NUM; i++) {
     segment_create(file, i);
@@ -48,18 +45,16 @@ int main(int argc, char *argv[]) {
   for (int i = 0; i < TRAIN_NUM; i++) {
     Train[i] = process_create();
     if (Train[i] == 0) {
-      sprintf(itinerary_name, "tmp/itinerario_t%i", i + 1);
       sprintf(log_file, "log/T%i.log", i + 1);
       sprintf(train_name, "T%i", i + 1);
       int sfd = create_socket_client(ip_address, port_string);
-      itinerary = get_itinerary(sfd, train_name, itinerary_name);
+      itinerary = get_itinerary(sfd, train_name);
       Train[i] = log_create(log_file);
       // Split the itinerary to get list of segments and stations
       char **itinerary_list = get_malloc_token_list(itinerary, ", ");
       traverse_itinerary(itinerary_list, Train[i]);
     }
   }
-  free(itinerary_name);
   free(log_file);
   for (int i = 0; i < TRAIN_NUM; i++) {
     wait(NULL);

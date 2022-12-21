@@ -125,7 +125,7 @@ int create_socket_client(char *socket_path, char *port_string) {
   return socket_open(socket_input, AF_INET);
 }
 
-char *get_itinerary(int sfd, char *train_name, char *itinerary_name) {
+char *get_itinerary(int sfd, char *train_name) {
   char *itinerary;
   // ask itinerary to REGISTRO
   socket_write(&sfd, train_name, strlen(train_name) + 1);
