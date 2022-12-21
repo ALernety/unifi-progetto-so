@@ -113,12 +113,10 @@ void traverse_itinerary(char **itinerary_list, int log_fd) {
   }
 }
 
-int create_socket_client(char *socket_path, char *port_string) {
+int create_socket_client(char *socket_path, size_t port) {
   int sfd;
-  unsigned int port = get_integer_from(port_string);
   socket_data socket_input;
   socket_input.socket_path = socket_path;
-  socket_input.max_connected_clients = 1;
   socket_input.port = port;
   socket_input.sfd = &sfd;
   socket_input.user = CLIENT;
