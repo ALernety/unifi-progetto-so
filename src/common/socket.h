@@ -83,6 +83,6 @@ char *socket_read_malloc(int *sfd, const char *end);
  * @param sfd File descriptor of socket.
  * @param msg Message to write.
  * @param msg_len Number of characters of msg to write.
- * @return int Number of characters written.
+ * @return int Number of characters to write without terminator.
  */
 int socket_write(int *sfd, const char *msg, ssize_t msg_len);
