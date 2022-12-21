@@ -10,12 +10,12 @@
 #define DEFAULT_FILE_STRING 1
 
 int main(int argc, char const *argv[]) {
-  char helpStr[450];
+  char help_str[450];
   char *map_name;
   char *mode_name;
   bool is_rbc = false;
   sprintf(
-      helpStr,
+      help_str,
       "\033[31mNot enough arguments! Example of use:\033[0m\n"
       "\n"
       "Usage: %s MODE [RBC] MAP\n\n"
@@ -31,10 +31,10 @@ int main(int argc, char const *argv[]) {
       argv[0]);
   switch (argc) {
   case 3: {
-    bool isNotETCS = strcmp(argv[1], "ETCS1") && strcmp(argv[1], "ETCS2");
-    bool isNotMAP = strcmp(argv[2], "MAPPA1") && strcmp(argv[2], "MAPPA2");
-    if (isNotETCS || isNotMAP) {
-      printf("%s", helpStr);
+    bool is_not_etcs = strcmp(argv[1], "ETCS1") && strcmp(argv[1], "ETCS2");
+    bool is_not_map = strcmp(argv[2], "MAPPA1") && strcmp(argv[2], "MAPPA2");
+    if (is_not_etcs || is_not_map) {
+      printf("%s", help_str);
       exit(EXIT_FAILURE);
     }
     mode_name = strdup(argv[1]);
@@ -42,9 +42,9 @@ int main(int argc, char const *argv[]) {
     break;
   }
   case 4: {
-    bool isNotMAP = strcmp(argv[3], "MAPPA1") && strcmp(argv[3], "MAPPA2");
-    if (strcmp(argv[1], "ETCS2") || strcmp(argv[2], "RBC") || isNotMAP) {
-      printf("%s", helpStr);
+    bool is_not_map = strcmp(argv[3], "MAPPA1") && strcmp(argv[3], "MAPPA2");
+    if (strcmp(argv[1], "ETCS2") || strcmp(argv[2], "RBC") || is_not_map) {
+      printf("%s", help_str);
       exit(EXIT_FAILURE);
     }
     mode_name = strdup(argv[1]);
@@ -53,7 +53,7 @@ int main(int argc, char const *argv[]) {
     break;
   }
   default:
-    printf("%s", helpStr);
+    printf("%s", help_str);
     exit(EXIT_FAILURE);
     break;
   }

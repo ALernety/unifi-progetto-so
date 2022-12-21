@@ -125,10 +125,10 @@ int create_socket_client(char *socket_path, char *port_string) {
   return socket_open(socket_input, AF_INET);
 }
 
-char *get_itinerary(int sfd, char *trainName, char *itineraryName) {
+char *get_itinerary(int sfd, char *train_name, char *itinerary_name) {
   char *itinerary;
   // ask itinerary to REGISTRO
-  socket_write(&sfd, trainName, strlen(trainName) + 1);
+  socket_write(&sfd, train_name, strlen(train_name) + 1);
   // get itinerary from REGISTRO
   itinerary = socket_read_malloc(&sfd, "\0");
   return itinerary;

@@ -22,9 +22,9 @@ int create_socket_client(char *socket_path, char* port_string);
  * @brief Get the itinerary needed for the trains via AF-INET socket   
  * 
  * @param sfd Socket file descriptor 
- * @param trainName Name of train
- * @param itineraryName Name of itinerary
+ * @param train_name Name of train
+ * @param itinerary_name Name of itinerary
  * @return char* String containing the itinerary
  */
-char* get_itinerary(int sfd,char* trainName,char* itineraryName);
+char* get_itinerary(int sfd,char* train_name,char* itinerary_name);
 
