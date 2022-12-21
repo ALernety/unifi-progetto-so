@@ -14,14 +14,6 @@
 static void signal_handler(int sig);
 
 int main(int argc, char const *argv[]) {
-  signal(SIGUSR2, signal_handler);
-
-  parent_dir_def(project_path, argv[0], 2);
-  if (chdir(project_path) == -1) {
-    perror("change directory");
-    abort();
-  }
-
   char helpStr[1000];
 
   char *ip_address = strdup("127.0.0.1");
@@ -52,13 +44,13 @@ int main(int argc, char const *argv[]) {
       "    \033[36mtmp/railway.txt\033[0m - is a default value\n"
       "\n"
       "\033[36m<PLATFORM_DELIMITER>\033[0m possible values are:\n"
-      "    \033[36m\\n\033[0m             - is a default value\n"
+      "    \033[36m\\n\033[0m              - is a default value\n"
       "\n"
       "\033[36m<PLATFORM_DETAIL_DELIMITER>\033[0m possible values are:\n"
-      "    \033[36m<platform_data>\033[0m             - is a default value\n"
+      "    \033[36m<platform_data>\033[0m - is a default value\n"
       "\n"
       "\033[36m<PLATFORM_ID_DELIMITER>\033[0m possible values are:\n"
-      "    \033[36m,\033[0m             - is a default value\n",
+      "    \033[36m,\033[0m               - is a default value\n",
       argv[0]);
 
   switch (argc) {
@@ -106,6 +98,14 @@ int main(int argc, char const *argv[]) {
   default:
     printf("%s", helpStr);
     exit(EXIT_FAILURE);
+  }
+
+  signal(SIGUSR2, signal_handler);
+
+  parent_dir_def(project_path, argv[0], 2);
+  if (chdir(project_path) == -1) {
+    perror("change directory");
+    abort();
   }
 
   int sfd;

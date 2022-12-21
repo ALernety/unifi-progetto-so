@@ -22,7 +22,7 @@ int main(int argc, char const *argv[]) {
           "    \033[36mpath/to/map\033[0m - manage trains with map two\n"
           "\n"
           "\033[36m<MAP_DELIMITER>\033[0m possible values are:\n"
-          "    \033[36m\\n\033[0m         - Is default value\n"
+          "    \033[36m\\n\033[0m          - Is default value\n"
           "\n"
           "\033[36m<AF_INET_ADDRESS>\033[0m possible values are:\n"
           "    \033[36m127.0.0.1\033[0m   - Is default value\n"
