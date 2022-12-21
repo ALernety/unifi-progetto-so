@@ -6,7 +6,8 @@ enum SOCKET_USER { SERVER, CLIENT };
 typedef enum SOCKET_USER socket_user;
 
 /**
- * @brief All fields are mandatory except "port" on AF_UNIX socket.
+ * @brief All fields are mandatory except "port" on AF_UNIX socket and
+ *        "max_connected_clients" with user CLIENT.
  *
  * @param sfd Is a socket file descriptor, mandatory in all cases.
  * @param user Is a socket_user ENUM that indicates usage purpose.

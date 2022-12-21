@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
   char *itinerary = NULL;
   char train_name[5];
   char ip_address[] = "127.0.0.1";
-  char port_string[] = "43210";
+  size_t port = 43210;
 
   parent_dir_def(project_path, argv[0], 2);
   if (chdir(project_path) == -1) {
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
     if (Train[i] == 0) {
       sprintf(log_file, "log/T%i.log", i + 1);
       sprintf(train_name, "T%i", i + 1);
-      int sfd = create_socket_client(ip_address, port_string);
+      int sfd = create_socket_client(ip_address, port);
       itinerary = get_itinerary(sfd, train_name);
       Train[i] = log_create(log_file);
       // Split the itinerary to get list of segments and stations
