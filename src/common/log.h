@@ -11,11 +11,11 @@ void log_current_date(int fd);
  * @brief Log info about next or current segment
  *
  * @param fd Log file descriptor
- * @param segment Segment name
- * @param is_current It is 0 if logging next segment, 1 if logging current
+ * @param current Current segment name.
+ * @param next Next segment name.
  * segment
  */
-void log_segment(int fd, char *segment, bool is_current);
+void log_segment(int fd, const char *current, const char *next);
 
 /**
  * @brief Create log file.
