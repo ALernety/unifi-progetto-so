@@ -33,3 +33,13 @@ long file_length(int fd);
  * @param seg_number Segment number
  */
 void segment_create(char *file, int seg_number);
+
+/**
+ * @brief Create train process.
+ *
+ * @param train_index Index of train (train name will be "T{train_index + 1}").
+ * @param REGISTRO_ip AF_INET compatible ip address.
+ * @param REGISTRO_port AF_INET compatible port.
+ */
+void create_train_process(size_t train_index, char *REGISTRO_ip,
+                          size_t REGISTRO_port);
