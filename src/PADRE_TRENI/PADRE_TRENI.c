@@ -1,4 +1,8 @@
-#include "PADRE_TRENI.h"
+#include "../PADRE_TRENI/PADRE_TRENI.h"
+#include "../PADRE_TRENI/TRENO.h"
+#include "../common/alloc_macro.h"
+#include "../common/log.h"
+#include "../common/string_handlers.h"
 #include <fcntl.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -49,3 +53,27 @@ int file_write(int fd, char *msg, ssize_t msg_len) {
 }
 
 long file_length(int fd) { return lseek(fd, 0, SEEK_END); }
+
+void create_train_process(size_t train_index, char *REGISTRO_ip,
+                          size_t REGISTRO_port) {
+  int pid = fork();
+  if (pid < 0) {
+    perror("Error creating a child process.");
+    exit(EXIT_FAILURE);
+  } else if (pid == 0) {
+    // Return to parent process.
+    return;
+  }
+  int train_name_size = snprintf(NULL, 0, "T%zu", train_index);
+  char train_name[train_name_size];
+  sprintf(train_name, "T%zu", train_index + 1);
+  char log_file[strlen("log/.log") + train_name_size];
+  sprintf(log_file, "log/%s.log", train_name);
+
+  int sfd = create_socket_client(REGISTRO_ip, REGISTRO_port);
+  char *itinerary = get_itinerary(sfd, train_name);
+  int log_fd = log_create(log_file);
+  // Split the itinerary to get list of segments and stations
+  char **itinerary_list = get_malloc_token_list(itinerary, ", ");
+  traverse_itinerary(itinerary_list, log_fd);
+}
