@@ -2,7 +2,6 @@
 #include "../PADRE_TRENI/PADRE_TRENI.h"
 #include "../common/log.h"
 #include "../common/socket.h"
-#include "../common/string_handlers.h"
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,7 +30,7 @@ static void reach_station(char *cur_segment, char *next_segment, int log_fd) {
   flock(cur_segment_fd, LOCK_UN);
   close(cur_segment_fd);
   log_segment(log_fd, next_segment, 1);
-  log_segment(log_fd, "-- ", 0);
+  log_segment(log_fd, "--", 0);
   log_current_date(log_fd);
   close(log_fd);
 }
