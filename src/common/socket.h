@@ -51,7 +51,8 @@ int socket_accept(int *sfd, int *client_sfd);
  * @brief Close socket and unlink of the socket_path.
  *
  * @param sfd File descriptor of socket.
- * @param socket_path Path to the socket file, which will be unlinked.
+ * @param socket_path Path to the socket file, which will be unlinked. Set to
+ *        NULL if "user" is CLIENT.
  * @return true Error on close.
  * @return false Closed with success.
  */
