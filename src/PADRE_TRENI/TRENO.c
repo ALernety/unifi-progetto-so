@@ -13,10 +13,11 @@
 
 static int check_next_segment(char *next_segment, char *segment_free);
 
-static void access_segment(int next_segment_fd, char *next_segment,
-                           char *cur_segment);
+static void access_segment(int segment_fd);
 
 static void free_segment(char *segment);
+
+static int connect_to_rbc(char *socket_path);
 
 static int check_next_segment(char *next_segment, char *segment_value) {
   char segment_path[PATH_MAX];
@@ -33,12 +34,11 @@ static int check_next_segment(char *next_segment, char *segment_value) {
   return next_segment_fd;
 }
 
-static void access_segment(int next_segment_fd, char *next_segment,
-                           char *cur_segment) {
-  flock(next_segment_fd, LOCK_EX);
-  file_write(next_segment_fd, "1", 1);
+static void access_segment(int segment_fd) {
+  flock(segment_fd, LOCK_EX);
+  file_write(segment_fd, "1", 1);
   usleep(MICROSECONDS);
-  flock(next_segment_fd, LOCK_UN);
+  flock(segment_fd, LOCK_UN);
 }
 
 static void free_segment(char *segment) {
@@ -65,26 +65,26 @@ void traverse_itinerary(char **itinerary_list, int log_fd, char *socket_path,
       log_segment(log_fd, next_segment, "--");
       // If next_segment is a station, final destination is reached.
       free_segment(cur_segment);
+      communicate_to_rbc(socket_path, train, MOVE, next_segment, request_delim);
       close(log_fd);
       exit(EXIT_SUCCESS);
     }
     // Open file corresponding to the next segment to enter and check if it is
     // free
+    bool rbc_permit = communicate_to_rbc(socket_path, train, PERMIT,
+                                         next_segment, request_delim);
     int next_segment_fd = check_next_segment(next_segment, &segment_value);
-    if (segment_value == '0') {
-      access_segment(next_segment_fd, next_segment, cur_segment);
-      if (cur_segment[0] == 'S') {
+    if (segment_value == '0' && rbc_permit) {
+      access_segment(next_segment_fd);
+      communicate_to_rbc(socket_path, train, MOVE, next_segment, request_delim);
+      if (cur_segment[0] != 'S') {
         // If train is in the departure station, It
         // can immediately enter the next segment
-        sprintf(cur_segment, "%s", next_segment);
-        close(next_segment_fd);
-        next_seg_counter++;
-      } else {
         free_segment(cur_segment);
-        sprintf(cur_segment, "%s", next_segment);
-        next_seg_counter++;
-        close(next_segment_fd);
       }
+      sprintf(cur_segment, "%s", next_segment);
+      close(next_segment_fd);
+      next_seg_counter++;
     } else {
       // If segment_value is 1, then the next segment is occupied by
       // another train
@@ -110,4 +110,35 @@ char *get_itinerary(int sfd, char *train_name) {
   // get itinerary from REGISTRO
   itinerary = socket_read_malloc(&sfd, "\0");
   return itinerary;
+}
+
+bool communicate_to_rbc(char *socket_path, const char *train, Mode mode,
+                        const char *request_segment,
+                        const char *request_delim) {
+  if (!strcmp(socket_path, request_segment)) {
+    return socket_path;
+  }
+  const char *format_communicate = "%%s%s%%c%s%%s";
+  char format[strlen(format_communicate) + (2 * strlen(request_delim))];
+  sprintf(format, format_communicate, request_delim, request_delim);
+  int sfd = connect_to_rbc(socket_path);
+  size_t request_length =
+      strlen(format) + strlen(train) + sizeof(mode) + strlen(request_segment);
+  char request[request_length];
+  sprintf(request, format, train, mode, request_segment);
+  socket_write(&sfd, request, strlen(request));
+  char *response = socket_read_malloc(&sfd, "\0");
+  socket_close(&sfd, NULL);
+  return strcmp(response, "0");
+}
+
+static int connect_to_rbc(char *socket_path) {
+  int sfd;
+  socket_data socket_input;
+  socket_input.socket_path = socket_path;
+  socket_input.sfd = &sfd;
+  socket_input.user = CLIENT;
+
+  socket_open(socket_input, AF_UNIX);
+  return *socket_input.sfd;
 }

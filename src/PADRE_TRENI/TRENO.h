@@ -1,3 +1,5 @@
+#include "../common/mode.h"
+#include <stdbool.h>
 #include <sys/types.h>
 
 /**
@@ -31,3 +33,18 @@ int create_socket_client(char *socket_path, size_t port);
  * @return char* String containing the itinerary
  */
 char *get_itinerary(int sfd, char *train_name);
+
+/**
+ * @brief Communicate to RBC permit question or notification movement train.
+ *
+ * @param socket_path Path to AF_UNIX socket of RBC. If empty, return of
+ *        function always true.
+ * @param train Name of train which ask permit.
+ * @param mode Communication mode, instance of Mode.
+ * @param request_segment Name of segment which train try to access.
+ * @param request_delim Request delimiter for delim parameters in RBC.
+ * @return true Passage permited.
+ * @return false Passage rejected.
+ */
+bool communicate_to_rbc(char *socket_path, const char *train, Mode mode,
+                        const char *request_segment, const char *request_delim);
