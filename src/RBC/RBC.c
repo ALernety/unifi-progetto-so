@@ -19,7 +19,7 @@ Itinerary **get_malloc_itinerary_list(size_t *itinerary_number,
       perror("socket timeout receive");
       abort();
     }
-    int train_name_size = snprintf(NULL, 0, "T%zu", index) + 1;
+    int train_name_size = snprintf(NULL, 0, "T%zu", index);
     char train_name[train_name_size];
     sprintf(train_name, "T%zu", index);
     socket_write(&sfd, train_name, train_name_size);
@@ -61,11 +61,11 @@ int get_request(int sfd, const char *delim, char **train_name,
   return *client_sfd;
 }
 
-Itinerary *get_itinerary_by_train(Itinerary *itinerary_list,
+Itinerary *get_itinerary_by_train(Itinerary **itinerary_list,
                                   size_t itinerary_number, char *train) {
   for (size_t index = 0; index < itinerary_number; index++) {
-    if (!strcmp(itinerary_list[index].train, train)) {
-      return &itinerary_list[index];
+    if (!strcmp(itinerary_list[index]->train, train)) {
+      return itinerary_list[index];
     }
   }
 

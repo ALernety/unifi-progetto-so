@@ -43,6 +43,6 @@ int get_request(int sfd, const char *delim, char **train_name, char **platform);
  * @param train Identity string of itinerary.
  * @return Itinerary* Itinerary found by train.
  */
-Itinerary *get_itinerary_by_train(Itinerary *itinerary_list,
+Itinerary *get_itinerary_by_train(Itinerary **itinerary_list,
                                   size_t itinerary_number, char *train);
 
