@@ -111,7 +111,8 @@ int main(int argc, char const *argv[]) {
   } else if (pid != 0) {
     execl("bin/REGISTRO", "bin/REGISTRO", map_name, NULL);
   } else {
-    execl("bin/PADRE_TRENI", "bin/PADRE_TRENI", mode_name, NULL);
+    const char *socket_path = strcmp(mode_name, "ETCS2") ? "" : "tmp/rbc";
+    execl("bin/PADRE_TRENI", "bin/PADRE_TRENI", socket_path, NULL);
   }
 
   return EXIT_SUCCESS;

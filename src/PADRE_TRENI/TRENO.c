@@ -51,7 +51,8 @@ static void free_segment(char *segment) {
   close(cur_segment_fd);
 }
 
-void traverse_itinerary(char **itinerary_list, int log_fd) {
+void traverse_itinerary(char **itinerary_list, int log_fd, char *socket_path,
+                        char *train) {
   int next_seg_counter = 0;
   char segment_value;
   char *next_segment;
