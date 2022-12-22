@@ -11,7 +11,7 @@
  * @param platform_number Total number of platforms in platform_list.
  */
 struct railway {
-  Platform *platform_list;
+  Platform **platform_list;
   size_t platform_number;
   // size_t station_number;
   // size_t track_number;

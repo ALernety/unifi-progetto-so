@@ -19,7 +19,7 @@ struct platform {
   bool type;
   size_t actual_capacity;
   size_t full_capacity;
-  struct platform *connected;
+  struct platform **connected;
   int connected_number;
 };
 typedef struct platform Platform;
@@ -34,9 +34,9 @@ typedef struct platform Platform;
  * @param delim String which delimit parameters of platform.
  * @param connected_ids Pointer to string where to save the platforms id
  *        connected.
- * @return Platform Not connected platform.
+ * @return Platform* Not connected platform.
  */
-Platform set_platform_from(Platform *platform, char *platform_string,
+Platform *set_platform_from(Platform *platform, char *platform_string,
                            const char *delim, char **connected_ids);
 
 /**
@@ -47,9 +47,9 @@ Platform set_platform_from(Platform *platform, char *platform_string,
  * @param platform_number Maximum number of Platforms to elaborate or dimension
  *        of platform_list.
  * @param id Identity string of platform.
- * @return Platform Platform found with id.
+ * @return Platform* Platform found with id.
  */
-Platform get_platform_by_id(Platform *platform_list, size_t platform_number,
+Platform *get_platform_by_id(Platform **platform_list, size_t platform_number,
                             char *id);
 
 /**
@@ -60,8 +60,8 @@ Platform get_platform_by_id(Platform *platform_list, size_t platform_number,
  *        of platform_list.
  * @param connected_ids Array of ids of platforms.
  * @param ids_number Number of ids in connected_ids.
- * @return Platform* Array of platforms.
+ * @return Platform** Array of platforms.
  */
-Platform *get_platform_list_by_ids(Platform *platform_list,
+Platform **get_platform_list_by_ids(Platform **platform_list,
                                    size_t platform_number, char **connected_ids,
                                    size_t ids_number);

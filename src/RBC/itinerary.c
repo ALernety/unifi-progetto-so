@@ -31,16 +31,16 @@ bool move_to_next_platform(Railway *railway, Itinerary *itinerary,
   if (is_on_last_platform_of(*itinerary)) {
     return false;
   }
-  Platform current = get_platform_by_id(railway->platform_list,
-                                        railway->platform_number, current_id);
+  Platform *current = get_platform_by_id(railway->platform_list,
+                                         railway->platform_number, current_id);
   // Check if platforms are connected, and get next platform if they are.
-  Platform next =
-      get_platform_by_id(current.connected, current.connected_number, next_id);
-  if (!can_transfer_on(next)) {
+  Platform *next = get_platform_by_id(current->connected,
+                                      current->connected_number, next_id);
+  if (!can_transfer_on(*next)) {
     return false;
   }
-  current.actual_capacity--;
-  next.actual_capacity++;
+  current->actual_capacity--;
+  next->actual_capacity++;
   itinerary->current = itinerary->next;
   if (itinerary->platform_number > itinerary->next + 1) {
     itinerary->next++;
