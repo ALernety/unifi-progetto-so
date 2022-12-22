@@ -128,7 +128,7 @@ int main(int argc, char const *argv[]) {
     char *train_name;
     int client_sfd = get_request(sfd, ",", &train_name, &request_platform);
     Itinerary *itinerary =
-        get_itinerary_by_train(*itinerary_list, itinerary_number, train_name);
+        get_itinerary_by_train(itinerary_list, itinerary_number, train_name);
     char *current_platform = itinerary->platform_ids[itinerary->current];
     bool permit = move_to_next_platform(railway, itinerary, request_platform);
     if (permit) {
