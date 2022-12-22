@@ -21,8 +21,23 @@ Itinerary *get_malloc_itinerary_from(char *itinerary_str, const char *delim,
   return itinerary;
 }
 
-bool move_to_next_platform(Railway *railway, Itinerary *itinerary,
-                           char *platform) {
+bool free_current_platform(Railway *railway, Itinerary *itinerary) {
+  char *current_id = itinerary->platform_ids[itinerary->current];
+  if (is_on_last_platform_of(*itinerary)) {
+    return false;
+  }
+  Platform *current = get_platform_by_id(railway->platform_list,
+                                         railway->platform_number, current_id);
+  current->actual_capacity--;
+  itinerary->current = itinerary->next;
+  if (itinerary->platform_number > itinerary->next + 1) {
+    itinerary->next++;
+  }
+  return true;
+}
+
+bool permit_to_next_platform(Railway *railway, Itinerary *itinerary,
+                             char *platform) {
   char *current_id = itinerary->platform_ids[itinerary->current];
   char *next_id = itinerary->platform_ids[itinerary->next];
   if (strcmp(next_id, platform)) {
@@ -39,12 +54,7 @@ bool move_to_next_platform(Railway *railway, Itinerary *itinerary,
   if (!can_transfer_on(*next)) {
     return false;
   }
-  current->actual_capacity--;
   next->actual_capacity++;
-  itinerary->current = itinerary->next;
-  if (itinerary->platform_number > itinerary->next + 1) {
-    itinerary->next++;
-  }
   return true;
 }
 

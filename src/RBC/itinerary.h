@@ -3,7 +3,6 @@
 #include <stdbool.h>
 #include <sys/types.h>
 
-
 /**
  * @brief Contains data of itinerary of train.
  *
@@ -28,7 +27,7 @@ typedef struct itinerary Itinerary;
 /**
  * @brief Get the malloc itinerary from itinerary_str, delimited by delim,
  *        and with identity name train.
- * 
+ *
  * @param itinerary_str Sequence of platform ids, delimited by delim.
  * @param delim Delimiter of platform ids in itinerary_str.
  * @param train Identity string of itinerary.
@@ -38,8 +37,19 @@ Itinerary *get_malloc_itinerary_from(char *itinerary_str, const char *delim,
                                      char *train);
 
 /**
- * @brief Move to next platform from current.
- * 
+ * @brief Free current platform, must be called when train already in next.
+ *
+ * @param railway Railway on which train moves.
+ * @param itinerary Itinerary of train.
+ * @return true Platform is free.
+ * @return false Platform cannot be free.
+ */
+bool free_current_platform(Railway *railway, Itinerary *itinerary);
+
+/**
+ * @brief Ask permit to use next platform, must be called before
+ *        free_current_platform.
+ *
  * @param railway Railway on which train moves.
  * @param itinerary Itinerary of train.
  * @param platform Platform id, on which should move train (should be next in
@@ -47,12 +57,12 @@ Itinerary *get_malloc_itinerary_from(char *itinerary_str, const char *delim,
  * @return true Train can move on platform.
  * @return false Train should wait for transfer of another train.
  */
-bool move_to_next_platform(Railway *railway, Itinerary *itinerary,
-                           char *platform);
+bool permit_to_next_platform(Railway *railway, Itinerary *itinerary,
+                             char *platform);
 
 /**
  * @brief Check if train on last platform.
- * 
+ *
  * @param itinerary Itinerary of train.
  * @return true Train on last platform.
  * @return false Train isn't reached last platform.

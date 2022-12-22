@@ -47,7 +47,7 @@ int create_socket_server(char *socket_path, int max_connected_clients) {
   return socket_open(socket_input, AF_UNIX);
 }
 
-int get_request(int sfd, const char *delim, char **train_name,
+int get_request(int sfd, const char *delim, char **train_name, Mode *mode,
                 char **platform) {
   int bla = -1;
   int *client_sfd = &bla;
@@ -56,7 +56,8 @@ int get_request(int sfd, const char *delim, char **train_name,
   char **split_request = get_malloc_token_list(request, delim);
   free(request);
   *train_name = split_request[0];
-  *platform = split_request[1];
+  *mode = (Mode)split_request[1][0];
+  *platform = split_request[2];
   free(split_request);
   return *client_sfd;
 }

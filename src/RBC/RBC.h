@@ -1,5 +1,6 @@
 #pragma once
 #include "../RBC/itinerary.h"
+#include "../common/mode.h"
 #include "../common/socket.h"
 #include <stdbool.h>
 #include <sys/types.h>
@@ -30,10 +31,12 @@ int create_socket_server(char *socket_path, int max_connected_clients);
  * @param sfd Server socket file descriptor.
  * @param delim Delimiter of train_name and platform
  * @param train_name Train identity string.
+ * @param mode Request mode, must be instance of Mode.
  * @param platform Platform id string.
  * @return int Client socket file descriptor.
  */
-int get_request(int sfd, const char *delim, char **train_name, char **platform);
+int get_request(int sfd, const char *delim, char **train_name, Mode *mode,
+                char **platform);
 
 /**
  * @brief Get the itinerary by train identity string.
@@ -45,4 +48,3 @@ int get_request(int sfd, const char *delim, char **train_name, char **platform);
  */
 Itinerary *get_itinerary_by_train(Itinerary **itinerary_list,
                                   size_t itinerary_number, char *train);
-
