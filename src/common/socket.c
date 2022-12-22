@@ -124,13 +124,21 @@ static int socket_open_unix(int *sfd, socket_user user, char *socket_path,
            socket_path);
 
   switch (user) {
-  case CLIENT:
+  case CLIENT: {
     // Connect to server socket.
-    if (connect(*sfd, socket_address_ptr, socket_len) == -1) {
+    int connection = connect(*sfd, socket_address_ptr, socket_len);
+    for (size_t time = 10; time > 0 && connection == -1; time--) {
+      printf("Client try to connect another %zu times...\n", time);
+      sleep(1);
+      connection = connect(*sfd, socket_address_ptr, socket_len);
+    }
+
+    if (connection == -1) {
       perror("connect");
       abort();
     }
     break;
+  }
   case SERVER:
     // Remove already existing socket.
     if (unlink(socket_address.sun_path) == -1 && errno != ENOENT) {
