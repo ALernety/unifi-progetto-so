@@ -23,6 +23,7 @@ int main(int argc, char const *argv[]) {
   const char *platform_delim = "\n";
   const char *platform_detail_delim = "<platform_data>";
   const char *platform_id_delim = ",";
+  const char *request_delim = ",";
 
   sprintf(help_str,
           "\033[31mWrong use! Example:\033[0m\n"
@@ -49,10 +50,16 @@ int main(int argc, char const *argv[]) {
           "    \033[36m<platform_data>\033[0m - is a default value\n"
           "\n"
           "\033[36m<PLATFORM_ID_DELIMITER>\033[0m possible values are:\n"
+          "    \033[36m,\033[0m               - is a default value\n"
+          "\n"
+          "\033[36m<REQUEST_DELIMITER>\033[0m possible values are:\n"
           "    \033[36m,\033[0m               - is a default value\n",
           argv[0]);
 
   switch (argc) {
+  case 9:
+    request_delim = argv[8];
+    __attribute__((fallthrough));
   case 8:
     platform_id_delim = argv[7];
     __attribute__((fallthrough));
@@ -128,7 +135,7 @@ int main(int argc, char const *argv[]) {
     Mode mode;
     char *train_name;
     int client_sfd =
-        get_request(sfd, ",", &train_name, &mode, &request_platform);
+        get_request(sfd, request_delim, &train_name, &mode, &request_platform);
     Itinerary *itinerary =
         get_itinerary_by_train(itinerary_list, itinerary_number, train_name);
     char *current_platform = itinerary->platform_ids[itinerary->current];

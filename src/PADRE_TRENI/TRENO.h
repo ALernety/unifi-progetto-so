@@ -9,9 +9,10 @@
  * @param socket_path Path to AF_UNIX socket, to connect to RBC. If RBC not
  *        needed will be empty string.
  * @param train Name of train which use itinerary.
+ * @param request_delim Request delimiter for delim parameters in RBC.
  */
 void traverse_itinerary(char **itinerary_list, int log_fd, char *socket_path,
-                        char *train);
+                        const char *train, const char *request_delim);
 
 /**
  *@brief Create a client-side AF_INET socket

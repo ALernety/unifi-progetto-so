@@ -43,7 +43,7 @@ void segment_create(char *file, int seg_number) {
   close(segment);
 }
 
-int file_write(int fd, char *msg, ssize_t msg_len) {
+int file_write(int fd, const char *msg, ssize_t msg_len) {
   int bytes_written = write(fd, msg, msg_len);
   if (bytes_written != msg_len) {
     perror("Error writing into a file.");
@@ -55,7 +55,9 @@ int file_write(int fd, char *msg, ssize_t msg_len) {
 long file_length(int fd) { return lseek(fd, 0, SEEK_END); }
 
 void create_train_process(size_t train_index, char *REGISTRO_ip,
-                          size_t REGISTRO_port) {
+                          size_t REGISTRO_port, char *RBC_socket_file,
+                          const char *itinerary_delim,
+                          const char *request_delim) {
   int pid = fork();
   if (pid < 0) {
     perror("Error creating a child process.");
@@ -74,6 +76,6 @@ void create_train_process(size_t train_index, char *REGISTRO_ip,
   char *itinerary = get_itinerary(sfd, train_name);
   int log_fd = log_create(log_file);
   // Split the itinerary to get list of segments and stations
-  char **itinerary_list = get_malloc_token_list(itinerary, ", ");
-  traverse_itinerary(itinerary_list, log_fd);
+  char **itinerary_list = get_malloc_token_list(itinerary, itinerary_delim);
+  traverse_itinerary(itinerary_list, log_fd, RBC_socket_file, train_name, request_delim);
 }
