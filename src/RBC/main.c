@@ -125,13 +125,26 @@ int main(int argc, char const *argv[]) {
   int log_fd = log_create("log/RBC.log");
   while (true) {
     char *request_platform;
+    Mode mode;
     char *train_name;
-    int client_sfd = get_request(sfd, ",", &train_name, &request_platform);
+    int client_sfd =
+        get_request(sfd, ",", &train_name, &mode, &request_platform);
     Itinerary *itinerary =
         get_itinerary_by_train(itinerary_list, itinerary_number, train_name);
     char *current_platform = itinerary->platform_ids[itinerary->current];
-    bool permit = move_to_next_platform(railway, itinerary, request_platform);
-    if (permit) {
+    bool request_result = false;
+    switch (mode) {
+    case PERMIT:
+      request_result =
+          permit_to_next_platform(railway, itinerary, request_platform);
+      break;
+    case MOVE:
+      request_result = free_current_platform(railway, itinerary);
+      break;
+    default:
+      break;
+    }
+    if (request_result) {
       const char *response = "1";
       socket_write(&client_sfd, response, strlen(response));
     } else {
