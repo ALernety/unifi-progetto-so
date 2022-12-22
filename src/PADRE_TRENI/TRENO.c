@@ -52,7 +52,7 @@ static void free_segment(char *segment) {
 }
 
 void traverse_itinerary(char **itinerary_list, int log_fd, char *socket_path,
-                        char *train) {
+                        const char *train, const char *request_delim) {
   int next_seg_counter = 0;
   char segment_value;
   char *next_segment;

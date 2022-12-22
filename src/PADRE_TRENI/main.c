@@ -15,17 +15,18 @@
 #define TRAIN_NUM 5
 
 int main(int argc, char *argv[]) {
-  char help_str[650];
+  char help_str[850];
+  char *RBC_socket_file = strdup("tmp/rbc");
   char *ip_address = strdup("127.0.0.1");
   size_t port = 43210;
-  char *rbc_socket_file = strdup("tmp/rbc");
   const char *request_delim = ",";
+  const char *itinerary_delim = ", ";
 
   sprintf(help_str,
           "\033[31mNot enough arguments! Example of use:\033[0m\n"
           "\n"
           "Usage: %s <AF_UNIX_SOCKET> <AF_INET_ADDRESS> <AF_INET_PORT> "
-          "<REQUEST_DELIMITER>\n\n"
+          "<REQUEST_DELIMITER> <ITINERARY_DELIMITER>\n\n"
           "\033[36m<AF_UNIX_SOCKET>\033[0m possible values are:\n"
           "    \033[36mtmp/rbc\033[0m        - Path to RBC socket. To use "
           "without RBC set to empty string.\n"
@@ -37,10 +38,16 @@ int main(int argc, char *argv[]) {
           "    \033[36m43210\033[0m          - Is default value\n"
           "\n"
           "\033[36m<REQUEST_DELIMITER>\033[0m possible values are:\n"
-          "    \033[36m,\033[0m              - Is default value\n",
+          "    \033[36m,\033[0m              - Is default value\n"
+          "\n"
+          "\033[36m<ITINERARY_DELIMITER>\033[0m possible values are:\n"
+          "    \033[36m', '\033[0m           - Is default value\n",
           argv[0]);
 
   switch (argc) {
+  case 6:
+    itinerary_delim = argv[5];
+    __attribute__((fallthrough));
   case 5:
     request_delim = argv[4];
     __attribute__((fallthrough));
@@ -51,7 +58,7 @@ int main(int argc, char *argv[]) {
     ip_address = strdup(argv[2]);
     __attribute__((fallthrough));
   case 2: {
-    rbc_socket_file = strdup(argv[1]);
+    RBC_socket_file = strdup(argv[1]);
     struct sockaddr_in sa;
     bool is_wrong_ip = inet_pton(AF_INET, ip_address, &(sa.sin_addr)) == 0;
     if (is_wrong_ip) {
@@ -65,11 +72,11 @@ int main(int argc, char *argv[]) {
       exit(EXIT_FAILURE);
     }
     bool is_rbc =
-        strcmp(rbc_socket_file, "") && access(rbc_socket_file, F_OK) == -1;
+        strcmp(RBC_socket_file, "") && access(RBC_socket_file, F_OK) == -1;
     if (is_rbc) {
       printf("\033[31mRBC socket file not reachable!\033[0m\n");
       usleep(1000000);
-      if (access(rbc_socket_file, F_OK) == -1) {
+      if (access(RBC_socket_file, F_OK) == -1) {
         printf("\033[31mRBC socket file not found!\033[0m\n");
         printf("%s", help_str);
         exit(EXIT_FAILURE);
@@ -97,7 +104,8 @@ int main(int argc, char *argv[]) {
   }
   // create and execute train processes
   for (size_t train_index = 0; train_index < TRAIN_NUM; train_index++) {
-    create_train_process(train_index, ip_address, port, rbc_socket_file);
+    create_train_process(train_index, ip_address, port, RBC_socket_file,
+                         itinerary_delim, request_delim);
   }
   for (int i = 0; i < TRAIN_NUM; i++) {
     wait(NULL);
