@@ -1,3 +1,4 @@
+#include "../common/mode.h"
 #include <stdbool.h>
 
 /**
@@ -33,6 +34,7 @@ int log_create(char *log_file);
  * @param current_platform Current platform name string.
  * @param request_platform Request platform name string.
  * @param permit Passage permit on platform.
+ * @param mode Type of request to rbc.
  */
 void log_rbc(int log_fd, const char *train, const char *current_platform,
-             const char *request_platform, const bool permit);
+             const char *request_platform, const bool permit, Mode mode);

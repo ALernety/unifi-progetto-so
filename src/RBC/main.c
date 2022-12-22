@@ -144,6 +144,8 @@ int main(int argc, char const *argv[]) {
     default:
       break;
     }
+    log_rbc(log_fd, train_name, current_platform, request_platform,
+            request_result, mode);
     if (request_result) {
       const char *response = "1";
       socket_write(&client_sfd, response, strlen(response));
@@ -151,7 +153,6 @@ int main(int argc, char const *argv[]) {
       const char *response = "0";
       socket_write(&client_sfd, response, strlen(response));
     }
-    log_rbc(log_fd, train_name, current_platform, request_platform, permit);
     close(client_sfd);
   }
   return 0;

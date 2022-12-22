@@ -1,4 +1,4 @@
-#include "log.h"
+#include "../common/log.h"
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,6 +9,8 @@
 #include <unistd.h>
 
 static char *get_date(char *date_string, size_t *date_size);
+
+static char *log_rbc_format(Mode mode);
 
 void log_segment(int fd, const char *current, const char *next) {
   size_t date_size = 30;
@@ -37,13 +39,9 @@ int log_create(char *log_file) {
 }
 
 void log_rbc(int log_fd, const char *train, const char *current_platform,
-             const char *request_platform, const bool permit) {
+             const char *request_platform, const bool permit, Mode mode) {
   size_t date_size = 30;
-  const char *format_string = "[TRENO RICHIEDENTE AUTORIZZAZIONE: %s], "
-                              "[SEGMENTO ATTUALE: %s], "
-                              "[SEGMENTO RICHIESTO: %s], "
-                              "[AUTORIZZATO: %s], "
-                              "[DATA: %s]\n";
+  const char *format_string = log_rbc_format(mode);
   size_t log_length = strlen(format_string) + strlen(train) +
                       strlen(current_platform) + strlen(request_platform) +
                       /*authorize*/ 2 + date_size + 1;
@@ -59,6 +57,34 @@ void log_rbc(int log_fd, const char *train, const char *current_platform,
     perror("log segment");
     abort();
   }
+}
+
+static char *log_rbc_format(Mode mode) {
+  char *action_type;
+  switch (mode) {
+  case PERMIT:
+    action_type = strdup("AUTORIZZAZIONE");
+    break;
+  case MOVE:
+    action_type = strdup("MOVIMENTO");
+    break;
+  default:
+    perror("wrong mode");
+    abort();
+  }
+
+  const char *format_string = "[TRENO RICHIEDENTE %s: %%s], "
+                              "[SEGMENTO ATTUALE: %%s], "
+                              "[SEGMENTO RICHIESTO: %%s], "
+                              "[AUTORIZZATO: %%s], "
+                              "[DATA: %%s]\n";
+
+  size_t format_length = strlen(format_string) + strlen(action_type);
+  char format[format_length];
+
+  sprintf(format, format_string, action_type);
+  free(action_type);
+  return strdup(format);
 }
 
 static char *get_date(char *date_string, size_t *date_size) {
