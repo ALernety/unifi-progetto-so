@@ -115,7 +115,7 @@ char *get_itinerary(int sfd, char *train_name) {
 bool communicate_to_rbc(char *socket_path, const char *train, Mode mode,
                         const char *request_segment,
                         const char *request_delim) {
-  if (!strcmp(socket_path, request_segment)) {
+  if (!strcmp(socket_path, "")) {
     return socket_path;
   }
   const char *format_communicate = "%%s%s%%c%s%%s";
