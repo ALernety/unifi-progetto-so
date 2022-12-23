@@ -6,14 +6,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+#include <unistd.h>
 #define DEFAULT_FILE_NAME 0
 #define DEFAULT_FILE_STRING 1
 
 int main(int argc, char const *argv[]) {
   char help_str[450];
   char *map_name;
-  char *mode_name;
   bool is_rbc = false;
+  bool is_etcs2 = false;
   sprintf(
       help_str,
       "\033[31mNot enough arguments! Example of use:\033[0m\n"
@@ -37,7 +38,7 @@ int main(int argc, char const *argv[]) {
       printf("%s", help_str);
       exit(EXIT_FAILURE);
     }
-    mode_name = strdup(argv[1]);
+    is_etcs2 = !strcmp(argv[1], "ETCS2");
     map_name = strdup(argv[2]);
     break;
   }
@@ -47,8 +48,8 @@ int main(int argc, char const *argv[]) {
       printf("%s", help_str);
       exit(EXIT_FAILURE);
     }
-    mode_name = strdup(argv[1]);
     map_name = strdup(argv[3]);
+    is_etcs2 = !strcmp(argv[1], "ETCS2");
     is_rbc = !strcmp(argv[2], "RBC");
     break;
   }
@@ -101,18 +102,28 @@ int main(int argc, char const *argv[]) {
     close(fd);
   }
 
-  if (is_rbc) {
-    execl("bin/RBC", "bin/RBC", NULL);
+  pid_t parent_pid = getpid();
+  pid_t pid = 0;
+  // Not fork only if it is an ETCS2 mode called without RBC.
+  // Need this to not create duplicate process PADRE_TRENI.
+  bool is_only_REGISTRO = is_etcs2 & !is_rbc;
+  if (!is_only_REGISTRO) {
+    pid = fork();
   }
-  int pid = fork();
   if (pid < 0) {
     perror("fork");
     abort();
-  } else if (pid != 0) {
+  } else if (is_rbc && pid != 0) {
+    execl("bin/RBC", "bin/RBC", NULL);
+  } else if (pid != 0 || is_only_REGISTRO) {
     execl("bin/REGISTRO", "bin/REGISTRO", map_name, NULL);
   } else {
-    const char *socket_path = strcmp(mode_name, "ETCS2") ? "" : "tmp/rbc";
-    execl("bin/PADRE_TRENI", "bin/PADRE_TRENI", socket_path, NULL);
+    const char *socket_path = is_etcs2 ? "tmp/rbc" : "";
+    size_t parent_pid_length = snprintf(NULL, 0, "%d", parent_pid) + 1;
+    char parent_pid_str[parent_pid_length];
+    sprintf(parent_pid_str, "%d", parent_pid);
+    execl("bin/PADRE_TRENI", "bin/PADRE_TRENI", socket_path, parent_pid_str,
+          NULL);
   }
 
   return EXIT_SUCCESS;
