@@ -14,9 +14,13 @@
 #define SEGMENTS_NUM 16
 #define TRAIN_NUM 5
 
+static void sigusr1_handler(int sig);
+int trains_arrived = 0;
+
 int main(int argc, char *argv[]) {
-  char help_str[850];
+  char help_str[1000];
   char *RBC_socket_file = strdup("tmp/rbc");
+  pid_t RBC_pid = -1;
   char *ip_address = strdup("127.0.0.1");
   size_t port = 43210;
   const char *request_delim = ",";
@@ -25,11 +29,15 @@ int main(int argc, char *argv[]) {
   sprintf(help_str,
           "\033[31mNot enough arguments! Example of use:\033[0m\n"
           "\n"
-          "Usage: %s <AF_UNIX_SOCKET> <AF_INET_ADDRESS> <AF_INET_PORT> "
-          "<REQUEST_DELIMITER> <ITINERARY_DELIMITER>\n\n"
+          "Usage: %s <AF_UNIX_SOCKET> <PARENT_PID> <AF_INET_ADDRESS> "
+          "<AF_INET_PORT> <REQUEST_DELIMITER> <ITINERARY_DELIMITER>\n\n"
           "\033[36m<AF_UNIX_SOCKET>\033[0m possible values are:\n"
           "    \033[36mtmp/rbc\033[0m        - Path to RBC socket. To use "
           "without RBC set to empty string.\n"
+          "\n"
+          "\033[36m<RBC_PID>\033[0m possible values are:\n"
+          "    \033[36mpid_of_RBC\033[0m     - Pid of RBC process, to which "
+          "will be send SEGUSR2 signal on end of process. Default value is -1\n"
           "\n"
           "\033[36m<AF_INET_ADDRESS>\033[0m possible values are:\n"
           "    \033[36m127.0.0.1\033[0m      - Is default value\n"
@@ -45,17 +53,20 @@ int main(int argc, char *argv[]) {
           argv[0]);
 
   switch (argc) {
+  case 7:
+    itinerary_delim = argv[6];
+    __attribute__((fallthrough));
   case 6:
-    itinerary_delim = argv[5];
+    request_delim = argv[5];
     __attribute__((fallthrough));
   case 5:
-    request_delim = argv[4];
+    port = atoi(argv[4]);
     __attribute__((fallthrough));
   case 4:
-    port = atoi(argv[3]);
+    ip_address = strdup(argv[3]);
     __attribute__((fallthrough));
   case 3:
-    ip_address = strdup(argv[2]);
+    RBC_pid = atoi(argv[2]);
     __attribute__((fallthrough));
   case 2: {
     RBC_socket_file = strdup(argv[1]);
@@ -89,6 +100,8 @@ int main(int argc, char *argv[]) {
     exit(EXIT_FAILURE);
   }
 
+  signal(SIGUSR1, sigusr1_handler);
+
   parent_dir_def(project_path, argv[0], 2);
   if (chdir(project_path) == -1) {
     perror("change directory");
@@ -107,7 +120,19 @@ int main(int argc, char *argv[]) {
     create_train_process(train_index, ip_address, port, RBC_socket_file,
                          itinerary_delim, request_delim);
   }
-  for (int i = 0; i < TRAIN_NUM; i++) {
+  while (trains_arrived < TRAIN_NUM) {
     wait(NULL);
   }
+  // All trains are terminated, so PADRE_TRENI can be terminated.
+  if (RBC_pid != -1) {
+    kill(RBC_pid, SIGUSR2);
+  }
+  printf("Terminate PADRE_TRENI.\n");
+  exit(EXIT_SUCCESS);
+}
+
+static void sigusr1_handler(int sig) {
+  printf("TRENO at the last station.\n");
+  trains_arrived++;
+  return;
 }

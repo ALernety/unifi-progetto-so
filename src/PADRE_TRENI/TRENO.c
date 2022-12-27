@@ -25,7 +25,7 @@ static int check_next_segment(char *next_segment, char *segment_value) {
   int next_segment_fd = open(segment_path, O_RDWR);
   if (next_segment_fd == -1) {
     perror("Error opening a segment file");
-    exit(EXIT_FAILURE);
+    abort();
   }
   flock(next_segment_fd, LOCK_SH);
   read(next_segment_fd, segment_value, 1);
@@ -67,7 +67,7 @@ void traverse_itinerary(char **itinerary_list, int log_fd, char *socket_path,
       free_segment(cur_segment);
       communicate_to_rbc(socket_path, train, MOVE, next_segment, request_delim);
       close(log_fd);
-      exit(EXIT_SUCCESS);
+      return;
     }
     // Open file corresponding to the next segment to enter and check if it is
     // free
