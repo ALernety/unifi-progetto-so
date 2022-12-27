@@ -35,6 +35,7 @@ int log_create(char *log_file) {
     perror("log create");
     abort();
   }
+  lseek(fd, 0, SEEK_END);
   return fd;
 }
 
