@@ -8,28 +8,28 @@
 #include <string.h>
 
 int main(int argc, char const *argv[]) {
-  char help_str[600];
+  const char *format_string =
+      "\033[31mNot enough arguments! Example of use:\033[0m\n"
+      "\n"
+      "Usage: %s <MAP> <MAP_DELIMITER> <AF_INET_ADDRESS> <AF_INET_PORT>\n\n"
+      "\033[36m<MAP>\033[0m possible values are:\n"
+      "    \033[36mpath/to/map\033[0m - manage trains with map two\n"
+      "\n"
+      "\033[36m<MAP_DELIMITER>\033[0m possible values are:\n"
+      "    \033[36m\\n\033[0m          - Is default value\n"
+      "\n"
+      "\033[36m<AF_INET_ADDRESS>\033[0m possible values are:\n"
+      "    \033[36m127.0.0.1\033[0m   - Is default value\n"
+      "\n"
+      "\033[36m<AF_INET_PORT>\033[0m possible values are:\n"
+      "    \033[36m43210\033[0m       - Is default value\n";
+  char help_str[strlen(format_string) + strlen(argv[0]) + 1];
   const char *map_name;
   const char *map_delimiter = "\n";
   char *ip_address = strdup("127.0.0.1");
   int port = 43210;
 
-  sprintf(help_str,
-          "\033[31mNot enough arguments! Example of use:\033[0m\n"
-          "\n"
-          "Usage: %s <MAP> <MAP_DELIMITER> <AF_INET_ADDRESS> <AF_INET_PORT>\n\n"
-          "\033[36m<MAP>\033[0m possible values are:\n"
-          "    \033[36mpath/to/map\033[0m - manage trains with map two\n"
-          "\n"
-          "\033[36m<MAP_DELIMITER>\033[0m possible values are:\n"
-          "    \033[36m\\n\033[0m          - Is default value\n"
-          "\n"
-          "\033[36m<AF_INET_ADDRESS>\033[0m possible values are:\n"
-          "    \033[36m127.0.0.1\033[0m   - Is default value\n"
-          "\n"
-          "\033[36m<AF_INET_PORT>\033[0m possible values are:\n"
-          "    \033[36m43210\033[0m       - Is default value\n",
-          argv[0]);
+  sprintf(help_str, format_string, argv[0]);
 
   switch (argc) {
   case 5:
@@ -66,12 +66,6 @@ int main(int argc, char const *argv[]) {
   default:
     printf("%s", help_str);
     exit(EXIT_FAILURE);
-  }
-
-  parent_dir_def(project_path, argv[0], 2);
-  if (chdir(project_path) == -1) {
-    perror("change directory");
-    abort();
   }
 
   char *map = get_malloc_string_from(map_name);

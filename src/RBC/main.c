@@ -14,7 +14,36 @@
 static void sigusr2_handler(int sig);
 
 int main(int argc, char const *argv[]) {
-  char help_str[1000];
+  const char *format_string =
+      "\033[31mWrong use! Example:\033[0m\n"
+      "\n"
+      "Usage: %s <AF_INET_ADDRESS> <AF_INET_PORT> <AF_UNIX_ADDRESS> "
+      "<RAILWAY_FILE> <PLATFORM_DELIMITER> <PLATFORM_DETAIL_DELIMITER> "
+      "<PLATFORM_ID_DELIMITER>\n\n"
+      "\033[36m<AF_INET_ADDRESS>\033[0m possible values are:\n"
+      "    \033[36m127.0.0.1\033[0m       - is a default value\n"
+      "\n"
+      "\033[36m<AF_INET_PORT>\033[0m possible values are:\n"
+      "    \033[36m43210\033[0m           - is a default value\n"
+      "\n"
+      "\033[36m<AF_UNIX_ADDRESS>\033[0m possible values are:\n"
+      "    \033[36mtmp/rbc\033[0m         - is a default value\n"
+      "\n"
+      "\033[36m<RAILWAY_FILE>\033[0m possible values are:\n"
+      "    \033[36mtmp/railway.txt\033[0m - is a default value\n"
+      "\n"
+      "\033[36m<PLATFORM_DELIMITER>\033[0m possible values are:\n"
+      "    \033[36m\\n\033[0m              - is a default value\n"
+      "\n"
+      "\033[36m<PLATFORM_DETAIL_DELIMITER>\033[0m possible values are:\n"
+      "    \033[36m<platform_data>\033[0m - is a default value\n"
+      "\n"
+      "\033[36m<PLATFORM_ID_DELIMITER>\033[0m possible values are:\n"
+      "    \033[36m,\033[0m               - is a default value\n"
+      "\n"
+      "\033[36m<REQUEST_DELIMITER>\033[0m possible values are:\n"
+      "    \033[36m,\033[0m               - is a default value\n";
+  char help_str[strlen(format_string) + strlen(argv[0]) + 1];
 
   char *ip_address = strdup("127.0.0.1");
   int port = 43210;
@@ -25,36 +54,7 @@ int main(int argc, char const *argv[]) {
   const char *platform_id_delim = ",";
   const char *request_delim = ",";
 
-  sprintf(help_str,
-          "\033[31mWrong use! Example:\033[0m\n"
-          "\n"
-          "Usage: %s <AF_INET_ADDRESS> <AF_INET_PORT> <AF_UNIX_ADDRESS> "
-          "<RAILWAY_FILE> <PLATFORM_DELIMITER> <PLATFORM_DETAIL_DELIMITER> "
-          "<PLATFORM_ID_DELIMITER>\n\n"
-          "\033[36m<AF_INET_ADDRESS>\033[0m possible values are:\n"
-          "    \033[36m127.0.0.1\033[0m       - is a default value\n"
-          "\n"
-          "\033[36m<AF_INET_PORT>\033[0m possible values are:\n"
-          "    \033[36m43210\033[0m           - is a default value\n"
-          "\n"
-          "\033[36m<AF_UNIX_ADDRESS>\033[0m possible values are:\n"
-          "    \033[36mtmp/rbc\033[0m         - is a default value\n"
-          "\n"
-          "\033[36m<RAILWAY_FILE>\033[0m possible values are:\n"
-          "    \033[36mtmp/railway.txt\033[0m - is a default value\n"
-          "\n"
-          "\033[36m<PLATFORM_DELIMITER>\033[0m possible values are:\n"
-          "    \033[36m\\n\033[0m              - is a default value\n"
-          "\n"
-          "\033[36m<PLATFORM_DETAIL_DELIMITER>\033[0m possible values are:\n"
-          "    \033[36m<platform_data>\033[0m - is a default value\n"
-          "\n"
-          "\033[36m<PLATFORM_ID_DELIMITER>\033[0m possible values are:\n"
-          "    \033[36m,\033[0m               - is a default value\n"
-          "\n"
-          "\033[36m<REQUEST_DELIMITER>\033[0m possible values are:\n"
-          "    \033[36m,\033[0m               - is a default value\n",
-          argv[0]);
+  sprintf(help_str, format_string, argv[0]);
 
   switch (argc) {
   case 9:
@@ -107,12 +107,6 @@ int main(int argc, char const *argv[]) {
   }
 
   signal(SIGUSR2, sigusr2_handler);
-
-  parent_dir_def(project_path, argv[0], 2);
-  if (chdir(project_path) == -1) {
-    perror("change directory");
-    abort();
-  }
 
   int sfd;
   socket_data socket_input;
