@@ -37,6 +37,7 @@ static int check_next_segment(char *next_segment, char *segment_value) {
 static void access_segment(int segment_fd) {
   flock(segment_fd, LOCK_EX);
   file_write(segment_fd, "1", 1);
+  // sleep(SECONDS);
   flock(segment_fd, LOCK_UN);
 }
 
@@ -84,9 +85,10 @@ void traverse_itinerary(char **itinerary_list, int log_fd, char *socket_path,
       cur_segment = next_segment;
       close(next_segment_fd);
       next_seg_counter++;
-      // If segment_value is 1, then the next segment is occupied by
-      // another train
-      sleep(SECONDS);
+    }
+    // If segment_value is 1, then the next segment is occupied by
+    // another train
+    sleep(SECONDS);
   }
 }
 
