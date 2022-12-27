@@ -11,7 +11,7 @@
 #include <string.h>
 #include <unistd.h>
 
-static void signal_handler(int sig);
+static void sigusr2_handler(int sig);
 
 int main(int argc, char const *argv[]) {
   char help_str[1000];
@@ -106,7 +106,7 @@ int main(int argc, char const *argv[]) {
     exit(EXIT_FAILURE);
   }
 
-  signal(SIGUSR2, signal_handler);
+  signal(SIGUSR2, sigusr2_handler);
 
   parent_dir_def(project_path, argv[0], 2);
   if (chdir(project_path) == -1) {
@@ -165,10 +165,8 @@ int main(int argc, char const *argv[]) {
   return 0;
 }
 
-static void signal_handler(int sig) {
-  if (sig == SIGUSR2) {
-    exit(EXIT_SUCCESS);
-  }
-  signal(SIGUSR2, signal_handler);
+static void sigusr2_handler(int sig) {
+  printf("Terminate RBC.\n");
+  exit(EXIT_SUCCESS);
   return;
 }
