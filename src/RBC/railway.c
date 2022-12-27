@@ -23,9 +23,7 @@ Railway *get_malloc_railway_from(const char *file, const char *platform_delim,
                                  const char *platform_detail_delim,
                                  const char *platform_id_delim) {
 #include "../railway_manager/default_values.h"
-  malloc_macro_def(char *, railway_string, strlen(RAILWAY_DEFAULT_STRING));
-  sprintf(railway_string, "%s", RAILWAY_DEFAULT_STRING);
-  // char *railway_string = get_malloc_string_from(file);
+  char *railway_string = get_malloc_string_from(file);
   malloc_macro_def(Railway *, railway, sizeof(*railway));
   railway->platform_number =
       get_number_of_tokens(railway_string, platform_delim);
