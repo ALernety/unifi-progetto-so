@@ -1,7 +1,8 @@
 #pragma once
-#include "../RBC/railway.h"
 #include <stdbool.h>
 #include <sys/types.h>
+
+#include "../RBC/railway.h"
 
 /**
  * @brief Contains data of itinerary of train.
@@ -16,11 +17,11 @@
  *        in order to transfer.
  */
 struct itinerary {
-  char *train;
-  size_t current;
-  size_t next;
-  size_t platform_number;
-  char **platform_ids;
+	char *train;
+	size_t current;
+	size_t next;
+	size_t platform_number;
+	char **platform_ids;
 };
 typedef struct itinerary Itinerary;
 
@@ -34,7 +35,7 @@ typedef struct itinerary Itinerary;
  * @return Itinerary* Constructed itinerary from itinerary_str.
  */
 Itinerary *get_malloc_itinerary_from(char *itinerary_str, const char *delim,
-                                     char *train);
+				     char *train);
 
 /**
  * @brief Free current platform, must be called when train already in next.
@@ -58,7 +59,7 @@ bool free_current_platform(Railway *railway, Itinerary *itinerary);
  * @return false Train should wait for transfer of another train.
  */
 bool permit_to_next_platform(Railway *railway, Itinerary *itinerary,
-                             char *platform);
+			     char *platform);
 
 /**
  * @brief Check if train on last platform.

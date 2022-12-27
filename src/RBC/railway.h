@@ -1,7 +1,8 @@
 #pragma once
-#include "../RBC/platform.h"
 #include <stdbool.h>
 #include <sys/types.h>
+
+#include "../RBC/platform.h"
 
 /**
  * @brief Is an strcut containing pointer to platform list and platform number
@@ -11,10 +12,10 @@
  * @param platform_number Total number of platforms in platform_list.
  */
 struct railway {
-  Platform **platform_list;
-  size_t platform_number;
-  // size_t station_number;
-  // size_t track_number;
+	Platform **platform_list;
+	size_t platform_number;
+	// size_t station_number;
+	// size_t track_number;
 };
 typedef struct railway Railway;
 
@@ -30,8 +31,8 @@ typedef struct railway Railway;
  * @return Railway* Railway created by map.
  */
 Railway *get_malloc_railway_from(const char *file, const char *platform_delim,
-                                 const char *platform_detail_delim,
-                                 const char *platform_id_delim);
+				 const char *platform_detail_delim,
+				 const char *platform_id_delim);
 
 /**
  * @brief Returns if platform passed can hold passage of train.

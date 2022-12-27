@@ -11,9 +11,10 @@
  * @param path Relative path from which should be taken parent_dir.
  * @param parent_depth Depth of parent directory (if is 0 will return file).
  */
-#define parent_dir_def(parent_dir, path, parent_depth)                         \
-  char path_buffer[PATH_MAX];                                                  \
-  char *parent_dir = realpath(path, path_buffer);                              \
-  for (unsigned int i = 0; i < parent_depth && strcmp(parent_dir, "/"); i++) { \
-    parent_dir = dirname(parent_dir);                                          \
-  }
+#define parent_dir_def(parent_dir, path, parent_depth)                        \
+	char path_buffer[PATH_MAX];                                           \
+	char *parent_dir = realpath(path, path_buffer);                       \
+	for (unsigned int i = 0; i < parent_depth && strcmp(parent_dir, "/"); \
+	     i++) {                                                           \
+		parent_dir = dirname(parent_dir);                             \
+	}

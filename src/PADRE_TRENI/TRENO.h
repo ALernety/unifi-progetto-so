@@ -1,6 +1,7 @@
-#include "../common/mode.h"
 #include <stdbool.h>
 #include <sys/types.h>
+
+#include "../common/mode.h"
 
 /**
  * @brief Iterates through all segments that make up the itinerary
@@ -14,7 +15,7 @@
  * @param request_delim Request delimiter for delim parameters in RBC.
  */
 void traverse_itinerary(char **itinerary_list, int log_fd, char *socket_path,
-                        const char *train, const char *request_delim);
+			const char *train, const char *request_delim);
 
 /**
  *@brief Create a client-side AF_INET socket
@@ -47,4 +48,4 @@ char *get_itinerary(int sfd, char *train_name);
  * @return false Passage rejected.
  */
 bool communicate_to_rbc(char *socket_path, const char *train, Mode mode,
-                        const char *request_segment, const char *request_delim);
+			const char *request_segment, const char *request_delim);

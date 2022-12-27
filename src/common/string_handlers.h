@@ -39,7 +39,7 @@ char **get_malloc_token_list(char *string_to_split, const char *delim);
  * @return char** Array of malloc strings, limited by token_number.
  */
 char **get_malloc_token_list_number(char *string_to_split, const char *delim,
-                                    size_t tokens_number);
+				    size_t tokens_number);
 
 /**
  * @brief Extract integer from string.

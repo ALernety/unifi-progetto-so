@@ -1,6 +1,0 @@
-Diagnostics:
-  UnusedIncludes: Strict
-
-CompileFlags:
-    Add: [-Wno-gnu-zero-variadic-macro-arguments]
-    Remove: [-fdiagnostics-urls=always]

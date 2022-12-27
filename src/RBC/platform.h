@@ -15,12 +15,12 @@
  * @param connected_number Number of connected platforms.
  */
 struct platform {
-  char *id;
-  bool type;
-  size_t actual_capacity;
-  size_t full_capacity;
-  struct platform **connected;
-  int connected_number;
+	char *id;
+	bool type;
+	size_t actual_capacity;
+	size_t full_capacity;
+	struct platform **connected;
+	int connected_number;
 };
 typedef struct platform Platform;
 
@@ -37,7 +37,7 @@ typedef struct platform Platform;
  * @return Platform* Not connected platform.
  */
 Platform *set_platform_from(Platform *platform, char *platform_string,
-                           const char *delim, char **connected_ids);
+			    const char *delim, char **connected_ids);
 
 /**
  * @brief Get the platform by id string from platform_list, limited by
@@ -50,7 +50,7 @@ Platform *set_platform_from(Platform *platform, char *platform_string,
  * @return Platform* Platform found with id.
  */
 Platform *get_platform_by_id(Platform **platform_list, size_t platform_number,
-                            char *id);
+			     char *id);
 
 /**
  * @brief Get platform list by ids from connected_ids.
@@ -63,5 +63,5 @@ Platform *get_platform_by_id(Platform **platform_list, size_t platform_number,
  * @return Platform** Array of platforms.
  */
 Platform **get_platform_list_by_ids(Platform **platform_list,
-                                   size_t platform_number, char **connected_ids,
-                                   size_t ids_number);
+				    size_t platform_number,
+				    char **connected_ids, size_t ids_number);
