@@ -1,5 +1,6 @@
-#include "../common/mode.h"
 #include <stdbool.h>
+
+#include "../common/mode.h"
 
 /**
  * @brief Log current date and time in format DD/MM/YYYY hh/mm/ss
@@ -37,4 +38,4 @@ int log_create(char *log_file);
  * @param mode Type of request to rbc.
  */
 void log_rbc(int log_fd, const char *train, const char *current_platform,
-             const char *request_platform, const bool permit, Mode mode);
+	     const char *request_platform, const bool permit, Mode mode);

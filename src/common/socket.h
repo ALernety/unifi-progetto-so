@@ -19,11 +19,11 @@ typedef enum SOCKET_USER socket_user;
  *        (mandatory with AF_INET)
  */
 struct SOCKET_DATA {
-  int *sfd;
-  socket_user user;
-  char *socket_path;
-  int max_connected_clients;
-  unsigned int port;
+	int *sfd;
+	socket_user user;
+	char *socket_path;
+	int max_connected_clients;
+	unsigned int port;
 };
 typedef struct SOCKET_DATA socket_data;
 

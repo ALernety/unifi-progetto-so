@@ -1,7 +1,6 @@
 #pragma once
 #include <stdbool.h>
 
-
 /**
  * @brief Create a socket server of AF_INET type.
  *
@@ -12,7 +11,7 @@
  * @return int It is a socket file descriptor created by function.
  */
 int create_socket_server(char *socket_path, unsigned int port,
-                         int max_connected_clients);
+			 int max_connected_clients);
 
 /**
  * @brief Start receive requests from clients, and give requested
