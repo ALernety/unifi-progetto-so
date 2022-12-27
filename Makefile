@@ -4,7 +4,8 @@ OBJ_DIR := obj
 BIN_DIR := bin
 LOG_DIR := log
 TMP_DIR := tmp
-
+# Set default shell.
+SHELL   := /bin/sh
 # Compilatore da utilizzare e relative flag per compilatore e linker
 CC	    := gcc
 CFLAGS  := -Wall -Wextra -pedantic
@@ -108,7 +109,8 @@ bin.%: | bindir tmpdir logdir
 	$(CC) \
 		$(CFLAGS) \
 		$(shell find \
-			$(OBJ_DIR)/{$(subst bin.,,$@),common} \
+			$(OBJ_DIR)/$(subst bin.,,$@) \
+			$(OBJ_DIR)/common \
 			-type f \
 			-name "*.o") \
 		-o $(BIN_DIR)/$(subst bin.,,$@) \
