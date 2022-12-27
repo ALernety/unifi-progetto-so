@@ -1,0 +1,13 @@
+vscode/*
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.env.tex
+relazione.*
+!relazione.tex
