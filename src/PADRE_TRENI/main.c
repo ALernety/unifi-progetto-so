@@ -18,7 +18,31 @@ static void sigusr1_handler(int sig);
 int trains_arrived = 0;
 
 int main(int argc, char *argv[]) {
-  char help_str[1000];
+  const char *format_string =
+      "\033[31mNot enough arguments! Example of use:\033[0m\n"
+      "\n"
+      "Usage: %s <AF_UNIX_SOCKET> <PARENT_PID> <AF_INET_ADDRESS> "
+      "<AF_INET_PORT> <REQUEST_DELIMITER> <ITINERARY_DELIMITER>\n\n"
+      "\033[36m<AF_UNIX_SOCKET>\033[0m possible values are:\n"
+      "    \033[36mtmp/rbc\033[0m        - Path to RBC socket. To use "
+      "without RBC set to empty string.\n"
+      "\n"
+      "\033[36m<RBC_PID>\033[0m possible values are:\n"
+      "    \033[36mpid_of_RBC\033[0m     - Pid of RBC process, to which "
+      "will be send SEGUSR2 signal on end of process. Default value is -1\n"
+      "\n"
+      "\033[36m<AF_INET_ADDRESS>\033[0m possible values are:\n"
+      "    \033[36m127.0.0.1\033[0m      - Is default value\n"
+      "\n"
+      "\033[36m<AF_INET_PORT>\033[0m possible values are:\n"
+      "    \033[36m43210\033[0m          - Is default value\n"
+      "\n"
+      "\033[36m<REQUEST_DELIMITER>\033[0m possible values are:\n"
+      "    \033[36m,\033[0m              - Is default value\n"
+      "\n"
+      "\033[36m<ITINERARY_DELIMITER>\033[0m possible values are:\n"
+      "    \033[36m', '\033[0m           - Is default value\n";
+  char help_str[strlen(format_string) + strlen(argv[0]) + 1];
   char *RBC_socket_file = strdup("tmp/rbc");
   pid_t RBC_pid = -1;
   char *ip_address = strdup("127.0.0.1");
@@ -26,31 +50,7 @@ int main(int argc, char *argv[]) {
   const char *request_delim = ",";
   const char *itinerary_delim = ", ";
 
-  sprintf(help_str,
-          "\033[31mNot enough arguments! Example of use:\033[0m\n"
-          "\n"
-          "Usage: %s <AF_UNIX_SOCKET> <PARENT_PID> <AF_INET_ADDRESS> "
-          "<AF_INET_PORT> <REQUEST_DELIMITER> <ITINERARY_DELIMITER>\n\n"
-          "\033[36m<AF_UNIX_SOCKET>\033[0m possible values are:\n"
-          "    \033[36mtmp/rbc\033[0m        - Path to RBC socket. To use "
-          "without RBC set to empty string.\n"
-          "\n"
-          "\033[36m<RBC_PID>\033[0m possible values are:\n"
-          "    \033[36mpid_of_RBC\033[0m     - Pid of RBC process, to which "
-          "will be send SEGUSR2 signal on end of process. Default value is -1\n"
-          "\n"
-          "\033[36m<AF_INET_ADDRESS>\033[0m possible values are:\n"
-          "    \033[36m127.0.0.1\033[0m      - Is default value\n"
-          "\n"
-          "\033[36m<AF_INET_PORT>\033[0m possible values are:\n"
-          "    \033[36m43210\033[0m          - Is default value\n"
-          "\n"
-          "\033[36m<REQUEST_DELIMITER>\033[0m possible values are:\n"
-          "    \033[36m,\033[0m              - Is default value\n"
-          "\n"
-          "\033[36m<ITINERARY_DELIMITER>\033[0m possible values are:\n"
-          "    \033[36m', '\033[0m           - Is default value\n",
-          argv[0]);
+  sprintf(help_str, format_string, argv[0]);
 
   switch (argc) {
   case 7:
@@ -101,12 +101,6 @@ int main(int argc, char *argv[]) {
   }
 
   signal(SIGUSR1, sigusr1_handler);
-
-  parent_dir_def(project_path, argv[0], 2);
-  if (chdir(project_path) == -1) {
-    perror("change directory");
-    abort();
-  }
 
   umask(000);
   // Get the size of the formatted string to allocate needed memory

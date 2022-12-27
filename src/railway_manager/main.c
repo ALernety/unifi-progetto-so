@@ -11,12 +11,7 @@
 #define DEFAULT_FILE_STRING 1
 
 int main(int argc, char const *argv[]) {
-  char help_str[450];
-  char *map_name;
-  bool is_rbc = false;
-  bool is_etcs2 = false;
-  sprintf(
-      help_str,
+  const char *format_string =
       "\033[31mNot enough arguments! Example of use:\033[0m\n"
       "\n"
       "Usage: %s MODE [RBC] MAP\n\n"
@@ -28,8 +23,12 @@ int main(int argc, char const *argv[]) {
       "\n"
       "\033[36mMAP\033[0m possible values are:\n"
       "    \033[36mMAPPA1\033[0m   - manage trains with map one \n"
-      "    \033[36mMAPPA2\033[0m   - manage trains with map two\n",
-      argv[0]);
+      "    \033[36mMAPPA2\033[0m   - manage trains with map two\n";
+  char help_str[strlen(format_string) + strlen(argv[0]) + 1];
+  char *map_name;
+  bool is_rbc = false;
+  bool is_etcs2 = false;
+  sprintf(help_str, format_string, argv[0]);
   switch (argc) {
   case 3: {
     bool is_not_etcs = strcmp(argv[1], "ETCS1") && strcmp(argv[1], "ETCS2");
