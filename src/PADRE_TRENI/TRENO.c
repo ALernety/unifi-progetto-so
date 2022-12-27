@@ -9,7 +9,7 @@
 #include <sys/file.h>
 #include <unistd.h>
 
-#define MICROSECONDS 10000
+#define SECONDS 2
 
 static int check_next_segment(char *next_segment, char *segment_free);
 
@@ -37,7 +37,6 @@ static int check_next_segment(char *next_segment, char *segment_value) {
 static void access_segment(int segment_fd) {
   flock(segment_fd, LOCK_EX);
   file_write(segment_fd, "1", 1);
-  usleep(MICROSECONDS);
   flock(segment_fd, LOCK_UN);
 }
 
@@ -82,14 +81,12 @@ void traverse_itinerary(char **itinerary_list, int log_fd, char *socket_path,
         // can immediately enter the next segment
         free_segment(cur_segment);
       }
-      sprintf(cur_segment, "%s", next_segment);
+      cur_segment = next_segment;
       close(next_segment_fd);
       next_seg_counter++;
-    } else {
       // If segment_value is 1, then the next segment is occupied by
       // another train
-      usleep(MICROSECONDS);
-    }
+      sleep(SECONDS);
   }
 }
 
