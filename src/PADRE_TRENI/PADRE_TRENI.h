@@ -24,7 +24,7 @@ int file_write(int fd, const char *msg, ssize_t msg_len);
  * @param fd File descriptor
  * @return long Length of the file
  */
-long file_length(int fd);
+int64_t file_length(int fd);
 
 /**
  * @brief Create a file representing a segment and initialize it with 0.
