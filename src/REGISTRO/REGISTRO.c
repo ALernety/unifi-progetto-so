@@ -22,7 +22,8 @@ int create_socket_server(char *socket_path, unsigned int port,
 	return socket_open(socket_input, AF_INET);
 }
 
-void start_socket_server(int *sfd, char **itinerary_list)
+void start_socket_server(int *sfd, char **itinerary_list,
+			 size_t itinerary_number)
 {
 	while (true) {
 		int client_socket = -1;
@@ -30,8 +31,11 @@ void start_socket_server(int *sfd, char **itinerary_list)
 		socket_accept(sfd, client_sfd);
 		if (fork() == 0) {
 			char *train_name = get_malloc_train(client_sfd);
-			int train_index = get_integer_from(train_name) - 1;
-			send_itinerary(client_sfd, itinerary_list[train_index]);
+			size_t train_index = get_integer_from(train_name) - 1;
+			if (train_index < itinerary_number) {
+				send_itinerary(client_sfd,
+					       itinerary_list[train_index]);
+			}
 			socket_close(client_sfd, NULL);
 			exit(EXIT_SUCCESS);
 		} else {
@@ -42,8 +46,8 @@ void start_socket_server(int *sfd, char **itinerary_list)
 
 char *get_malloc_train(int *sfd)
 {
-	// Read from socket
-	return socket_read_malloc(sfd, "\0");
+	char *train = socket_read_malloc(sfd, "\0");
+	return train;
 }
 
 bool send_itinerary(int *sfd, char *itinerary)

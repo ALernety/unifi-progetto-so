@@ -1,5 +1,6 @@
 #pragma once
 #include <stdbool.h>
+#include <sys/types.h>
 
 /**
  * @brief Create a socket server of AF_INET type.
@@ -19,8 +20,10 @@ int create_socket_server(char *socket_path, unsigned int port,
  *
  * @param sfd Is a pointer to the socket file descriptor.
  * @param itinerary_list Is an array of itineraries.
+ * @param itinerary_number Number of itineraries in itinerary_list.
  */
-void start_socket_server(int *sfd, char **itinerary_list);
+void start_socket_server(int *sfd, char **itinerary_list,
+			 size_t itinerary_number);
 
 /**
  * @brief Get the malloc train get train name from socket.
