@@ -45,15 +45,16 @@ int main(int argc, char *argv[])
 		"\n"
 		"\033[36m<ITINERARY_DELIMITER>\033[0m possible values are:\n"
 		"    \033[36m', '\033[0m           - Is default value\n";
-	char help_str[strlen(format_string) + strlen(argv[0]) + 1];
-	char *RBC_socket_file = strdup("tmp/rbc");
-	pid_t RBC_pid = -1;
+	size_t help_length = strlen(format_string) + strlen(argv[0]) + 1;
+	malloc_macro_def(char *, help_str, help_length);
+	char *RBC_socket_file;
+	pid_t parent_pid = -1;
 	char *ip_address = strdup("127.0.0.1");
 	size_t port = 43210;
 	const char *request_delim = ",";
 	const char *itinerary_delim = ", ";
 
-	sprintf(help_str, format_string, argv[0]);
+	snprintf(help_str, help_length, format_string, argv[0]);
 
 	switch (argc) {
 	case 7:
@@ -69,7 +70,7 @@ int main(int argc, char *argv[])
 		ip_address = strdup(argv[3]);
 		__attribute__((fallthrough));
 	case 3:
-		RBC_pid = atoi(argv[2]);
+		parent_pid = atoi(argv[2]);
 		__attribute__((fallthrough));
 	case 2: {
 		RBC_socket_file = strdup(argv[1]);
@@ -103,13 +104,13 @@ int main(int argc, char *argv[])
 		printf("%s", help_str);
 		exit(EXIT_FAILURE);
 	}
+	free(help_str);
 
 	signal(SIGUSR1, sigusr1_handler);
 
 	umask(000);
 	// Get the size of the formatted string to allocate needed memory
-	int size = snprintf(NULL, 0, "tmp/MA%d", SEGMENTS_NUM);
-	char file[size];
+	char file[PATH_MAX];
 	for (int i = 0; i < SEGMENTS_NUM; i++) {
 		segment_create(file, i);
 	}
@@ -123,16 +124,18 @@ int main(int argc, char *argv[])
 		wait(NULL);
 	}
 	// All trains are terminated, so PADRE_TRENI can be terminated.
-	if (RBC_pid != -1) {
-		kill(RBC_pid, SIGUSR2);
+	if (parent_pid != -1) {
+		kill(parent_pid, SIGUSR2);
 	}
 	printf("Terminate PADRE_TRENI.\n");
+	free(RBC_socket_file);
+	free(ip_address);
 	exit(EXIT_SUCCESS);
 }
 
 static void sigusr1_handler(int sig)
 {
-	printf("TRENO at the last station.\n");
+	printf("TRENO at the last station with signal %d.\n", sig);
 	trains_arrived++;
 	return;
 }
