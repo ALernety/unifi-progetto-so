@@ -12,18 +12,10 @@
 Itinerary **get_malloc_itinerary_list(size_t *itinerary_number,
 				      socket_data socket_input)
 {
-	struct timeval timeout;
-	timeout.tv_sec = 1;
-	timeout.tv_usec = 0;
 	malloc_macro_def(Itinerary **, itinerary_list, sizeof(*itinerary_list));
 	size_t index = 1;
 	do {
 		int sfd = socket_open(socket_input, AF_INET);
-		if (setsockopt(sfd, SOL_SOCKET, SO_RCVTIMEO, &timeout,
-			       sizeof(timeout)) < 0) {
-			perror("socket timeout receive");
-			abort();
-		}
 		int train_name_size = snprintf(NULL, 0, "T%zu", index) + 1;
 		malloc_macro_def(char *, train_name, train_name_size);
 		snprintf(train_name, train_name_size, "T%zu", index);
