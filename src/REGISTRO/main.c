@@ -81,7 +81,9 @@ int main(int argc, char const *argv[])
 	free(help_str);
 
 	char *map = get_malloc_string_from(map_name);
-	char **itinerary_list = get_malloc_token_list(map, map_delimiter);
+	size_t itinerary_number = get_number_of_tokens(map, map_delimiter);
+	char **itinerary_list = get_malloc_token_list_number(map, map_delimiter,
+							     itinerary_number);
 	int sfd = create_socket_server(ip_address, port, 3);
 	// Remove timeout for socket read
 	struct timeval timeout;
@@ -93,7 +95,7 @@ int main(int argc, char const *argv[])
 		abort();
 	}
 	printf("Started REGISTRO, to stop it send interrupt signal (CTRL-C)\n");
-	start_socket_server(&sfd, itinerary_list);
+	start_socket_server(&sfd, itinerary_list, itinerary_number);
 	free(ip_address);
 
 	return EXIT_SUCCESS;
