@@ -1,4 +1,5 @@
 #include <arpa/inet.h>
+#include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +9,8 @@
 #include "common/alloc_macro.h"
 #include "common/parent_dir.h"
 #include "common/string_handlers.h"
+
+static void sigusr2_handler(int sig);
 
 int main(int argc, char const *argv[])
 {
@@ -26,13 +29,14 @@ int main(int argc, char const *argv[])
 		"\n"
 		"\033[36m<AF_INET_PORT>\033[0m possible values are:\n"
 		"    \033[36m43210\033[0m       - Is default value\n";
-	char help_str[strlen(format_string) + strlen(argv[0]) + 1];
+	size_t help_length = strlen(format_string) + strlen(argv[0]) + 1;
+	malloc_macro_def(char *, help_str, help_length);
+	snprintf(help_str, help_length, format_string, argv[0]);
+
 	const char *map_name;
 	const char *map_delimiter = "\n";
 	char *ip_address = strdup("127.0.0.1");
 	int port = 43210;
-
-	sprintf(help_str, format_string, argv[0]);
 
 	switch (argc) {
 	case 5:
@@ -72,6 +76,10 @@ int main(int argc, char const *argv[])
 		exit(EXIT_FAILURE);
 	}
 
+	signal(SIGUSR2, sigusr2_handler);
+
+	free(help_str);
+
 	char *map = get_malloc_string_from(map_name);
 	char **itinerary_list = get_malloc_token_list(map, map_delimiter);
 	int sfd = create_socket_server(ip_address, port, 3);
@@ -86,6 +94,14 @@ int main(int argc, char const *argv[])
 	}
 	printf("Started REGISTRO, to stop it send interrupt signal (CTRL-C)\n");
 	start_socket_server(&sfd, itinerary_list);
+	free(ip_address);
 
 	return EXIT_SUCCESS;
+}
+
+static void sigusr2_handler(int sig)
+{
+	printf("Terminate REGISTRO with signal %d.\n", sig);
+	exit(EXIT_SUCCESS);
+	return;
 }
