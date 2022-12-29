@@ -1,15 +1,16 @@
-#include "../PADRE_TRENI/TRENO.h"
+#include "PADRE_TRENI/TRENO.h"
 
-#include <limits.h>
+#include <linux/limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/file.h>
 #include <unistd.h>
 
-#include "../PADRE_TRENI/PADRE_TRENI.h"
-#include "../common/log.h"
-#include "../common/socket.h"
+#include "PADRE_TRENI/PADRE_TRENI.h"
+#include "common/alloc_macro.h"
+#include "common/log.h"
+#include "common/socket.h"
 
 #define SECONDS 2
 

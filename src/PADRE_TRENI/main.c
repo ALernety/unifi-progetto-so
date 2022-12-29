@@ -1,5 +1,6 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
+#include <linux/limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,9 +9,9 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include "../PADRE_TRENI/PADRE_TRENI.h"
-#include "../common/alloc_macro.h"
-#include "../common/parent_dir.h"
+#include "PADRE_TRENI/PADRE_TRENI.h"
+#include "common/alloc_macro.h"
+#include "common/parent_dir.h"
 
 #define SEGMENTS_NUM 16
 #define TRAIN_NUM 5

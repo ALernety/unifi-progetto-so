@@ -1,6 +1,7 @@
-#include "../PADRE_TRENI/PADRE_TRENI.h"
+#include "PADRE_TRENI/PADRE_TRENI.h"
 
 #include <fcntl.h>
+#include <linux/limits.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,10 +9,10 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include "../PADRE_TRENI/TRENO.h"
-#include "../common/alloc_macro.h"
-#include "../common/log.h"
-#include "../common/string_handlers.h"
+#include "PADRE_TRENI/TRENO.h"
+#include "common/alloc_macro.h"
+#include "common/log.h"
+#include "common/string_handlers.h"
 
 static int file_create(char *filename);
 

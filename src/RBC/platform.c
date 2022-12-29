@@ -1,9 +1,9 @@
-#include "../RBC/platform.h"
+#include "RBC/platform.h"
 
 #include <string.h>
 
-#include "../common/alloc_macro.h"
-#include "../common/string_handlers.h"
+#include "common/alloc_macro.h"
+#include "common/string_handlers.h"
 
 Platform *set_platform_from(Platform *platform, char *platform_string,
 			    const char *delim, char **connected_ids)

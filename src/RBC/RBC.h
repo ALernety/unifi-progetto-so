@@ -2,9 +2,9 @@
 #include <stdbool.h>
 #include <sys/types.h>
 
-#include "../RBC/itinerary.h"
-#include "../common/mode.h"
-#include "../common/socket.h"
+#include "RBC/itinerary.h"
+#include "common/mode.h"
+#include "common/socket.h"
 
 /**
  * @brief Get the malloc itinerary list from connecting to REGISTRO.

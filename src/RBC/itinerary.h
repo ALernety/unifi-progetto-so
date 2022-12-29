@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <sys/types.h>
 
-#include "../RBC/railway.h"
+#include "RBC/railway.h"
 
 /**
  * @brief Contains data of itinerary of train.

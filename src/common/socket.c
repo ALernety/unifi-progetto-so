@@ -1,4 +1,4 @@
-#include "../common/socket.h"
+#include "common/socket.h"
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -11,7 +11,7 @@
 #include <sys/un.h>
 #include <unistd.h>
 
-#include "../common/alloc_macro.h"
+#include "common/alloc_macro.h"
 
 #define DEFAULT_PROTOCOL 0
 #define SOCKET_TYPE SOCK_STREAM

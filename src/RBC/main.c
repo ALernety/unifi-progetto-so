@@ -5,12 +5,13 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "../RBC/RBC.h"
-#include "../RBC/itinerary.h"
-#include "../common/log.h"
-#include "../common/parent_dir.h"
-#include "../common/socket.h"
-#include "railway.h"
+#include "RBC/RBC.h"
+#include "RBC/itinerary.h"
+#include "RBC/railway.h"
+#include "common/alloc_macro.h"
+#include "common/log.h"
+#include "common/parent_dir.h"
+#include "common/socket.h"
 
 static void sigusr2_handler(int sig);
 

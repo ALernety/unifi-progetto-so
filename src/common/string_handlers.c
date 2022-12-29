@@ -1,4 +1,4 @@
-#include "../common/string_handlers.h"
+#include "common/string_handlers.h"
 
 #include <ctype.h>
 #include <fcntl.h>
@@ -8,7 +8,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "../common/alloc_macro.h"
+#include "common/alloc_macro.h"
 
 char *get_malloc_string_from(const char *file)
 {

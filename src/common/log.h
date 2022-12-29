@@ -1,6 +1,6 @@
 #include <stdbool.h>
 
-#include "../common/mode.h"
+#include "common/mode.h"
 
 /**
  * @brief Log current date and time in format DD/MM/YYYY hh/mm/ss
