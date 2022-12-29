@@ -15,7 +15,7 @@
 
 #define SEGMENTS_NUM 16
 
-static void sigusr1_handler(int sig);
+static void sigusr1_handler(int signo, siginfo_t *info, void *extra);
 size_t trains_arrived = 0;
 
 int main(int argc, char *argv[])
@@ -116,7 +116,11 @@ int main(int argc, char *argv[])
 	}
 	free(help_str);
 
-	signal(SIGUSR1, sigusr1_handler);
+	struct sigaction action;
+	action.sa_flags = SA_SIGINFO;
+	action.sa_sigaction = sigusr1_handler;
+	sigemptyset(&action.sa_mask);
+	sigaction(SIGUSR1, &action, NULL);
 
 	umask(000);
 	// Get the size of the formatted string to allocate needed memory
@@ -145,9 +149,11 @@ int main(int argc, char *argv[])
 	exit(EXIT_SUCCESS);
 }
 
-static void sigusr1_handler(int sig)
+static void sigusr1_handler(int signo, siginfo_t *info, void *extra)
 {
-	printf("TRENO at the last station with signal %d.\n", sig);
+	(void)signo, (void)extra;
+	printf("TRENO number %d at the last station.\n",
+	       info->si_value.sival_int);
 	trains_arrived++;
 	return;
 }

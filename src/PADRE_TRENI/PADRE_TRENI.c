@@ -93,6 +93,9 @@ void create_train_process(size_t train_index, char *REGISTRO_ip,
 				   train_name, request_delim);
 	}
 	// Train already on last station, so we communicate to PADRE_TRENI.
-	kill(parent_pid, SIGUSR1);
+	union sigval queue;
+	queue.sival_int = train_index + 1;
+	sigqueue(parent_pid, SIGUSR1, queue);
+
 	exit(EXIT_SUCCESS);
 }
