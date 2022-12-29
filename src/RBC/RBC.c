@@ -30,10 +30,13 @@ Itinerary **get_malloc_itinerary_list(size_t *itinerary_number,
 		socket_write(&sfd, train_name, train_name_size);
 
 		int allowed_errno[1] = { ECONNRESET };
+		// Catch error if peer close before sending anything
 		char *itinerary_str = socket_read_malloc_errno(
 			&sfd, "\0",
 			sizeof(allowed_errno) / sizeof(*allowed_errno),
 			allowed_errno);
+		// If peer was closed before sending anything, this means no itinerary
+		// with ID (aka train_name) in REGISTRO
 		if (errno == allowed_errno[0]) {
 			index--;
 			break;
@@ -64,9 +67,12 @@ int get_request(int sfd, const char *delim, char **train_name, Mode *mode,
 	int bla = -1;
 	int *client_sfd = &bla;
 	int allowed_errno[1] = { EAGAIN };
+	// Catch error when timeout passed
 	socket_accept_errno(&sfd, client_sfd,
 			    sizeof(allowed_errno) / sizeof(*allowed_errno),
 			    allowed_errno);
+	// If timeout passed, this means that no client remains to serve, so RBC
+	// can be closed
 	if (errno == allowed_errno[0]) {
 		printf("Timeout RBC.\n");
 		exit(EXIT_SUCCESS);
