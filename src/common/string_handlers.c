@@ -48,12 +48,11 @@ char **get_malloc_token_list_number(char *string_to_split, const char *delim,
 {
 	malloc_macro_def(char **, token_list,
 			 tokens_number * sizeof(*token_list));
-	char *token = strtok(string_to_split, delim);
+	char *token = strtok_r(string_to_split, delim, &string_to_split);
 	for (size_t index = 0; token && index < tokens_number; index++) {
-		malloc_macro(char *, token_list[index],
-			     sizeof(char) * strlen(token));
-		sprintf(token_list[index], "%s", token);
-		token = strtok(NULL, delim);
+		malloc_macro(char *, token_list[index], strlen(token) + 1);
+		snprintf(token_list[index], strlen(token) + 1, "%s", token);
+		token = strtok_r(string_to_split, delim, &string_to_split);
 	}
 	return token_list;
 }
