@@ -1,10 +1,10 @@
-#include "../RBC/railway.h"
+#include "RBC/railway.h"
 
 #include <fcntl.h>
 #include <string.h>
 
-#include "../common/alloc_macro.h"
-#include "../common/string_handlers.h"
+#include "common/alloc_macro.h"
+#include "common/string_handlers.h"
 
 /**
  * @brief Connects platforms of railway by list of strings with id's split by
@@ -25,7 +25,6 @@ Railway *get_malloc_railway_from(const char *file, const char *platform_delim,
 				 const char *platform_detail_delim,
 				 const char *platform_id_delim)
 {
-#include "../railway_manager/default_values.h"
 	char *railway_string = get_malloc_string_from(file);
 	malloc_macro_def(Railway *, railway, sizeof(*railway));
 	railway->platform_number =
