@@ -25,7 +25,7 @@ static int connect_to_rbc(char *socket_path);
 static int check_next_segment(char *next_segment, char *segment_value)
 {
 	char segment_path[PATH_MAX];
-	sprintf(segment_path, "tmp/%s", next_segment);
+	snprintf(segment_path, PATH_MAX, "tmp/%s", next_segment);
 	int next_segment_fd = open(segment_path, O_RDWR);
 	if (next_segment_fd == -1) {
 		perror("Error opening a segment file");
@@ -49,7 +49,7 @@ static void access_segment(int segment_fd)
 static void free_segment(char *segment)
 {
 	char cur_segment_path[PATH_MAX];
-	sprintf(cur_segment_path, "tmp/%s", segment);
+	snprintf(cur_segment_path, PATH_MAX, "tmp/%s", segment);
 	int cur_segment_fd = open(cur_segment_path, O_WRONLY);
 	flock(cur_segment_fd, LOCK_EX);
 	file_write(cur_segment_fd, "0", 1);
@@ -131,13 +131,16 @@ bool communicate_to_rbc(char *socket_path, const char *train, Mode mode,
 		return socket_path;
 	}
 	const char *format_communicate = "%%s%s%%c%s%%s";
-	char format[strlen(format_communicate) + (2 * strlen(request_delim))];
-	sprintf(format, format_communicate, request_delim, request_delim);
+	size_t format_length =
+		strlen(format_communicate) + (2 * strlen(request_delim)) + 1;
+	malloc_macro_def(char *, format, format_length);
+	snprintf(format, format_length, format_communicate, request_delim,
+		 request_delim);
 	int sfd = connect_to_rbc(socket_path);
 	size_t request_length = strlen(format) + strlen(train) + sizeof(mode) +
-				strlen(request_segment);
-	char request[request_length];
-	sprintf(request, format, train, mode, request_segment);
+				strlen(request_segment) + 1;
+	malloc_macro_def(char *, request, request_length);
+	snprintf(request, request_length, format, train, mode, request_segment);
 	socket_write(&sfd, request, strlen(request));
 	char *response = socket_read_malloc(&sfd, "\0");
 	socket_close(&sfd, NULL);
