@@ -14,25 +14,31 @@
 #include "common/parent_dir.h"
 
 #define SEGMENTS_NUM 16
-#define TRAIN_NUM 5
 
 static void sigusr1_handler(int sig);
-int trains_arrived = 0;
+size_t trains_arrived = 0;
 
 int main(int argc, char *argv[])
 {
 	const char *format_string =
 		"\033[31mNot enough arguments! Example of use:\033[0m\n"
 		"\n"
-		"Usage: %s <AF_UNIX_SOCKET> <PARENT_PID> <AF_INET_ADDRESS> "
-		"<AF_INET_PORT> <REQUEST_DELIMITER> <ITINERARY_DELIMITER>\n\n"
+		"Usage: %s <TRAIN_NUMBER> <AF_UNIX_SOCKET> <SIGUSR2_PARENT> "
+		"<AF_INET_ADDRESS> <AF_INET_PORT> <REQUEST_DELIMITER> "
+		"<ITINERARY_DELIMITER>\n\n"
+		"\033[36m<TRAIN_NUMBER>\033[0m possible values are:\n"
+		"    \033[36m[number]\033[0m       - Create number times train "
+		"process. Default is 0.\n"
+		"\n"
 		"\033[36m<AF_UNIX_SOCKET>\033[0m possible values are:\n"
 		"    \033[36mtmp/rbc\033[0m        - Path to RBC socket. To use "
-		"without RBC set to empty string.\n"
+		"without RBC set to empty string (default).\n"
 		"\n"
-		"\033[36m<RBC_PID>\033[0m possible values are:\n"
-		"    \033[36mpid_of_RBC\033[0m     - Pid of RBC process, to which "
-		"will be send SEGUSR2 signal on end of process. Default value is -1\n"
+		"\033[36m<SIGUSR2_PARENT>\033[0m possible values are:\n"
+		"    \033[36m0\033[0m              - Don't send signal SIGUSR2 to "
+		"parent process.\n"
+		"    \033[36m1\033[0m              - Send signal SIGUSR2 to parent "
+		"process.\n"
 		"\n"
 		"\033[36m<AF_INET_ADDRESS>\033[0m possible values are:\n"
 		"    \033[36m127.0.0.1\033[0m      - Is default value\n"
@@ -47,8 +53,9 @@ int main(int argc, char *argv[])
 		"    \033[36m', '\033[0m           - Is default value\n";
 	size_t help_length = strlen(format_string) + strlen(argv[0]) + 1;
 	malloc_macro_def(char *, help_str, help_length);
-	char *RBC_socket_file;
-	pid_t parent_pid = -1;
+	size_t trains_number = 0;
+	char *RBC_socket_file = strdup("");
+	bool sigusr2_parent = false;
 	char *ip_address = strdup("127.0.0.1");
 	size_t port = 43210;
 	const char *request_delim = ",";
@@ -57,23 +64,26 @@ int main(int argc, char *argv[])
 	snprintf(help_str, help_length, format_string, argv[0]);
 
 	switch (argc) {
+	case 8:
+		itinerary_delim = argv[7];
+		__attribute__((fallthrough));
 	case 7:
-		itinerary_delim = argv[6];
+		request_delim = argv[6];
 		__attribute__((fallthrough));
 	case 6:
-		request_delim = argv[5];
+		port = atoi(argv[5]);
 		__attribute__((fallthrough));
 	case 5:
-		port = atoi(argv[4]);
+		ip_address = strdup(argv[4]);
 		__attribute__((fallthrough));
 	case 4:
-		ip_address = strdup(argv[3]);
+		sigusr2_parent = atoi(argv[3]);
 		__attribute__((fallthrough));
 	case 3:
-		parent_pid = atoi(argv[2]);
+		RBC_socket_file = strdup(argv[2]);
 		__attribute__((fallthrough));
 	case 2: {
-		RBC_socket_file = strdup(argv[1]);
+		trains_number = atoi(argv[1]);
 		struct sockaddr_in sa;
 		bool is_wrong_ip =
 			inet_pton(AF_INET, ip_address, &(sa.sin_addr)) == 0;
@@ -115,17 +125,19 @@ int main(int argc, char *argv[])
 		segment_create(file, i);
 	}
 	// create and execute train processes
-	for (size_t train_index = 0; train_index < TRAIN_NUM; train_index++) {
+	for (size_t train_index = 0; train_index < trains_number;
+	     train_index++) {
 		create_train_process(train_index, ip_address, port,
 				     RBC_socket_file, itinerary_delim,
 				     request_delim);
 	}
-	while (trains_arrived < TRAIN_NUM) {
-		wait(NULL);
+	while (trains_arrived < trains_number) {
+		// Use pause instead of wait to not wait until child die
+		pause();
 	}
 	// All trains are terminated, so PADRE_TRENI can be terminated.
-	if (parent_pid != -1) {
-		kill(parent_pid, SIGUSR2);
+	if (sigusr2_parent) {
+		kill(getppid(), SIGUSR2);
 	}
 	printf("Terminate PADRE_TRENI.\n");
 	free(RBC_socket_file);
