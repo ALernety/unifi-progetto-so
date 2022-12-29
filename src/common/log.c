@@ -1,4 +1,4 @@
-#include "../common/log.h"
+#include "common/log.h"
 
 #include <fcntl.h>
 #include <stdio.h>
@@ -8,6 +8,8 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
+
+#include "common/alloc_macro.h"
 
 static char *get_date(char *date_string, size_t *date_size);
 

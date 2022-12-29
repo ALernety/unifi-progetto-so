@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <sys/types.h>
 
-#include "../RBC/platform.h"
+#include "RBC/platform.h"
 
 /**
  * @brief Is an strcut containing pointer to platform list and platform number

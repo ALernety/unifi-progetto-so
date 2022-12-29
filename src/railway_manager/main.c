@@ -6,8 +6,10 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "../common/parent_dir.h"
-#include "../railway_manager/default_values.h"
+#include "common/alloc_macro.h"
+#include "common/parent_dir.h"
+#include "railway_manager/default_values.h"
+
 #define DEFAULT_FILE_NAME 0
 #define DEFAULT_FILE_STRING 1
 

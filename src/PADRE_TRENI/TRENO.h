@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include <sys/types.h>
 
-#include "../common/mode.h"
+#include "common/mode.h"
 
 /**
  * @brief Iterates through all segments that make up the itinerary

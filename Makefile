@@ -8,7 +8,7 @@ TMP_DIR := tmp
 SHELL   := /bin/sh
 # Compilatore da utilizzare e relative flag per compilatore e linker
 CC	    := gcc
-CFLAGS  := -Wall -Wextra -pedantic
+CFLAGS  := $(shell awk 'BEGIN {ORS=" "} {print $0}' compile_flags.txt)
 DEBUG ?= 1
 ifneq ($(DEBUG), 0)
     CFLAGS += -g

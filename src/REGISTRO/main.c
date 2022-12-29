@@ -4,9 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../REGISTRO/REGISTRO.h"
-#include "../common/parent_dir.h"
-#include "../common/string_handlers.h"
+#include "REGISTRO/REGISTRO.h"
+#include "common/alloc_macro.h"
+#include "common/parent_dir.h"
+#include "common/string_handlers.h"
 
 int main(int argc, char const *argv[])
 {

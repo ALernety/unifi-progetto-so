@@ -1,11 +1,11 @@
-#include "../RBC/RBC.h"
+#include "RBC/RBC.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "../common/alloc_macro.h"
-#include "../common/string_handlers.h"
+#include "common/alloc_macro.h"
+#include "common/string_handlers.h"
 
 Itinerary **get_malloc_itinerary_list(size_t *itinerary_number,
 				      socket_data socket_input)

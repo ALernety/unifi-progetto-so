@@ -1,13 +1,13 @@
-#include "../REGISTRO/REGISTRO.h"
+#include "REGISTRO/REGISTRO.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-#include "../common/alloc_macro.h"
-#include "../common/socket.h"
-#include "../common/string_handlers.h"
+#include "common/alloc_macro.h"
+#include "common/socket.h"
+#include "common/string_handlers.h"
 
 int create_socket_server(char *socket_path, unsigned int port,
 			 int max_connected_clients)
