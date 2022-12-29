@@ -119,7 +119,6 @@ int main(int argc, char const *argv[])
 		close(fd);
 	}
 
-	pid_t parent_pid = getpid();
 	pid_t pid = 0;
 	// Not fork only if it is an ETCS2 mode called without RBC.
 	// Need this to not create duplicate process PADRE_TRENI.
@@ -134,17 +133,14 @@ int main(int argc, char const *argv[])
 		execl("bin/RBC", "bin/RBC", NULL);
 	} else if (pid != 0 || is_only_REGISTRO) {
 		execl("bin/REGISTRO", "bin/REGISTRO", map_name, NULL);
-		free(map_name);
 	} else {
 		const char *socket_path = is_etcs2 ? "tmp/rbc" : "";
-		size_t parent_pid_length =
-			snprintf(NULL, 0, "%d", parent_pid) + 1;
-		malloc_macro_def(char *, parent_pid_str, parent_pid_length);
-		snprintf(parent_pid_str, parent_pid_length, "%d", parent_pid);
-		execl("bin/PADRE_TRENI", "bin/PADRE_TRENI", socket_path,
-		      parent_pid_str, NULL);
-		free(parent_pid_str);
+		const char *trains_number =
+			strcmp(map_name, "tmp/MAPPA1") ? "5" : "4";
+		execl("bin/PADRE_TRENI", "bin/PADRE_TRENI", trains_number,
+		      socket_path, "1", NULL);
 	}
+	free(map_name);
 
 	return EXIT_SUCCESS;
 }
