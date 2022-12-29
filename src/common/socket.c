@@ -56,7 +56,8 @@ int socket_open(socket_data socket_input, sa_family_t socket_domain)
 	return *socket_input.sfd;
 }
 
-int socket_accept(int *sfd, int *client_sfd)
+int socket_accept_errno(int *sfd, int *client_sfd, size_t allowed_num,
+			int allowed_errno[])
 {
 	struct sockaddr_un remote_socket;
 	struct sockaddr *remote_socket_ptr = (struct sockaddr *)&remote_socket;
@@ -64,8 +65,14 @@ int socket_accept(int *sfd, int *client_sfd)
 
 	*client_sfd = accept(*sfd, remote_socket_ptr, &remote_socket_len);
 	if (*client_sfd == -1) {
-		perror("accept");
-		abort();
+		bool allowed = false;
+		for (size_t index = 0; index < allowed_num; index++) {
+			allowed |= allowed_errno[index] == errno;
+			if (!allowed) {
+				perror("accept");
+				abort();
+			}
+		}
 	}
 	return *client_sfd;
 }
@@ -80,17 +87,25 @@ bool socket_close(int *sfd, char *socket_path)
 	return socket_status;
 }
 
-int socket_read_length(int *sfd, char *msg, ssize_t msg_len)
+int socket_read_length_errno(int *sfd, char *msg, ssize_t msg_len,
+			     size_t allowed_num, int allowed_errno[])
 {
 	ssize_t read_len = read(*sfd, msg, msg_len);
 	if (read_len == -1) {
-		perror("read");
-		abort();
+		bool allowed = false;
+		for (size_t index = 0; index < allowed_num; index++) {
+			allowed |= allowed_errno[index] == errno;
+			if (!allowed) {
+				perror("read");
+				abort();
+			}
+		}
 	}
 	return read_len;
 }
 
-char *socket_read_malloc(int *sfd, const char *end)
+char *socket_read_malloc_errno(int *sfd, const char *end, size_t allowed_num,
+			       int allowed_errno[])
 {
 	int end_position = -strlen(end);
 	if (end_position > -1) {
@@ -101,7 +116,9 @@ char *socket_read_malloc(int *sfd, const char *end)
 	do {
 		realloc_macro(char *, message,
 			      (message_size + 1) * sizeof(char));
-		socket_read_length(sfd, &message[message_size++], sizeof(char));
+		socket_read_length_errno(sfd, &message[message_size++],
+					 sizeof(char), allowed_num,
+					 allowed_errno);
 		if (end_position++ < 0) {
 			continue;
 		}

@@ -43,9 +43,16 @@ int socket_open(socket_data socket_input, sa_family_t socket_domain);
  *
  * @param sfd File descriptor of server socket.
  * @param client_sfd File descriptor of the client socket.
+ * @param allowed_num Number of errno consts in allowed_errno.
+ * @param allowed_errno Array of errno consts, which should not be interpreted
+ *        as an error.
  * @return int Client socket file descriptor.
  */
-int socket_accept(int *sfd, int *client_sfd);
+int socket_accept_errno(int *sfd, int *client_sfd, size_t allowed_num,
+			int allowed_errno[]);
+
+#define socket_accept(sfd, client_sfd) \
+	socket_accept_errno(sfd, client_sfd, 0, NULL)
 
 /**
  * @brief Close socket and unlink of the socket_path.
@@ -64,9 +71,16 @@ bool socket_close(int *sfd, char *socket_path);
  * @param sfd File descriptor of socket.
  * @param msg Variable where will be stored read message.
  * @param msg_len Number of characters to read.
+ * @param allowed_num Number of errno consts in allowed_errno.
+ * @param allowed_errno Array of errno consts, which should not be interpreted
+ *        as an error.
  * @return int Length of read message.
  */
-int socket_read_length(int *sfd, char *msg, ssize_t msg_len);
+int socket_read_length_errno(int *sfd, char *msg, ssize_t msg_len,
+			     size_t allowed_num, int allowed_errno[]);
+
+#define socket_read_length(sfd, msg, msg_len) \
+	socket_read_length_errno(sfd, msh, msg_len, 0, NULL)
 
 /**
  * @brief Read message from socket to allocated space with malloc,
@@ -74,9 +88,15 @@ int socket_read_length(int *sfd, char *msg, ssize_t msg_len);
  *
  * @param sfd File descriptor of socket.
  * @param end End of message.
+ * @param allowed_num Number of errno consts in allowed_errno.
+ * @param allowed_errno Array of errno consts, which should not be interpreted
+ *        as an error.
  * @return int Length of read message.
  */
-char *socket_read_malloc(int *sfd, const char *end);
+char *socket_read_malloc_errno(int *sfd, const char *end, size_t allowed_num,
+			       int allowed_errno[]);
+
+#define socket_read_malloc(sfd, end) socket_read_malloc_errno(sfd, end, 0, NULL)
 
 /**
  * @brief Write first msg_len characters from msg to socket.
