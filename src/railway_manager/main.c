@@ -28,11 +28,12 @@ int main(int argc, char const *argv[])
 		"\033[36mMAP\033[0m possible values are:\n"
 		"    \033[36mMAPPA1\033[0m   - manage trains with map one \n"
 		"    \033[36mMAPPA2\033[0m   - manage trains with map two\n";
-	char help_str[strlen(format_string) + strlen(argv[0]) + 1];
+	size_t help_length = strlen(format_string) + strlen(argv[0]) + 1;
+	malloc_macro_def(char *, help_str, help_length);
 	char *map_name;
 	bool is_rbc = false;
 	bool is_etcs2 = false;
-	sprintf(help_str, format_string, argv[0]);
+	snprintf(help_str, help_length, format_string, argv[0]);
 	switch (argc) {
 	case 3: {
 		bool is_not_etcs = strcmp(argv[1], "ETCS1") &&
@@ -65,6 +66,7 @@ int main(int argc, char const *argv[])
 		exit(EXIT_FAILURE);
 		break;
 	}
+	free(help_str);
 
 	parent_dir_def(project_path, argv[0], 2);
 	if (chdir(project_path) == -1) {
@@ -95,8 +97,9 @@ int main(int argc, char const *argv[])
 				snprintf(NULL, 0, "open or create '%s' file",
 					 file_name) +
 				1;
-			char error[error_length];
-			sprintf(error, "open or create '%s' file", file_name);
+			malloc_macro_def(char *, error, error_length);
+			snprintf(error, error_length,
+				 "open or create '%s' file", file_name);
 			perror(error);
 			abort();
 		}
@@ -107,8 +110,9 @@ int main(int argc, char const *argv[])
 						       "write '%s' file",
 						       file_name) +
 					      1;
-			char error[error_length];
-			sprintf(error, "write '%s' file", file_name);
+			malloc_macro_def(char *, error, error_length);
+			snprintf(error, error_length, "write '%s' file",
+				 file_name);
 			perror(error);
 			abort();
 		}
@@ -130,14 +134,16 @@ int main(int argc, char const *argv[])
 		execl("bin/RBC", "bin/RBC", NULL);
 	} else if (pid != 0 || is_only_REGISTRO) {
 		execl("bin/REGISTRO", "bin/REGISTRO", map_name, NULL);
+		free(map_name);
 	} else {
 		const char *socket_path = is_etcs2 ? "tmp/rbc" : "";
 		size_t parent_pid_length =
 			snprintf(NULL, 0, "%d", parent_pid) + 1;
-		char parent_pid_str[parent_pid_length];
-		sprintf(parent_pid_str, "%d", parent_pid);
+		malloc_macro_def(char *, parent_pid_str, parent_pid_length);
+		snprintf(parent_pid_str, parent_pid_length, "%d", parent_pid);
 		execl("bin/PADRE_TRENI", "bin/PADRE_TRENI", socket_path,
 		      parent_pid_str, NULL);
+		free(parent_pid_str);
 	}
 
 	return EXIT_SUCCESS;
