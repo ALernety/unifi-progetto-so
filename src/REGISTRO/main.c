@@ -10,7 +10,7 @@
 #include "common/parent_dir.h"
 #include "common/string_handlers.h"
 
-static void sigusr2_handler(int sig);
+static void sigusr2_handler(int signo);
 
 int main(int argc, char const *argv[])
 {
@@ -101,9 +101,10 @@ int main(int argc, char const *argv[])
 	return EXIT_SUCCESS;
 }
 
-static void sigusr2_handler(int sig)
+static void sigusr2_handler(int signo)
 {
-	printf("Terminate REGISTRO with signal %d.\n", sig);
+	(void)signo;
+	printf("Terminate REGISTRO.\n");
 	exit(EXIT_SUCCESS);
 	return;
 }
