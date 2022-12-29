@@ -13,7 +13,7 @@
 #include "common/parent_dir.h"
 #include "common/socket.h"
 
-static void sigusr2_handler(int sig);
+static void sigusr2_handler(int signo);
 
 int main(int argc, char const *argv[])
 {
@@ -170,9 +170,10 @@ int main(int argc, char const *argv[])
 	return 0;
 }
 
-static void sigusr2_handler(int sig)
+static void sigusr2_handler(int signo)
 {
-	printf("Terminate RBC with signal %d.\n", sig);
+	(void)signo;
+	printf("Terminate RBC.\n");
 	exit(EXIT_SUCCESS);
 	return;
 }
