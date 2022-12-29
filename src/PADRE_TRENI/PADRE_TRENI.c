@@ -30,8 +30,9 @@ static int file_create(char *filename)
 {
 	int fd;
 	if ((fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, 0666)) < 0) {
-		char err_string[30];
-		sprintf(err_string, "Error opening file %s", filename);
+		char err_string[30 + PATH_MAX];
+		snprintf(err_string, sizeof(err_string),
+			 "Error opening file %s", filename);
 		perror(err_string);
 		exit(EXIT_FAILURE);
 	}
@@ -40,7 +41,7 @@ static int file_create(char *filename)
 
 void segment_create(char *file, int seg_number)
 {
-	sprintf(file, "tmp/MA%d", seg_number + 1);
+	snprintf(file, PATH_MAX, "tmp/MA%d", seg_number + 1);
 	int segment = file_create(file);
 	file_write(segment, "0", 1);
 	close(segment);
@@ -56,7 +57,7 @@ int file_write(int fd, const char *msg, ssize_t msg_len)
 	return bytes_written;
 }
 
-long file_length(int fd)
+int64_t file_length(int fd)
 {
 	return lseek(fd, 0, SEEK_END);
 }
@@ -75,11 +76,11 @@ void create_train_process(size_t train_index, char *REGISTRO_ip,
 		// Return to parent process.
 		return;
 	}
-	int train_name_size = snprintf(NULL, 0, "T%zu", train_index);
-	char train_name[train_name_size];
-	sprintf(train_name, "T%zu", train_index + 1);
-	char log_file[strlen("log/.log") + train_name_size];
-	sprintf(log_file, "log/%s.log", train_name);
+	int train_name_size = snprintf(NULL, 0, "T%zu", train_index) + 1;
+	malloc_macro_def(char *, train_name, train_name_size);
+	snprintf(train_name, train_name_size, "T%zu", train_index + 1);
+	char log_file[PATH_MAX];
+	snprintf(log_file, PATH_MAX, "log/%s.log", train_name);
 
 	int sfd = create_socket_client(REGISTRO_ip, REGISTRO_port);
 	char *itinerary = get_itinerary(sfd, train_name);
