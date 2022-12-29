@@ -1,8 +1,10 @@
 #include "RBC/RBC.h"
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "common/alloc_macro.h"
 #include "common/string_handlers.h"
@@ -22,13 +24,17 @@ Itinerary **get_malloc_itinerary_list(size_t *itinerary_number,
 			perror("socket timeout receive");
 			abort();
 		}
-		int train_name_size = snprintf(NULL, 0, "T%zu", index);
-		char train_name[train_name_size];
-		sprintf(train_name, "T%zu", index);
+		int train_name_size = snprintf(NULL, 0, "T%zu", index) + 1;
+		malloc_macro_def(char *, train_name, train_name_size);
+		snprintf(train_name, train_name_size, "T%zu", index);
 		socket_write(&sfd, train_name, train_name_size);
 
-		char *itinerary_str = socket_read_malloc(&sfd, "\0");
-		if (!strcmp(itinerary_str, "")) {
+		int allowed_errno[1] = { ECONNRESET };
+		char *itinerary_str = socket_read_malloc_errno(
+			&sfd, "\0",
+			sizeof(allowed_errno) / sizeof(*allowed_errno),
+			allowed_errno);
+		if (errno == allowed_errno[0]) {
 			index--;
 			break;
 		}
@@ -36,6 +42,7 @@ Itinerary **get_malloc_itinerary_list(size_t *itinerary_number,
 			      index * sizeof(*itinerary_list));
 		itinerary_list[index - 1] = get_malloc_itinerary_from(
 			itinerary_str, ", ", train_name);
+		free(itinerary_str);
 	} while (index++);
 	*itinerary_number = index;
 	return itinerary_list;
@@ -56,7 +63,14 @@ int get_request(int sfd, const char *delim, char **train_name, Mode *mode,
 {
 	int bla = -1;
 	int *client_sfd = &bla;
-	socket_accept(&sfd, client_sfd);
+	int allowed_errno[1] = { EAGAIN };
+	socket_accept_errno(&sfd, client_sfd,
+			    sizeof(allowed_errno) / sizeof(*allowed_errno),
+			    allowed_errno);
+	if (errno == allowed_errno[0]) {
+		printf("Timeout RBC.\n");
+		exit(EXIT_SUCCESS);
+	}
 	char *request = socket_read_malloc(client_sfd, "\0");
 	char **split_request = get_malloc_token_list(request, delim);
 	free(request);
