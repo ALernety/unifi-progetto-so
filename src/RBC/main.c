@@ -46,7 +46,9 @@ int main(int argc, char const *argv[])
 		"\n"
 		"\033[36m<REQUEST_DELIMITER>\033[0m possible values are:\n"
 		"    \033[36m,\033[0m               - is a default value\n";
-	char help_str[strlen(format_string) + strlen(argv[0]) + 1];
+	size_t help_length = strlen(format_string) + strlen(argv[0]) + 1;
+	malloc_macro_def(char *, help_str, help_length);
+	snprintf(help_str, help_length, format_string, argv[0]);
 
 	char *ip_address = strdup("127.0.0.1");
 	int port = 43210;
@@ -56,8 +58,6 @@ int main(int argc, char const *argv[])
 	const char *platform_detail_delim = "<platform_data>";
 	const char *platform_id_delim = ",";
 	const char *request_delim = ",";
-
-	sprintf(help_str, format_string, argv[0]);
 
 	switch (argc) {
 	case 9:
@@ -109,6 +109,7 @@ int main(int argc, char const *argv[])
 		printf("%s", help_str);
 		exit(EXIT_FAILURE);
 	}
+	free(help_str);
 
 	signal(SIGUSR2, sigusr2_handler);
 
@@ -163,12 +164,15 @@ int main(int argc, char const *argv[])
 		}
 		close(client_sfd);
 	}
+	free(itinerary_list);
+	free(ip_address);
+	free(unix_socket_path);
 	return 0;
 }
 
 static void sigusr2_handler(int sig)
 {
-	printf("Terminate RBC.\n");
+	printf("Terminate RBC with signal %d.\n", sig);
 	exit(EXIT_SUCCESS);
 	return;
 }
