@@ -101,9 +101,8 @@ int main(int argc, char const *argv[])
 	return EXIT_SUCCESS;
 }
 
-static void sigusr2_handler(int signo)
+static void sigusr2_handler(__attribute__((unused)) int signo)
 {
-	(void)signo;
 	printf("Terminate REGISTRO.\n");
 	exit(EXIT_SUCCESS);
 	return;
