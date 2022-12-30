@@ -9,7 +9,6 @@
 
 - [Progetto di Sistemi Operativi – Anno Accademico 2021/2022](#progetto-di-sistemi-operativi--anno-accademico-20212022)
     - [Compilazione ed esecuzione](#compilazione-ed-esecuzione)
-          - [](#)
     - [Sistema obiettivo](#sistema-obiettivo)
       - [Hardware](#hardware)
         - [Architettura](#architettura)
