@@ -26,6 +26,7 @@
         - [`TRENO`](#treno)
       - [`REGISTRO`](#registro)
       - [`common`](#common)
+    - [Elementi facoltativi](#elementi-facoltativi)
 
 ### Compilazione ed esecuzione
 Per compilare tutto il codice sorgente è necessario digitare il comando make all da shell. Durante la compilazione saranno generate le seguenti cartelle: 
@@ -148,6 +149,13 @@ In aggiunta a quelli elencati sopra, troviamo altri due file:
 
 + **alloc_macro.h** Insieme di macro che aiutano ad allocare la memoria necessaria e a localizzare i relativi controlli in un solo punto, riducendo così la duplicazione del codice.
 + **mode.h** enum con due valori: PERMIT e MOVE. Usato da `RBC` e da `TRENO`. 
+### Elementi facoltativi
+| Elemento facoltativo                                                     | Realizzato(SI/NO) | Descrizione metodo o file principale                    |
+| ------------------------------------------------------------------------ | ----------------- | ------------------------------------------------------- |
+| Implementare soluzioni per gestire letture/scritture  concorrenti        | SI                | Funzione di libreria `flock`                            |
+| In caso di informazione discordante tra RBC e boe, il TRENO rimane fermo | SI                | Realizzato tramite le strutture `Railway` e `Itinerary` |
+| Terminazione di PADRE_TRENI e PROCESSO_TRENO basata sul segnale SIGUSR1  | SI                | Funzione POSIX  `signal`                                |
+| Terminazione di RBC basata sul segnale SIGUSR2                           | SI                | Funzione POSIX  `signal`                                |
 
 
 
