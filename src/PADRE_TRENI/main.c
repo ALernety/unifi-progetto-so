@@ -149,9 +149,9 @@ int main(int argc, char *argv[])
 	exit(EXIT_SUCCESS);
 }
 
-static void sigusr1_handler(int signo, siginfo_t *info, void *extra)
+static void sigusr1_handler(__attribute__((unused)) int signo, siginfo_t *info,
+			    __attribute__((unused)) void *extra)
 {
-	(void)signo, (void)extra;
 	printf("TRENO number %d at the last station.\n",
 	       info->si_value.sival_int);
 	trains_arrived++;

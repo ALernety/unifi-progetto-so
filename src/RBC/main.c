@@ -170,9 +170,8 @@ int main(int argc, char const *argv[])
 	return 0;
 }
 
-static void sigusr2_handler(int signo)
+static void sigusr2_handler(__attribute__((unused)) int signo)
 {
-	(void)signo;
 	printf("Terminate RBC.\n");
 	exit(EXIT_SUCCESS);
 	return;
