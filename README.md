@@ -15,6 +15,17 @@
         - [Architettura](#architettura)
         - [CPU e memoria](#cpu-e-memoria)
       - [Software](#software)
+    - [Progettazione e implementazione](#progettazione-e-implementazione)
+      - [Caratteristiche comuni](#caratteristiche-comuni)
+      - [`railway_manager`](#railway_manager)
+      - [`RBC`](#rbc)
+        - [`PLATFORM`](#platform)
+        - [`RAILWAY`](#railway)
+        - [`ITINERARY`](#itinerary)
+      - [`PADRE_TRENI`](#padre_treni)
+        - [`TRENO`](#treno)
+      - [`REGISTRO`](#registro)
+      - [`common`](#common)
 
 ### Compilazione ed esecuzione
 Per compilare tutto il codice sorgente è necessario digitare il comando make all da shell. Durante la compilazione saranno generate le seguenti cartelle: 
@@ -85,4 +96,60 @@ Non sono state usate funzionalità specifiche di un particolare kernel. Di conse
 della distribuzione Linux.  
 
 Non avendo usato funzionalità proprie di un file system, non è necessario usarne uno in particolare. Se le richieste del programma in fatto di efficienza aumenteranno, quanto appena detto potrebbe non essere più vero.   
+### Progettazione e implementazione
+![RailwayManagerDiagram](./railway_manager-diagram.jpg)
+
+#### Caratteristiche comuni
+Il programma è composto da diversi eseguibili che possono essere lanciati separatamente anche senza railway_manager, il quale fornisce tutti i file e argomenti necessari al funzionamento richiesto del programma.     
+
+ Qua sotto si fornisce una descrizione dei principali componenti.  
+
+#### `railway_manager`
+Punto di avvio del programma che realizza l'interfaccia richiesta. Inizialmente valida tutti gli argomenti a riga di comando e termina se uno o più di essi non rispetta la sintassi richiesta. In questo caso viene anche mostrato un messaggio con possibili argomenti corretti.Successivamente, crea dei file temporanei richiesti dagli altri eseguibili (`railway.txt` e, a seconda degli argomenti, `MAPPA1` o `MAPPA2`).   
+E' opportuno notare che la  decisione su quale mappa passare all'eseguibile `REGISTRO` (quindi la decisione riguardo a quale tra le due mappe sarà effettivamente creata e utilizzata) è presa basandosi su un argomento digitato da shell (MAPPA1 o MAPPA2). In modalità ETCS2, `REGISTRO`  viene eseguito avviando `railway_manager` senza passare RBC come argomento (si veda il paragrafo [Compilazione ed esecuzione](#compilazione-ed-esecuzione);
+ la figura è quella dopo la scritta "[Shell1](#etcs2start)").   
+Il comportamento differisce leggermente tra le due modalità:   
++ _**ETCS1**_ `railway_manager` crea `PADRE_TRENI` e viene sostituito da  `REGISTRO`. 
+
++ _**ETCS2**_ Nell'avvio senza RBC, `railway_manager` viene sostituito da `REGISTRO`. Nell'avvio con RBC,  `railway_manager` crea  `PADRE_TRENI` e sostituisce sé stesso con `RBC`.
+
+#### `RBC`
+
+Comunica con REGISTRO tramite socket AF_INET e con i processi TRENO tramite socket AF_UNIX. Implementa tre strutture dati: Railway, Itinerary e Platform. Queste aiutano il programma a effettuare i controlli necessari. Termina non appena riceve un segnale SIGUSR2. 
+
+##### `PLATFORM`
+Implementa una struttura dati Platform e una funzione necessaria per inializzarla dalla stringa passata. Contiene inoltre una funzione per ottenere l'identificatore della piattaforma e una funzione che prende come input la lista degli identificatori. E' usata da Railway e Itinerary. 
+
+##### `RAILWAY`
+Implementa una struttura dati Railway e una funzione per inizializzarla. Inoltre ha una funzione che controlla se si può accedere a una piattaforma. 
+
+##### `ITINERARY`
+Implementa una struttura dati Itinerary e una funzione per inizializzarla. Contiene una funzione per liberare una piattaforma e un'altra per chiedere il permesso di accesso a una piattaforma. Per ultimo, una funzione per controllare se si è sull'ultima piattaforma.     
+
+
+#### `PADRE_TRENI`
+Si occupa della creazione dei 16 segmenti e dei processi TRENO, nonché dell'esecuzione di questi ultimi. Il numero di processi TRENO creati è deciso da `railway_manager`. Termina quando ha ricevuto un numero sufficiente di segnali SIGUSR1 dai processi TRENO. 
+
+##### `TRENO`
+
+Riceve il nome del treno da `PADRE_TRENI`. Si connette a `REGISTRO` tramite  socket AF_INET per ricevere l'itinerario da percorrere. Controlla se i segmenti creati da `PADRE_TRENI` sono liberi. Se sì, li occupa. In modalità ETCS2, il permesso di accesso ai vari segmenti è ottenuto da `RBC`, che comunica con i processi `TRENO` tramite socket `AF_UNIX`. Quando raggiunge la stazione di arrivo, invia un segnale SIGUSR1 a `PADRE_TRENI`. 
+#### `REGISTRO`
+Riceve come input un pathname della mappa, che usa per recuperarla e leggerla. Finito di leggere, divide la mappa in itinerari e avvia un server socket AF_INET per inviare questi itinerari ai processi `TRENO` e a `RBC` (a quest'ultimo solo se la modalità è ETCS2). 
+
+#### `common`
+ File che implementano delle funzioni utilizzate in varie parti del programma: 
+
++ **log.c** Creazione e scrittura di file di log. Usato da `TRENO` e da `RBC`.
++ **parent_dir.c** Contiene una funzione che ritorna il path assoluto di un file.
++ **socket.c** Creazione, lettura, scrittura e chiusura di socket lato client e lato server. E' possibile scegliere tra AF_UNIX e AF_INET.
++ **string_handlers.c** Varie operazioni per manipolare stringhe.
+
+In aggiunta a quelli elencati sopra, troviamo altri due file:
+
++ **alloc_macro.h** Insieme di macro che aiutano ad allocare la memoria necessaria e a localizzare i relativi controlli in un solo punto, riducendo così la duplicazione del codice.
++ **mode.h** enum con due valori: PERMIT e MOVE. Usato da `RBC` e da `TRENO`. 
+
+
+
+
 
