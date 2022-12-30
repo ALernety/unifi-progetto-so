@@ -14,8 +14,6 @@
 struct railway {
 	Platform **platform_list;
 	size_t platform_number;
-	// size_t station_number;
-	// size_t track_number;
 };
 typedef struct railway Railway;
 
