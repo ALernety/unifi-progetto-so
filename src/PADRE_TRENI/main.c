@@ -146,6 +146,9 @@ int main(int argc, char *argv[])
 			arrived--;
 		}
 	}
+	if (trains_arrived < trains_number) {
+		printf("\033[31mSome signal was lost.\033[0m\n");
+	}
 	// All trains are terminated, so PADRE_TRENI can be terminated.
 	if (sigusr2_parent) {
 		kill(getppid(), SIGUSR2);
