@@ -62,10 +62,9 @@ int64_t file_length(int fd)
 	return lseek(fd, 0, SEEK_END);
 }
 
-void create_train_process(size_t train_index, char *REGISTRO_ip,
-			  size_t REGISTRO_port, char *RBC_socket_file,
-			  const char *itinerary_delim,
-			  const char *request_delim)
+int create_train_process(size_t train_index, char *REGISTRO_ip,
+			 size_t REGISTRO_port, char *RBC_socket_file,
+			 const char *itinerary_delim, const char *request_delim)
 {
 	int parent_pid = getpid();
 	int pid = fork();
@@ -74,7 +73,7 @@ void create_train_process(size_t train_index, char *REGISTRO_ip,
 		abort();
 	} else if (pid != 0) {
 		// Return to parent process.
-		return;
+		return pid;
 	}
 	int train_name_size = snprintf(NULL, 0, "T%zu", train_index) + 1;
 	malloc_macro_def(char *, train_name, train_name_size);
