@@ -51,7 +51,7 @@ int file_write(int fd, const char *msg, ssize_t msg_len)
 {
 	int bytes_written = write(fd, msg, msg_len);
 	if (bytes_written != msg_len) {
-		perror("Error writing into a file.");
+		perror("file write");
 		exit(EXIT_FAILURE);
 	}
 	return bytes_written;
@@ -62,10 +62,9 @@ int64_t file_length(int fd)
 	return lseek(fd, 0, SEEK_END);
 }
 
-void create_train_process(size_t train_index, char *REGISTRO_ip,
-			  size_t REGISTRO_port, char *RBC_socket_file,
-			  const char *itinerary_delim,
-			  const char *request_delim)
+int create_train_process(size_t train_index, char *REGISTRO_ip,
+			 size_t REGISTRO_port, char *RBC_socket_file,
+			 const char *itinerary_delim, const char *request_delim)
 {
 	int parent_pid = getpid();
 	int pid = fork();
@@ -74,7 +73,7 @@ void create_train_process(size_t train_index, char *REGISTRO_ip,
 		abort();
 	} else if (pid != 0) {
 		// Return to parent process.
-		return;
+		return pid;
 	}
 	int train_name_size = snprintf(NULL, 0, "T%zu", train_index) + 1;
 	malloc_macro_def(char *, train_name, train_name_size);
@@ -87,10 +86,12 @@ void create_train_process(size_t train_index, char *REGISTRO_ip,
 	if (strcmp(itinerary, "")) {
 		int log_fd = log_create(log_file);
 		// Split the itinerary to get list of segments and stations
-		char **itinerary_list =
-			get_malloc_token_list(itinerary, itinerary_delim);
-		traverse_itinerary(itinerary_list, log_fd, RBC_socket_file,
-				   train_name, request_delim);
+		size_t itinerary_number =
+			get_number_of_tokens(itinerary, itinerary_delim);
+		char **itinerary_list = get_malloc_token_list_number(
+			itinerary, itinerary_delim, itinerary_number);
+		traverse_itinerary(itinerary_list, itinerary_number, log_fd,
+				   RBC_socket_file, train_name, request_delim);
 	}
 	// Train already on last station, so we communicate to PADRE_TRENI.
 	union sigval queue;

@@ -100,7 +100,8 @@ int main(int argc, char *argv[])
 		bool is_rbc = strcmp(RBC_socket_file, "") &&
 			      access(RBC_socket_file, F_OK) == -1;
 		if (is_rbc) {
-			printf("\033[31mRBC socket file not reachable!\033[0m\n");
+			printf("\033[31mRBC socket file not reachable! "
+			       "Trying to reconnect...\033[0m\n");
 			usleep(1000000);
 			if (access(RBC_socket_file, F_OK) == -1) {
 				printf("\033[31mRBC socket file not found!\033[0m\n");
@@ -135,9 +136,15 @@ int main(int argc, char *argv[])
 				     RBC_socket_file, itinerary_delim,
 				     request_delim);
 	}
-	while (trains_arrived < trains_number) {
-		// Use pause instead of wait to not wait until child die
-		pause();
+	for (size_t arrived = 0;
+	     // Until handled enough signals, or all trains terminated,
+	     // it means that some signal was masked.
+	     arrived < trains_number && trains_arrived < trains_number;
+	     arrived++) {
+		int pid = wait(NULL);
+		if (-1 == pid) {
+			arrived--;
+		}
 	}
 	// All trains are terminated, so PADRE_TRENI can be terminated.
 	if (sigusr2_parent) {
@@ -149,9 +156,9 @@ int main(int argc, char *argv[])
 	exit(EXIT_SUCCESS);
 }
 
-static void sigusr1_handler(int signo, siginfo_t *info, void *extra)
+static void sigusr1_handler(__attribute__((unused)) int signo, siginfo_t *info,
+			    __attribute__((unused)) void *extra)
 {
-	(void)signo, (void)extra;
 	printf("TRENO number %d at the last station.\n",
 	       info->si_value.sival_int);
 	trains_arrived++;

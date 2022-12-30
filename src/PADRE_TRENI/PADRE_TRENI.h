@@ -43,8 +43,9 @@ void segment_create(char *file, int seg_number);
  * @param RBC_socket_file AF_UNIX socket path.
  * @param itinerary_delim Delimiter for itinerary received from REGISTRO.
  * @param request_delim Delimiter for requests to RBC from RBC_socket_file.
+ * @return int Children's pid.
  */
-void create_train_process(size_t train_index, char *REGISTRO_ip,
-			  size_t REGISTRO_port, char *RBC_socket_file,
-			  const char *itinerary_delim,
-			  const char *request_delim);
+int create_train_process(size_t train_index, char *REGISTRO_ip,
+			 size_t REGISTRO_port, char *RBC_socket_file,
+			 const char *itinerary_delim,
+			 const char *request_delim);

@@ -57,25 +57,32 @@ static void free_segment(char *segment)
 	close(cur_segment_fd);
 }
 
-void traverse_itinerary(char **itinerary_list, int log_fd, char *socket_path,
-			const char *train, const char *request_delim)
+void traverse_itinerary(char **itinerary_list, size_t itinerary_number,
+			int log_fd, char *socket_path, const char *train,
+			const char *request_delim)
 {
-	int next_seg_counter = 0;
+	size_t next_seg_counter = 0;
 	char segment_value;
 	char *next_segment;
 	char *cur_segment = itinerary_list[next_seg_counter++];
 
-	while (1) {
+	while (next_seg_counter < itinerary_number) {
 		next_segment = itinerary_list[next_seg_counter];
 		log_segment(log_fd, cur_segment, next_segment);
 		if (next_segment[0] == 'S') {
-			log_segment(log_fd, next_segment, "--");
+			char *station_segment = next_segment;
+			next_seg_counter++;
+			next_segment =
+				next_seg_counter < itinerary_number ?
+					itinerary_list[next_seg_counter] :
+					strdup("--");
+			log_segment(log_fd, station_segment, next_segment);
 			// If next_segment is a station, final destination is reached.
 			free_segment(cur_segment);
 			communicate_to_rbc(socket_path, train, MOVE,
-					   next_segment, request_delim);
-			close(log_fd);
-			return;
+					   station_segment, request_delim);
+			cur_segment = next_segment;
+			continue;
 		}
 		// Open file corresponding to the next segment to enter and check if it is
 		// free
@@ -101,6 +108,8 @@ void traverse_itinerary(char **itinerary_list, int log_fd, char *socket_path,
 		// another train
 		sleep(SECONDS);
 	}
+	close(log_fd);
+	return;
 }
 
 int create_socket_client(char *socket_path, size_t port)
