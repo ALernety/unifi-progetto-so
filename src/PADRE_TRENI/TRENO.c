@@ -57,15 +57,16 @@ static void free_segment(char *segment)
 	close(cur_segment_fd);
 }
 
-void traverse_itinerary(char **itinerary_list, int log_fd, char *socket_path,
-			const char *train, const char *request_delim)
+void traverse_itinerary(char **itinerary_list, size_t itinerary_number,
+			int log_fd, char *socket_path, const char *train,
+			const char *request_delim)
 {
-	int next_seg_counter = 0;
+	size_t next_seg_counter = 0;
 	char segment_value;
 	char *next_segment;
 	char *cur_segment = itinerary_list[next_seg_counter++];
 
-	while (1) {
+	while (next_seg_counter < itinerary_number) {
 		next_segment = itinerary_list[next_seg_counter];
 		log_segment(log_fd, cur_segment, next_segment);
 		if (next_segment[0] == 'S') {
