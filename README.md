@@ -27,6 +27,7 @@
       - [`REGISTRO`](#registro)
       - [`common`](#common)
     - [Elementi facoltativi](#elementi-facoltativi)
+    - [Esecuzione](#esecuzione)
 
 ### Compilazione ed esecuzione
 Per compilare tutto il codice sorgente è necessario digitare il comando make all da shell. Durante la compilazione saranno generate le seguenti cartelle: 
@@ -157,7 +158,25 @@ In aggiunta a quelli elencati sopra, troviamo altri due file:
 | Terminazione di PADRE_TRENI e PROCESSO_TRENO basata sul segnale SIGUSR1  | SI                | Funzione POSIX  `signal`                                |
 | Terminazione di RBC basata sul segnale SIGUSR2                           | SI                | Funzione POSIX  `signal`                                |
 
+### Esecuzione
+Sono stati rilevati due casi che meritano una particolare attenzione.  
+Per illustrare il primo, lanciamo il programma in modalità ETCS2:  
 
+![ETCS2REGISTROStart](./doc_imgs/ETCS2_REGISTRO_start.png)
+![ETCS2SignalLost](./doc_imgs/ETCS2_signal_lost.png) 
+Non preoccupiamoci del messaggio "RBC socket file  not reachable: trying to reconnect". Notiamo che sembra mancare all'appello il treno T5. Tuttavia, se ispezioniamo T5.log, vediamo che esso ha raggiunto la stazione di arrivo:
+![T5_log](./doc_imgs/T5_log.png)
+E' accaduto che alcuni segnali SIGUSR1 sono arrivati  contemporaneamente a `PADRE_TRENI`, che non è riuscito a elaborarli tutti. Ad ogni modo, `PADRE_TRENI` ci informa che ciò è successo mostrando a schermo il messaggio: "some signal was lost".
 
+Il secondo caso riguarda una situazione di stallo che si verifica ogni tanto tra i treni T1 e T4 usando MAPPA2.  
+Lanciamo il programma:
+![DeadlockT1_T4](./doc_imgs/deadlock.png)
+Vediamo che non termina. Allora controlliamo T1.log:
+
+![T1_log](./doc_imgs/T1_log.png)
+
+E T4.log:
+
+![T4_log](./doc_imgs/T4_log.png)
 
 
