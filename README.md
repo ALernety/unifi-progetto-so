@@ -182,6 +182,22 @@ Vediamo che non termina. Allora controlliamo T1.log:
 E T4.log:
 
 ![T4_log](./doc_imgs/T4_log.png)
+Per come è strutturato, il programma riesce a gestire anche itinerari che contengono più stazioni.
+Facciamo un esempio con un solo treno avviando gli eseguibili separatamente.  
+Per prima cosa, creiamo una mappa con più stazioni.
+
+
+![MAPPA3](./doc_imgs/MAPPA3.png)
+Lanciamo gli eseguibili:
+![REGISTRO_MAPPA3](./doc_imgs/REGISTRO_MAPPA3.png)
+![RBC_MAPPA3](./doc_imgs/RBC_MAPPA3.png)
+![PADRE_TRENI_MAPPA3](./doc_imgs/PADRE_TRENI_MAPPA3.png)
+
+Controlliamo T1.log:
+![T1_Log_MAPPA3](./doc_imgs/T1_log_MAPPA3.png)
+
+
+
 
 Per come è strutturato il programma, i processi `TRENO` possono anche passare da diverse stazioni prima di giungere a quella di arrivo. Facciamo un esempio con un solo treno.  
 Per prima cosa, creiamo una mappa MAPPA3 che contiene una stazione intermedia :
