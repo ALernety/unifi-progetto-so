@@ -126,6 +126,17 @@ int main(int argc, char const *argv[])
 	Railway *railway = get_malloc_railway_from(railway_file, platform_delim,
 						   platform_detail_delim,
 						   platform_id_delim);
+	for (size_t index = 0; index < itinerary_number; index++) {
+		// Add train on start position.
+		Platform *first_platform = get_platform_by_id(
+			railway->platform_list, railway->platform_number,
+			itinerary_list[index]->platform_ids[0]);
+		if (!can_enter_on(*first_platform)) {
+			perror("itinerary is full");
+			abort();
+		}
+		first_platform->actual_capacity++;
+	}
 	socket_input.socket_path = unix_socket_path;
 	socket_input.user = SERVER;
 	sfd = socket_open(socket_input, AF_UNIX);
