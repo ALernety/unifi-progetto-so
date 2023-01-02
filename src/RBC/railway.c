@@ -69,26 +69,10 @@ static Railway *connect_platforms(Railway *railway, char **id_list,
 	return railway;
 }
 
-bool can_transfer_on(const Platform platform)
+bool can_enter_on(const Platform platform)
 {
 	if (platform.type) {
 		return platform.actual_capacity < platform.full_capacity;
 	}
 	return true;
 }
-
-// int main(/* int argc, char const *argv[] */) {
-//   Railway *railway =
-//       get_malloc_railway_from("railway.txt", "\n", "<platform_data>", ",");
-//   // printf("%s,", railway->platform_list[0].connected[0].id);
-//   for (size_t i = 0; i < railway->platform_number; i++) {
-//     printf("%s\t: ", railway->platform_list[i]->id);
-//     for (int j = 0; j < railway->platform_list[i]->connected_number; j++) {
-//       printf("%s,", railway->platform_list[i]->connected[j]->id);
-//       // printf("%d,", railway->platform_list[i].connected_number);
-//       // printf("%p,", railway->platform_list[i].connected[j]);
-//     }
-//     printf("\b.\n");
-//   }
-//   return EXIT_SUCCESS;
-// }
