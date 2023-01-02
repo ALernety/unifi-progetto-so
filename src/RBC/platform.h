@@ -2,13 +2,15 @@
 #include <stdbool.h>
 #include <sys/types.h>
 
+enum platform_types { STATION, TRACK };
+typedef enum platform_types Platform_Types;
+
 /**
  * @brief Platform structure to have easy access to all needed data to passage
  *        of train.
  *
  * @param id Identity platform string.
- * @param type false Platform is a station.
- * @param type true Platform is a track.
+ * @param type Platform type defined in Platform_Types.
  * @param actual_capacity How much trains already on platform.
  * @param full_capacity Maximum number of train, which platform can hold.
  * @param connected List of connected platforms.
@@ -16,7 +18,7 @@
  */
 struct platform {
 	char *id;
-	bool type;
+	Platform_Types type;
 	size_t actual_capacity;
 	size_t full_capacity;
 	struct platform **connected;

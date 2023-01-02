@@ -33,10 +33,10 @@ Railway *get_malloc_railway_from(const char *file, const char *platform_delim,
 				 const char *platform_id_delim);
 
 /**
- * @brief Returns if platform passed can hold passage of train.
+ * @brief Returns if platform can hold passage of train.
  *
  * @param platform Platform in which should pass train.
  * @return true Train can pass on platform.
  * @return false Platform has not enough capacity to hold passage of train.
  */
-bool can_transfer_on(const Platform platform);
+bool can_enter_on(const Platform platform);

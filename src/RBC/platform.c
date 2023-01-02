@@ -17,7 +17,8 @@ Platform *set_platform_from(Platform *platform, char *platform_string,
 	}
 
 	platform->id = platform_values_list[0];
-	platform->type = (bool)get_integer_from(platform_values_list[1]);
+	platform->type =
+		(Platform_Types)get_integer_from(platform_values_list[1]);
 	platform->actual_capacity = get_integer_from(platform_values_list[2]);
 	platform->full_capacity = get_integer_from(platform_values_list[3]);
 	*connected_ids = platform_values_list[4];
