@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -48,13 +47,21 @@ int log_create(char *log_file)
 }
 
 void log_rbc(int log_fd, const char *train, const char *current_platform,
-	     const char *request_platform, const bool permit, Mode mode)
+	     size_t current_platform_actual_capacity,
+	     size_t current_platform_maximum_capacity,
+	     const char *request_platform,
+	     size_t request_platform_actual_capacity,
+	     size_t request_platform_maximum_capacity, const bool permit,
+	     Mode mode)
 {
 	size_t date_size = 30;
+	int capacity_length = snprintf(NULL, 0, "%zu%zu",
+				       current_platform_maximum_capacity,
+				       request_platform_maximum_capacity);
 	char *format_string = log_rbc_format_malloc(mode);
 	size_t log_length = strlen(format_string) + strlen(train) +
-			    strlen(current_platform) +
-			    strlen(request_platform) +
+			    strlen(current_platform) + capacity_length +
+			    strlen(request_platform) + capacity_length +
 			    /*authorize*/ 2 + date_size + 1;
 	malloc_macro_def(char *, log_message, log_length);
 
@@ -62,8 +69,10 @@ void log_rbc(int log_fd, const char *train, const char *current_platform,
 	get_date(date, &date_size);
 
 	snprintf(log_message, log_length, format_string, train,
-		 current_platform, request_platform, permit ? "SI" : "NO",
-		 date);
+		 current_platform, current_platform_actual_capacity,
+		 current_platform_maximum_capacity, request_platform,
+		 request_platform_actual_capacity,
+		 request_platform_maximum_capacity, permit ? "SI" : "NO", date);
 	int write_length = write(log_fd, log_message, strlen(log_message));
 	if (write_length != (int)strlen(log_message)) {
 		perror("log segment");
@@ -91,7 +100,9 @@ static char *log_rbc_format_malloc(Mode mode)
 
 	const char *format_string = "[TRENO RICHIEDENTE %s: %%s], "
 				    "[SEGMENTO ATTUALE: %%s], "
+				    "[SEGMENTO ATTUALE CAPIENZA: %%zu/%%zu], "
 				    "[SEGMENTO RICHIESTO: %%s], "
+				    "[SEGMENTO RICHIESTO CAPIENZA: %%zu/%%zu], "
 				    "[AUTORIZZATO: %%s], "
 				    "[DATA: %%s]\n";
 
