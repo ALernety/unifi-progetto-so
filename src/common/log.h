@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <sys/types.h>
 
 #include "common/mode.h"
 
@@ -38,4 +39,9 @@ int log_create(char *log_file);
  * @param mode Type of request to rbc.
  */
 void log_rbc(int log_fd, const char *train, const char *current_platform,
-	     const char *request_platform, const bool permit, Mode mode);
+	     size_t current_platform_actual_capacity,
+	     size_t current_platform_maximum_capacity,
+	     const char *request_platform,
+	     size_t request_platform_actual_capacity,
+	     size_t request_platform_maximum_capacity, const bool permit,
+	     Mode mode);
