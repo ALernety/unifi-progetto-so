@@ -7,6 +7,7 @@
 
 #include "RBC/RBC.h"
 #include "RBC/itinerary.h"
+#include "RBC/platform.h"
 #include "RBC/railway.h"
 #include "common/alloc_macro.h"
 #include "common/log.h"
@@ -142,20 +143,20 @@ int main(int argc, char const *argv[])
 	sfd = socket_open(socket_input, AF_UNIX);
 	int log_fd = log_create("log/RBC.log");
 	while (true) {
-		char *request_platform;
+		char *request_platform_id;
 		Mode mode;
 		char *train_name;
 		int client_sfd = get_request(sfd, request_delim, &train_name,
-					     &mode, &request_platform);
+					     &mode, &request_platform_id);
 		Itinerary *itinerary = get_itinerary_by_train(
 			itinerary_list, itinerary_number, train_name);
-		char *current_platform =
+		char *current_platform_id =
 			itinerary->platform_ids[itinerary->current];
 		bool request_result = false;
 		switch (mode) {
 		case PERMIT:
 			request_result = permit_to_next_platform(
-				railway, itinerary, request_platform);
+				railway, itinerary, request_platform_id);
 			break;
 		case MOVE:
 			request_result =
@@ -164,8 +165,17 @@ int main(int argc, char const *argv[])
 		default:
 			break;
 		}
-		log_rbc(log_fd, train_name, current_platform, request_platform,
-			request_result, mode);
+		Platform *current_platform = get_platform_by_id(
+			railway->platform_list, railway->platform_number,
+			current_platform_id);
+		Platform *request_platform = get_platform_by_id(
+			railway->platform_list, railway->platform_number,
+			request_platform_id);
+		log_rbc(log_fd, train_name, current_platform_id,
+			current_platform->actual_capacity,
+			current_platform->full_capacity, request_platform_id,
+			request_platform->actual_capacity,
+			request_platform->full_capacity, request_result, mode);
 		if (request_result) {
 			const char *response = "1";
 			socket_write(&client_sfd, response, strlen(response));
