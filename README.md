@@ -65,7 +65,7 @@ Nonostante il codice sia stato sviluppato su computer montanti architetture **x8
 
  Caratteristiche computazionali dell'esecuzione di un processo TRENO:
 
-![Performance graphic]()
+![Performance graphic](doc_imgs/performace_ETCS1_MAPP1_TRENO.png)
 
 Dati di proc:
 ```
