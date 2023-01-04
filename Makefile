@@ -44,7 +44,7 @@ help: ## Mostra questo aiuto
 clean: ## Pulisci i file oggetto, i binari, i log e i file temporanei
 	rm -rf $(OBJ_DIR) $(BIN_DIR) $(LOG_DIR) $(TMP_DIR)
 clean_tmp: ## Pulisci i log e i file temporanei
-	rm -rf $(TMP_DIR) $(LOG_DIR)
+	rm -rf $(TMP_DIR)/* $(LOG_DIR)/*
 
 ### Targets di entrata
 
