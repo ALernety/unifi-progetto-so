@@ -71,6 +71,19 @@ La dimensione dei file di log, potrebbe rappresentare un limite per la memoria s
 
 Il programma richiede poca memoria (primaria e secondaria) e CPU per essere eseguito. Le prestazioni necessarie sono quelle minime del sistema operativo più qualche MB di memoria primaria. Questo ci permette di usare il programma anche su sistemi embedded.
 
+```
+Name:   PADRE_TRENI
+Pid:    112875
+VmPeak:     3428 kB
+VmSize:     3428 kB
+VmRSS:       112 kB
+VmData:      228 kB
+VmStk:       132 kB
+VmExe:        12 kB
+VmLib:      2036 kB
+VmPTE:        40 kB
+VmSwap:        0 kB
+```
 
 #### Software
 | Sistema Operativo | Distribuzione | Kernel                  | File system |
@@ -96,7 +109,7 @@ Non avendo usato funzionalità proprie di un file system, non è necessario usar
 ### Progettazione e implementazione
 <!-- ![RailwayManagerDiagram](./railway_manager-diagram.jpg) -->
 
-<img src="./railway_manager-diagram.jpg"  width="400" height="400">
+![railway_manager-diagram](railway_manager-diagram.png)
 
 
 
