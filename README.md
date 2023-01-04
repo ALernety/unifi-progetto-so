@@ -40,18 +40,18 @@ Digitando soltanto make o make help,  si ottiene un messaggio di aiuto che mostr
 
 ![makeHelp](./doc_imgs/make_help.png)
 
-Il programma è eseguibile in modalità ETCS1 ed ETCS2. In entrambi i casi è necessario avviare tramite shell il file railway_manager situato nella cartella bin.   
+Il programma è eseguibile in modalità ETCS1 e ETCS2. In entrambi i casi è necessario avviare tramite shell il file railway_manager situato nella cartella bin.   
 Nella figura sotto è mostrato un esempio di avvio in modalità ETCS1. Eventualmente si può sostituire MAPPA1 con MAPPA2:
 
-![ETCS1Start](./doc_imgs/ETCS1_start.png)
+![ETCS1Start](./doc_imgs/ETCS1_Start.png)
 
 L'esecuzione in modalità ETCS2 richiede l'utilizzo di due shell. Si riporta sotto un possibile avvio:  
 
 Shell 1:
-###### ![ETCS2Start](./doc_imgs/ETCS2_start.png)
-
+###### ![ETCS2Start](./doc_imgs/ETCS2_Start.png)
 Shell 2:
-![ETCS2RBCStart](./doc_imgs/ETCS2_RBC_start.png)
+
+![ETCS2RBCStart](./doc_imgs/ETCS2_RBC_Start.png)
 ### Sistema obiettivo
 #### Hardware
 | Architettura | RAM          | CPU                     |
@@ -66,11 +66,6 @@ Nonostante il codice sia stato sviluppato su computer montanti architetture **x8
  Caratteristiche computazionali dell'esecuzione di un processo TRENO:
 
 ![Performance graphic](doc_imgs/performace_ETCS1_MAPP1_TRENO.png)
-
-Dati di proc:
-```
-proc
-```
 
 La dimensione dei file di log, potrebbe rappresentare un limite per la memoria secondaria. Effettuando un semplice  [profiling](https://github.com/nmaggioni/pmon) di diversi componenti, i risultati ottenuti sono approssimativamente gli stessi e tutti molto bassi. Questo ci permette di non avere vincoli prestazionali, computazionali e di memoria primaria.
 
@@ -159,7 +154,7 @@ In aggiunta a quelli elencati sopra, troviamo altri due file:
 | ------------------------------------------------------------------------ | ----------------- | ------------------------------------------------------- |
 | Implementare soluzioni per gestire letture/scritture  concorrenti        | SI                | Funzione di libreria `flock`                            |
 | In caso di informazione discordante tra RBC e boe, il TRENO rimane fermo | SI                | Realizzato tramite le strutture `Railway` e `Itinerary` |
-| Terminazione di PADRE_TRENI e PROCESSO_TRENO basata sul segnale SIGUSR1  | SI                | Funzione POSIX  `signal`                                |
+| Terminazione di PADRE_TRENI e PROCESSO_TRENO basata sul segnale SIGUSR1  | SI                | Funzione POSIX  `sigaction`                                |
 | Terminazione di RBC basata sul segnale SIGUSR2                           | SI                | Funzione POSIX  `signal`                                |
 
 ### Esecuzione
@@ -167,48 +162,27 @@ Sono stati rilevati due casi che meritano una particolare attenzione.
 Per illustrare il primo, lanciamo il programma in modalità ETCS2:  
 
 ![ETCS2REGISTROStart](./doc_imgs/ETCS2_REGISTRO_start.png)
+Quando lanciamo `railway_manager` con argomento RBC, non preoccupiamoci del
+del messaggio "RBC socket file  not reachable: trying to reconnect".
+
 ![ETCS2SignalLost](./doc_imgs/ETCS2_signal_lost.png) 
-Non preoccupiamoci del messaggio "RBC socket file  not reachable: trying to reconnect". Notiamo che sembra mancare all'appello il treno T5. Tuttavia, se ispezioniamo T5.log, vediamo che esso ha raggiunto la stazione di arrivo:
-![T5_log](./doc_imgs/T5_log.png)
+Notiamo che sembra mancare all'appello il treno T2. Tuttavia, se ispezioniamo T2.log, vediamo che esso ha raggiunto la stazione di arrivo:
+![T4_log](./doc_imgs/T2_log.png)
 E' accaduto che alcuni segnali SIGUSR1 sono arrivati  contemporaneamente a `PADRE_TRENI`, che non è riuscito a elaborarli tutti. Ad ogni modo, `PADRE_TRENI` ci informa che ciò è successo mostrando a schermo il messaggio: "some signal was lost".
 
-Il secondo caso riguarda una situazione di stallo che si verifica ogni tanto tra i treni T1 e T4 usando MAPPA2.  
-Lanciamo il programma:
 ![DeadlockT1_T4](./doc_imgs/deadlock.png)
-Vediamo che non termina. Allora controlliamo T1.log:
-
-![T1_log](./doc_imgs/T1_log.png)
-
-E T4.log:
-
-![T4_log](./doc_imgs/T4_log.png)
+![T1T4Log ](./doc_imgs/T1_T4_log_deadlock.png)
+Osservando i due screenshot sopra, possiamo vedere che talvolta si verifica uno stallo tra i treni T1 e T4.
 
 Per come è strutturato il programma, i processi `TRENO` possono anche passare da diverse stazioni prima di giungere a quella di arrivo. Facciamo un esempio con un solo treno.  
 Per prima cosa, creiamo una mappa MAPPA3 che contiene una stazione intermedia :
 
 ![MAPPA3](./doc_imgs/MAPPA3.png)
-Lanciamo gli eseguibili:
+Lanciamo gli eseguibili e controlliamo T1.log:
 ![REGISTRO_MAPPA3](./doc_imgs/REGISTRO_MAPPA3.png)
 ![RBC_MAPPA3](./doc_imgs/RBC_MAPPA3.png)
 ![PADRE_TRENI_MAPPA3](./doc_imgs/PADRE_TRENI_MAPPA3.png)
-
-Controlliamo T1.log:
-<!--![T1_Log_MAPPA3](./doc_imgs/T1_log_MAPPA3.png) -->
-<img src="./doc_imgs/T1_log_MAPPA3.png"  width="350" height="180">
-
-
-Per come è strutturato il programma, i processi `TRENO` possono anche passare da diverse stazioni prima di giungere a quella di arrivo. Facciamo un esempio con un solo treno.  
-Per prima cosa, creiamo una mappa MAPPA3 che contiene una stazione intermedia :
-
-![MAPPA3](./doc_imgs/MAPPA3.png)
-Lanciamo gli eseguibili:
-![REGISTRO_MAPPA3](./doc_imgs/REGISTRO_MAPPA3.png)
-![RBC_MAPPA3](./doc_imgs/RBC_MAPPA3.png)
-![PADRE_TRENI_MAPPA3](./doc_imgs/PADRE_TRENI_MAPPA3.png)
-
-Controlliamo T1.log:
-<!--![T1_Log_MAPPA3](./doc_imgs/T1_log_MAPPA3.png) -->
-<img src="./doc_imgs/T1_log_MAPPA3.png"  width="350" height="180">
+![T1_log_MAPPA3](./doc_imgs/t1_log_mappa3.png)
 
 
 
