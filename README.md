@@ -201,16 +201,22 @@ Sono stati rilevati due casi che meritano una particolare attenzione.
 Per illustrare il primo, lanciamo il programma in modalità ETCS2:
 
 ![ETCS2REGISTROStart](./doc_imgs/ETCS2_REGISTRO_start.png)
+
 Quando lanciamo `railway_manager` con argomento RBC, non preoccupiamoci del
 del messaggio "RBC socket file not reachable: trying to reconnect".
 
 ![ETCS2SignalLost](./doc_imgs/ETCS2_signal_lost.png)
+
 Notiamo che sembra mancare all'appello il treno T2. Tuttavia, se ispezioniamo T2.log, vediamo che esso ha raggiunto la stazione di arrivo:
+
 ![T4_log](./doc_imgs/T2_log.png)
+
 E' accaduto che alcuni segnali SIGUSR1 sono arrivati contemporaneamente a `PADRE_TRENI`, che non è riuscito a elaborarli tutti. Ad ogni modo, `PADRE_TRENI` ci informa che ciò è successo mostrando a schermo il messaggio: "some signal was lost".
 
 ![DeadlockT1_T4](./doc_imgs/deadlock.png)
+
 ![T1T4Log ](./doc_imgs/T1_T4_log_deadlock.png)
+
 Osservando i due screenshot sopra, possiamo vedere che talvolta si verifica uno stallo tra i treni T1 e T4.
 
 Per come è strutturato il programma, i processi `TRENO` possono anche passare da diverse stazioni prima di giungere a quella di arrivo. Facciamo un esempio con un solo treno.  
