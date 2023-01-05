@@ -62,8 +62,7 @@ Shell 2:
 $ bin/railway_manager ETCS2 RBC MAPPA2
 ```
 
-### Sistema obiettivo
-
+### Sistema obiettivo 
 #### Hardware
 
 | Architettura | RAM          | CPU                     |
@@ -114,7 +113,7 @@ rispettano le caratteristiche descritte prima possano soddisfare le
 necessità del programma. Cioé, sarà possibile compilare ed eseguire il codice
 correttamente anche su suddetti sistemi.
 
-I test sono stati eseguiti nei sistemi operativi presenti nella tabella sopra.
+I test  relativi al funzionamento del programma sono stati eseguiti nei sistemi operativi presenti nella tabella sopra. Il programma si comporta correttamente se avviato da entrambi i computer. 
 
 Non sono state usate funzionalità specifiche di un particolare kernel. Di conseguenza, l'utilizzo di un kernel diverso da quelli elencati non dovrebbe influenzare il corretto funzionamento del programma. Similmente, dovrebbe essere indifferente anche la scelta
 della distribuzione Linux.
