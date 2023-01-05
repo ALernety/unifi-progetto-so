@@ -1,9 +1,7 @@
 .cache
-*.o
-*.log
-MA[0-9]+
-itinerarioT[0-9]+
+.vscode
 bin/*
 tmp/*
 obj/*
 log/*
+README.pdf
