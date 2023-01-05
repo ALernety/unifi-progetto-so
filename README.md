@@ -229,4 +229,4 @@ $ bin/RBC
 $ bin/PADRE_TRENI 1 tmp/rbc
 ```
 
-![T1_log_MAPPA3](./doc_imgs/t1_log_mappa3.png)
+![T1_log_MAPPA3](./doc_imgs/T1_log_MAPPA3.png)
