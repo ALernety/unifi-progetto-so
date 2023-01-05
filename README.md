@@ -8,25 +8,25 @@
 > Data di consegna: 00/00/0000
 
 - [Progetto di Sistemi Operativi – Anno Accademico 2021/2022](#progetto-di-sistemi-operativi--anno-accademico-20212022)
-    - [Compilazione ed esecuzione](#compilazione-ed-esecuzione)
-    - [Sistema obiettivo](#sistema-obiettivo)
-      - [Hardware](#hardware)
-        - [Architettura](#architettura)
-        - [CPU e memoria](#cpu-e-memoria)
-      - [Software](#software)
-    - [Progettazione e implementazione](#progettazione-e-implementazione)
-      - [Caratteristiche comuni](#caratteristiche-comuni)
-      - [`railway_manager`](#railway_manager)
-      - [`RBC`](#rbc)
-        - [`PLATFORM`](#platform)
-        - [`RAILWAY`](#railway)
-        - [`ITINERARY`](#itinerary)
-      - [`PADRE_TRENI`](#padre_treni)
-        - [`TRENO`](#treno)
-      - [`REGISTRO`](#registro)
-      - [`common`](#common)
-    - [Elementi facoltativi](#elementi-facoltativi)
-    - [Esecuzione](#esecuzione)
+  - [Compilazione ed esecuzione](#compilazione-ed-esecuzione)
+  - [Sistema obiettivo](#sistema-obiettivo)
+    - [Hardware](#hardware)
+      - [Architettura](#architettura)
+      - [CPU e memoria](#cpu-e-memoria)
+    - [Software](#software)
+  - [Progettazione e implementazione](#progettazione-e-implementazione)
+    - [Caratteristiche comuni](#caratteristiche-comuni)
+    - [`railway_manager`](#railway_manager)
+    - [`RBC`](#rbc)
+      - [`PLATFORM`](#platform)
+      - [`RAILWAY`](#railway)
+      - [`ITINERARY`](#itinerary)
+    - [`PADRE_TRENI`](#padre_treni)
+      - [`TRENO`](#treno)
+    - [`REGISTRO`](#registro)
+    - [`common`](#common)
+  - [Elementi facoltativi](#elementi-facoltativi)
+  - [Esecuzione](#esecuzione)
 
 ### Compilazione ed esecuzione
 
@@ -39,7 +39,7 @@ Per compilare tutto il codice sorgente è necessario digitare il comando make al
 
 Digitando soltanto make o make help, si ottiene un messaggio di aiuto che mostra tutti i possibili comandi.
 
-![makeHelp](./doc_imgs/make_help.png)
+![Compilazione ed esecuzione: esempio di make help][make-help]
 
 Il programma è eseguibile in modalità ETCS1 e ETCS2. In entrambi i casi è necessario avviare tramite shell il file railway_manager situato nella cartella bin.  
 Nella figura sotto è mostrato un esempio di avvio in modalità ETCS1. Eventualmente si può sostituire MAPPA1 con MAPPA2:
@@ -62,7 +62,8 @@ Shell 2:
 $ bin/railway_manager ETCS2 RBC MAPPA2
 ```
 
-### Sistema obiettivo 
+### Sistema obiettivo
+
 #### Hardware
 
 | Architettura | RAM          | CPU                     |
@@ -78,7 +79,7 @@ Nonostante il codice sia stato sviluppato su computer montanti architetture **x8
 
 Caratteristiche computazionali dell'esecuzione di un processo TRENO:
 
-![Performance graphic](doc_imgs/performace_ETCS1_MAPP1_TRENO.png)
+![Sistema obiettivo: grafico di performance][performance-graphic]
 
 La dimensione dei file di log, potrebbe rappresentare un limite per la memoria secondaria. Effettuando un semplice [profiling](https://github.com/nmaggioni/pmon) di diversi componenti, i risultati ottenuti sono approssimativamente gli stessi e tutti molto bassi. Questo ci permette di non avere vincoli prestazionali, computazionali e di memoria primaria.
 
@@ -113,7 +114,7 @@ rispettano le caratteristiche descritte prima possano soddisfare le
 necessità del programma. Cioé, sarà possibile compilare ed eseguire il codice
 correttamente anche su suddetti sistemi.
 
-I test  relativi al funzionamento del programma sono stati eseguiti nei sistemi operativi presenti nella tabella sopra. Il programma si comporta correttamente se avviato da entrambi i computer. 
+I test relativi al funzionamento del programma sono stati eseguiti nei sistemi operativi presenti nella tabella sopra. Il programma si comporta correttamente se avviato da entrambi i computer.
 
 Non sono state usate funzionalità specifiche di un particolare kernel. Di conseguenza, l'utilizzo di un kernel diverso da quelli elencati non dovrebbe influenzare il corretto funzionamento del programma. Similmente, dovrebbe essere indifferente anche la scelta
 della distribuzione Linux.
@@ -122,9 +123,7 @@ Non avendo usato funzionalità proprie di un file system, non è necessario usar
 
 ### Progettazione e implementazione
 
-<!-- ![RailwayManagerDiagram](./railway_manager-diagram.jpg) -->
-
-![railway_manager-diagram](railway_manager-diagram.png)
+![Progettazione e implementazione: railway_manager][railway-manager-diagram]
 
 #### Caratteristiche comuni
 
@@ -200,17 +199,17 @@ Sono stati rilevati due casi che meritano una particolare attenzione.
 Per illustrare il primo, lanciamo il programma in modalità ETCS2. Quando lanciamo `railway_manager` con argomento RBC, non preoccupiamoci del
 del messaggio "RBC socket file not reachable: trying to reconnect".
 
-![ETCS2SignalLost](./doc_imgs/ETCS2_signal_lost.png)
+![Esecuzione: perdita di segnale in modalità ETCS2][etcs2-signal-lost]
 
 Notiamo che sembra mancare all'appello il treno T2. Tuttavia, se ispezioniamo T2.log, vediamo che esso ha raggiunto la stazione di arrivo:
 
-![T4_log](./doc_imgs/T2_log.png)
+![Esecuzione: log di treno T4][t4-log]
 
 E' accaduto che alcuni segnali SIGUSR1 sono arrivati contemporaneamente a `PADRE_TRENI`, che non è riuscito a elaborarli tutti. Ad ogni modo, `PADRE_TRENI` ci informa che ciò è successo mostrando a schermo il messaggio: "some signal was lost".
 
-![DeadlockT1_T4](./doc_imgs/deadlock.png)
+![Esecuzione: deadlock di treni T1 e T4][deadlock-t1-t4]
 
-![T1T4Log ](./doc_imgs/T1_T4_log_deadlock.png)
+![Esecuzione: log di treni T1 e T4 in deadlock][t1-t4-log]
 
 Osservando i due screenshot sopra, possiamo vedere che talvolta si verifica uno stallo tra i treni T1 e T4.
 
@@ -229,4 +228,13 @@ $ bin/RBC
 $ bin/PADRE_TRENI 1 tmp/rbc
 ```
 
-![T1_log_MAPPA3](./doc_imgs/T1_log_MAPPA3.png)
+![Esecuzione: log di treno T1 con MAPPA3][t1-log-mappa3]
+
+[make-help]: doc_imgs/make_help.png
+[performance-graphic]: doc_imgs/performace_ETCS1_MAPP1_TRENO.png
+[railway-manager-diagram]: railway_manager-diagram.png
+[etcs2-signal-lost]: doc_imgs/ETCS2_signal_lost.png
+[t4-log]: doc_imgs/T2_log.png
+[deadlock-t1-t4]: doc_imgs/deadlock.png
+[t1-t4-log]: doc_imgs/T1_T4_log_deadlock.png
+[t1-log-mappa3]: doc_imgs/T1_log_MAPPA3.png
