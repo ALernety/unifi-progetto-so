@@ -8,25 +8,25 @@
 > Data di consegna: 00/00/0000
 
 - [Progetto di Sistemi Operativi – Anno Accademico 2021/2022](#progetto-di-sistemi-operativi--anno-accademico-20212022)
-  - [Compilazione ed esecuzione](#compilazione-ed-esecuzione) - [](#)
-  - [Sistema obiettivo](#sistema-obiettivo)
-    - [Hardware](#hardware)
-      - [Architettura](#architettura)
-      - [CPU e memoria](#cpu-e-memoria)
-    - [Software](#software)
-  - [Progettazione e implementazione](#progettazione-e-implementazione)
-    - [Caratteristiche comuni](#caratteristiche-comuni)
-    - [`railway_manager`](#railway_manager)
-    - [`RBC`](#rbc)
-      - [`PLATFORM`](#platform)
-      - [`RAILWAY`](#railway)
-      - [`ITINERARY`](#itinerary)
-    - [`PADRE_TRENI`](#padre_treni)
-      - [`TRENO`](#treno)
-    - [`REGISTRO`](#registro)
-    - [`common`](#common)
-  - [Elementi facoltativi](#elementi-facoltativi)
-  - [Esecuzione](#esecuzione)
+    - [Compilazione ed esecuzione](#compilazione-ed-esecuzione)
+    - [Sistema obiettivo](#sistema-obiettivo)
+      - [Hardware](#hardware)
+        - [Architettura](#architettura)
+        - [CPU e memoria](#cpu-e-memoria)
+      - [Software](#software)
+    - [Progettazione e implementazione](#progettazione-e-implementazione)
+      - [Caratteristiche comuni](#caratteristiche-comuni)
+      - [`railway_manager`](#railway_manager)
+      - [`RBC`](#rbc)
+        - [`PLATFORM`](#platform)
+        - [`RAILWAY`](#railway)
+        - [`ITINERARY`](#itinerary)
+      - [`PADRE_TRENI`](#padre_treni)
+        - [`TRENO`](#treno)
+      - [`REGISTRO`](#registro)
+      - [`common`](#common)
+    - [Elementi facoltativi](#elementi-facoltativi)
+    - [Esecuzione](#esecuzione)
 
 ### Compilazione ed esecuzione
 
@@ -198,11 +198,7 @@ In aggiunta a quelli elencati sopra, troviamo altri due file:
 ### Esecuzione
 
 Sono stati rilevati due casi che meritano una particolare attenzione.  
-Per illustrare il primo, lanciamo il programma in modalità ETCS2:
-
-![ETCS2REGISTROStart](./doc_imgs/ETCS2_REGISTRO_start.png)
-
-Quando lanciamo `railway_manager` con argomento RBC, non preoccupiamoci del
+Per illustrare il primo, lanciamo il programma in modalità ETCS2. Quando lanciamo `railway_manager` con argomento RBC, non preoccupiamoci del
 del messaggio "RBC socket file not reachable: trying to reconnect".
 
 ![ETCS2SignalLost](./doc_imgs/ETCS2_signal_lost.png)
