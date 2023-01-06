@@ -119,10 +119,10 @@ VmSwap:        0 kB
 
 ### Software
 
-| Sistema Operativo | Distribuzione | Kernel                  | File system |
-| ----------------- | ------------- | ----------------------- | ----------- |
-| GNU/Linux         | Ubuntu 22.04  | Linux 5.15.0-56-generic | EXT4        |
-| GNU/Linux         | Ubuntu 22.04  | Linux 5.15.0-56-generic | EXT4        |
+| Sistema Operativo | Distribuzione        | Kernel                  | File system |
+| ----------------- | -------------------- | ----------------------- | ----------- |
+| GNU/Linux         | Ubuntu 22.04         | Linux 5.15.0-56-generic | EXT4        |
+| GNU/Linux         | Manjaro Linux 22.0.0 | Linux 6.1.1-1-MANJARO   | EXT4        |
 
 Il codice è stato sviluppato aderendo allo standard POSIX e utilizzando
 le utility GNU presenti nei sistemi operativi della famiglia GNU/Linux.
