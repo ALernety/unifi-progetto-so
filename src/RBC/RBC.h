@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SRC_RBC_RBC_H_
+#define SRC_RBC_RBC_H_
 #include <stdbool.h>
 #include <sys/types.h>
 
@@ -49,3 +50,5 @@ int get_request(int sfd, const char *delim, char **train_name, Mode *mode,
  */
 Itinerary *get_itinerary_by_train(Itinerary **itinerary_list,
 				  size_t itinerary_number, char *train);
+
+#endif // SRC_RBC_RBC_H_

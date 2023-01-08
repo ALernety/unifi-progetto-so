@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SRC_RBC_ITINERARY_H_
+#define SRC_RBC_ITINERARY_H_
 #include <stdbool.h>
 #include <sys/types.h>
 
@@ -69,3 +70,5 @@ bool permit_to_next_platform(Railway *railway, Itinerary *itinerary,
  * @return false Train isn't reached last platform.
  */
 bool is_on_last_platform_of(Itinerary itinerary);
+
+#endif // SRC_RBC_ITINERARY_H_

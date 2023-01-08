@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SRC_COMMON_SOCKET_H_
+#define SRC_COMMON_SOCKET_H_
 #include <stdbool.h>
 #include <sys/socket.h>
 
@@ -107,3 +108,5 @@ char *socket_read_malloc_errno(int *sfd, const char *end, size_t allowed_num,
  * @return int Number of characters to write without terminator.
  */
 int socket_write(int *sfd, const char *msg, ssize_t msg_len);
+
+#endif // SRC_COMMON_SOCKET_H_

@@ -1,3 +1,5 @@
+#ifndef SRC_COMMON_PARENT_DIR_H_
+#define SRC_COMMON_PARENT_DIR_H_
 #include <libgen.h>
 #include <linux/limits.h>
 #include <stdlib.h>
@@ -18,3 +20,5 @@
 	     i++) {                                                           \
 		parent_dir = dirname(parent_dir);                             \
 	}
+
+#endif // SRC_COMMON_PARENT_DIR_H_

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SRC_COMMON_STRING_HANDLERS_H_
+#define SRC_COMMON_STRING_HANDLERS_H_
 #include <sys/types.h>
 
 /**
@@ -57,3 +58,5 @@ int get_integer_from(char *string_with_integer);
  * @return char* Uppercase string.
  */
 char *to_upper(char *string_to_handle);
+
+#endif // SRC_COMMON_STRING_HANDLERS_H_

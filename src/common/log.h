@@ -1,3 +1,5 @@
+#ifndef SRC_COMMON_LOG_H_
+#define SRC_COMMON_LOG_H_
 #include <stdbool.h>
 #include <sys/types.h>
 
@@ -45,3 +47,5 @@ void log_rbc(int log_fd, const char *train, const char *current_platform,
 	     size_t request_platform_actual_capacity,
 	     size_t request_platform_maximum_capacity, const bool permit,
 	     Mode mode);
+
+#endif // SRC_COMMON_LOG_H_

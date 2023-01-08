@@ -1,3 +1,5 @@
+#ifndef SRC_PADRE_TRENI_TRENO_H_
+#define SRC_PADRE_TRENI_TRENO_H_
 #include <stdbool.h>
 #include <sys/types.h>
 
@@ -51,3 +53,5 @@ char *get_itinerary(int sfd, char *train_name);
  */
 bool communicate_to_rbc(char *socket_path, const char *train, Mode mode,
 			const char *request_segment, const char *request_delim);
+
+#endif // SRC_PADRE_TRENI_TRENO_H_

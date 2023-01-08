@@ -1,3 +1,6 @@
+#ifndef SRC_RAILWAY_MANAGER_DEFAULT_VALUES_H_
+#define SRC_RAILWAY_MANAGER_DEFAULT_VALUES_H_
+
 #define RAILWAY_DEFAULT_STRING                                                       \
 	"S1<platform_data>0<platform_data>0<platform_data>-1<platform_data>MA1\n"    \
 	"MA1<platform_data>1<platform_data>0<platform_data>1<platform_data>S1,MA2\n" \
@@ -47,3 +50,5 @@
 	"S4, MA14, MA15, MA16, MA12, S8\n"  \
 	"S6, MA8, MA3, MA2, MA1, S1\n"      \
 	"S5, MA4, MA3, MA2, MA1, S1"
+
+#endif // SRC_RAILWAY_MANAGER_DEFAULT_VALUES_H_

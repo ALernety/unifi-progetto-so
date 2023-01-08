@@ -1,12 +1,15 @@
-# Paths della struttura del progetto, relative alla cartella in cui è situato il Makefile (in questo caso, la root)
+# Paths of the project structure, relative to the folder where the Makefile
+# is located (in this case, the root of project)
 SRC_DIR := src
 OBJ_DIR := obj
 BIN_DIR := bin
 LOG_DIR := log
 TMP_DIR := tmp
-# Set default shell.
+
+# Set default shell
 SHELL   := /bin/sh
-# Compilatore da utilizzare e relative flag per compilatore e linker
+
+# Compiler to use and related compiler and linker flags
 CC	    := gcc
 CFLAGS  := $(shell awk 'BEGIN {ORS=" "} {print $0}' compile_flags.txt)
 DEBUG ?= 1
@@ -15,7 +18,7 @@ ifneq ($(DEBUG), 0)
 endif
 LDFLAGS := -lm
 
-# Funzioni per la risoluzione di sorgenti e file oggetto dei componenti
+# Functions for resolving component source and object files
 SRC_FILES = $(wildcard $(SRC_DIR)/$(1)/*.c) $(wildcard $(SRC_DIR)/common/*.c)
 OBJ_FILES = $(subst \
 				$(SRC_DIR)/,\
@@ -23,43 +26,45 @@ OBJ_FILES = $(subst \
 				$(patsubst %.c,%.o,$(call SRC_FILES,$(1)))\
 			)
 
-# Riferimento unico al comando di generazione dei file oggetto
+# Reference to the unique object file generation command
 define BUILD_O
 	$(CC) $(CFLAGS) -c -o $@ $< $(LDFLAGS)
 endef
 
-# Opzioni interne del Makefile
-# .NOTPARALLEL:          # Disabilita l'esecuzione parallela (`--jobs=N` viene ignorato) a causa di conflitti con la creazione dei path di output
-.DEFAULT_GOAL := help  # Quando non viene specificato alcun target, viene eseguito `help` (superfluo visto che `help` è comunque il primo target elencato)
+# Makefile internal options
+.NOTPARALLEL:          # Disable parallel execution (`--jobs=N` is ignored)
+# 					     due to conflicts with output path creation
+.DEFAULT_GOAL := help  # When no target is specified, `help` is executed
+#						 (unnecessary since `help` is the first target listed anyway)
 
-### Targets ausiliari/cosmetici
+### Auxiliary/cosmetic targets
 
 .PHONY: help clean clean_tmp
-help: ## Mostra questo aiuto
+help: ## Show this help
 	@sed -e':a' -e'N' -e'$$!ba' -e's/\\\n//g' $(MAKEFILE_LIST)\
 	| grep -E '^[a-zA-Z\._-]+:.*?## .*$$'\
 	| awk \
 		'BEGIN {FS = ":.*?## "};\
 		{printf "\033[36m%-25s\033[0m %s\n", $$1, $$2}'
-clean: ## Pulisci i file oggetto, i binari, i log e i file temporanei
+clean: ## Clean up object files, binaries, logs and temporary files
 	rm -rf $(OBJ_DIR) $(BIN_DIR) $(LOG_DIR) $(TMP_DIR)
-clean_tmp: ## Pulisci i log e i file temporanei
+clean_tmp: ## Clean up logs and temporary files
 	rm -rf $(TMP_DIR)/* $(LOG_DIR)/*
 
-### Targets di entrata
+### Entry targets
 
 .PHONY: all PADRE_TRENI REGISTRO RBC railway_manager
-all: PADRE_TRENI REGISTRO RBC railway_manager ## Compila tutti i componenti
+all: PADRE_TRENI REGISTRO RBC railway_manager ## Compile all the components
 PADRE_TRENI: $(call OBJ_FILES,PADRE_TRENI)\
-  bindir bin.PADRE_TRENI ## Compila il PADRE_TRENI
+  bindir bin.PADRE_TRENI ## Compile the PADRE_TRENI
 REGISTRO: $(call OBJ_FILES,REGISTRO)\
-  bindir bin.REGISTRO ## Compila il REGISTRO
+  bindir bin.REGISTRO ## Compile the REGISTRO
 RBC: $(call OBJ_FILES,RBC)\
-  bindir bin.RBC ## Compila il RBC
+  bindir bin.RBC ## Compile the RBC
 railway_manager: | PADRE_TRENI REGISTRO $(call OBJ_FILES,railway_manager)\
-  bindir bin.railway_manager ## Compila il railway_manager
+  bindir bin.railway_manager ## Compile the railway_manager
 
-### Targets di compilazione file oggetto
+### Object file compilation targets
 
 $(OBJ_DIR)/common/%.o:\
   $(SRC_DIR)/common/%.c cpplint/common/%.c | objdir/common
@@ -77,7 +82,7 @@ $(OBJ_DIR)/railway_manager/%.o:\
   $(SRC_DIR)/railway_manager/%.c cpplint/railway_manager/%.c | objdir/railway_manager
 	$(BUILD_O)
 
-### Targets di creazione paths di output
+### Creation of output target paths
 
 .PHONY: objdir bindir tmpdir logdir cpplint
 objdir:
@@ -86,26 +91,22 @@ objdir/%:
 	@mkdir -p $(OBJ_DIR)/$(subst objdir/,,$@)
 bindir:
 	@mkdir -p $(BIN_DIR)
-bindir/%:
-	@mkdir -p $(BIN_DIR)/$(subst bindir/,,$@)
 tmpdir:
 	@mkdir -p $(TMP_DIR)
 logdir:
 	@mkdir -p $(LOG_DIR)
-	# @mkdir -p $(LOG_DIR)/components
 cpplint: ## Analyze all source code
-	cpplint $(shell find $(SRC_DIR) -type f -name "*.c")
+	cpplint $(shell find $(SRC_DIR) -type f -name "*.[c\|h]")
 cpplint/%: ## Analyze source code of directory or specifed file
 	-cpplint $(shell find \
 					$(SRC_DIR)/$(subst cpplint/,,$@) \
 					-type f \
-					-name "*.c"\
+					-name "*.[c\|h]"\
 				)
 
-### Targets di compilazione binari
+### Binary build targets
 
 bin.%: | bindir tmpdir logdir
-    # Cache wildcard bypassata tramite utilizzo di ls via shell
 	$(CC) \
 		$(CFLAGS) \
 		$(shell find \

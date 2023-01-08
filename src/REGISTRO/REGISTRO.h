@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SRC_REGISTRO_REGISTRO_H_
+#define SRC_REGISTRO_REGISTRO_H_
 #include <stdbool.h>
 #include <sys/types.h>
 
@@ -43,3 +44,5 @@ char *get_malloc_train(int *sfd);
  * @return false Some characters was not write to socket.
  */
 bool send_itinerary(int *sfd, char *itinerary);
+
+#endif // SRC_REGISTRO_REGISTRO_H_
