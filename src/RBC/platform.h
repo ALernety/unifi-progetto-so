@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SRC_RBC_PLATFORM_H_
+#define SRC_RBC_PLATFORM_H_
 #include <stdbool.h>
 #include <sys/types.h>
 
@@ -67,3 +68,5 @@ Platform *get_platform_by_id(Platform **platform_list, size_t platform_number,
 Platform **get_platform_list_by_ids(Platform **platform_list,
 				    size_t platform_number,
 				    char **connected_ids, size_t ids_number);
+
+#endif // SRC_RBC_PLATFORM_H_

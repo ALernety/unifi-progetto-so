@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SRC_RBC_RAILWAY_H_
+#define SRC_RBC_RAILWAY_H_
 #include <stdbool.h>
 #include <sys/types.h>
 
@@ -40,3 +41,5 @@ Railway *get_malloc_railway_from(const char *file, const char *platform_delim,
  * @return false Platform has not enough capacity to hold passage of train.
  */
 bool can_enter_on(const Platform platform);
+
+#endif // SRC_RBC_RAILWAY_H_

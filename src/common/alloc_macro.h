@@ -1,3 +1,5 @@
+#ifndef SRC_COMMON_ALLOC_MACRO_H_
+#define SRC_COMMON_ALLOC_MACRO_H_
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -16,3 +18,5 @@
 
 #define realloc_macro(cast_type, variable, size) \
 	alloc_macro_def(realloc(variable, size + 1), , cast_type, variable)
+
+#endif // SRC_COMMON_ALLOC_MACRO_H_

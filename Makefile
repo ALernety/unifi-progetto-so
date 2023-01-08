@@ -96,12 +96,12 @@ tmpdir:
 logdir:
 	@mkdir -p $(LOG_DIR)
 cpplint: ## Analyze all source code
-	cpplint $(shell find $(SRC_DIR) -type f -name "*.c")
+	cpplint $(shell find $(SRC_DIR) -type f -name "*.[c\|h]")
 cpplint/%: ## Analyze source code of directory or specifed file
 	-cpplint $(shell find \
 					$(SRC_DIR)/$(subst cpplint/,,$@) \
 					-type f \
-					-name "*.c"\
+					-name "*.[c\|h]"\
 				)
 
 ### Binary build targets

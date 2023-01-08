@@ -1,3 +1,5 @@
+#ifndef SRC_PADRE_TRENI_PADRE_TRENI_H_
+#define SRC_PADRE_TRENI_PADRE_TRENI_H_
 #include <stdbool.h>
 #include <sys/types.h>
 
@@ -49,3 +51,5 @@ int create_train_process(size_t train_index, char *REGISTRO_ip,
 			 size_t REGISTRO_port, char *RBC_socket_file,
 			 const char *itinerary_delim,
 			 const char *request_delim);
+
+#endif // SRC_PADRE_TRENI_PADRE_TRENI_H_
